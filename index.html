@@ -7,8 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-   
-<style>
+    <style>
     body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -19,27 +18,25 @@
         min-height: 100vh;
         touch-action: manipulation;
         overscroll-behavior-y: none;
-        width: 100%;
-        overflow-x: hidden; /* Empêche le débordement horizontal */
-        box-sizing: border-box;
     }
     .hidden {
-        display: none !important;
-    }
+    display: none !important;
+}
 
-    .standard-popup {
-        position: fixed;
-        top: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: white;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        border-radius: 8px;
-        z-index: 999;
-        min-width: 250px;
-        max-width: 90%;
-    }
+.standard-popup {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 999;
+    min-width: 250px;
+    max-width: 90%;
+}
+
 
     #homePage {
         max-width: 600px;
@@ -86,65 +83,63 @@
     #homePage #invoiceBtn:hover {
         background: #0000CC;
     }
-    #homePage #budgetBtn {
-        background: #FFA500; /* Orange */
-    }
-    #homePage #budgetBtn:hover {
-        background: #E59400;
-    }
+#homePage #budgetBtn {
+    background: #FFA500; /* Orange */
+}
+#homePage #budgetBtn:hover {
+    background: #E59400;
+}
 
-    #passwordPage {
-        max-width: 600px;
-        margin: 0 auto;
-        text-align: center;
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
+#passwordPage {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
-    #passwordPage h2 {
-        color: #333;
-        margin-bottom: 20px;
-    }
+#passwordPage h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
 
-    #passwordPage input {
-        padding: 10px;
-        width: 80%;
-        max-width: 300px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
+#passwordPage input {
+    padding: 10px;
+    width: 80%;
+    max-width: 300px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
 
-    #passwordPage button {
-        padding: 10px 20px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-    }
+#passwordPage button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
 
-    #passwordPage button:hover {
-        background: #0056b3;
-    }
+#passwordPage button:hover {
+    background: #0056b3;
+}
 
     #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
-        max-width: 100%; /* S'adapte à la largeur de l'écran */
-        width: 100%;
+        max-width: 600px;
         margin: 0 auto;
         background: white;
-        padding: 10px; /* Réduit le padding pour les petits écrans */
+        padding: 20px;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        box-sizing: border-box;
     }
     #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
         text-align: center;
@@ -187,10 +182,10 @@
         background: #2AB82A;
     }
     /* Boutons "Supprimer" et "Effacer" */
-    #deleteProductBtn, #deleteRecipeBtn, #deleteDetailBtn, #clearInvoiceBtn, .delete-btn {
+    #deleteProductBtn, #deleteRecipeBtn,#deleteDetailBtn, #clearInvoiceBtn, .delete-btn {
         background: #FF0000; /* Rouge */
     }
-    #deleteProductBtn:hover, #deleteRecipeBtn:hover, #deleteDetailBtn:hover, #clearInvoiceBtn:hover, .delete-btn:hover {
+    #deleteProductBtn:hover, #deleteRecipeBtn:hover,#deleteDetailBtn:hover, #clearInvoiceBtn:hover, .delete-btn:hover {
         background: #CC0000;
     }
     /* Boutons "Bilan" */
@@ -201,13 +196,13 @@
         background: #0000CC;
     }
     /* Boutons "Imprimer" */
-    #printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn, #printBluetoothSalesBtn {
-        background: #FFFF00; /* Jaune */
-        color: #000; /* Texte noir pour lisibilité */
-    }
-    #printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover, #printBluetoothSalesBtn:hover {
-        background: #CCCC00;
-    }
+#printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn, #printBluetoothSalesBtn {
+    background: #FFFF00; /* Jaune */
+    color: #000; /* Texte noir pour lisibilité */
+}
+#printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover, #printBluetoothSalesBtn:hover {
+    background: #CCCC00;
+}
 
     /* Boutons "Envoyer" */
     #sendSmsInvoiceBtn, #sendEmailInvoiceBtn {
@@ -281,6 +276,9 @@
         flex-direction: column;
         gap: 10px;
         margin-bottom: 20px;
+
+
+
     }
     #invoicePage .checkbox-group label, #purchasesPage .radio-group label, #personnelPage .select-group label {
         display: flex;
@@ -298,7 +296,6 @@
         gap: 0;
         width: 100%;
         text-align: left;
-        flex-wrap: wrap; /* Permet aux checkboxes de s'enrouler */
     }
     #invoicePage .checkbox-group label {
         display: inline-flex;
@@ -307,7 +304,7 @@
         padding: 0;
     }
     #invoicePage .checkbox-group .first-label {
-        margin-right: 20px; /* Réduit l'espacement */
+        margin-right: 30px;
     }
     #invoicePage .checkbox-group input[type="checkbox"] {
         margin: 0 0 0 5px;
@@ -367,16 +364,12 @@
         list-style: none;
         padding: 0;
         margin: 0;
-        width: 100%;
     }
     #invoicePage #productList li {
         padding: 8px;
         border-bottom: 1px solid #ddd;
         display: flex;
         align-items: center;
-        flex-wrap: wrap; /* Permet au contenu de s'enrouler */
-        width: 100%;
-        box-sizing: border-box;
     }
     #invoicePage #productList input[type="checkbox"] {
         margin-right: 10px;
@@ -386,7 +379,7 @@
         margin-top: 20px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         width: 100%;
-        max-width: 100%; /* Remplace 210mm */
+        max-width: 210mm;
         margin-left: auto;
         margin-right: auto;
         box-sizing: border-box;
@@ -395,7 +388,6 @@
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
-        table-layout: auto; /* Permet aux colonnes de s'adapter au contenu */
     }
     #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
         border: 1px solid #ddd;
@@ -403,7 +395,6 @@
         text-align: left;
         font-size: 14px;
         min-height: 30px;
-        white-space: normal; /* Permet au texte de s'enrouler */
     }
     #invoicePage th, #recipeManagementPage th, #invoiceManagementPage th, #purchasesManagementPage th, #personnelManagementPage th {
         background-color: #f2f2f2;
@@ -426,7 +417,7 @@
     #recipeManagementPage #exportRecipeBtn:hover {
         background: #E59400;
     }
-    /* Télécharger PDF - Bilan des Ventes */
+    /* Télécharger PDF - Bilan des Ventes (inchangé, déjà corrigé) */
     #recipeManagementPage #exportPurchasesPdfBtn {
         background: #FFA500; /* Orange */
     }
@@ -478,19 +469,17 @@
         text-align: center;
         margin-bottom: 20px;
         position: relative;
-        width: 100%;
-        box-sizing: border-box;
     }
     #invoicePage #invoiceHeader .invoice-number {
-        position: static; /* Évite les débordements */
-        display: block;
-        text-align: right;
-        font-size: 14px;
-        margin-bottom: 10px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 16px;
+        font-weight: bold;
     }
     #invoicePage .total-table, #personnelPage .total-table {
         width: 100%;
-        max-width: 100%; /* S'adapte à l'écran */
+        max-width: 300px;
         margin-left: auto;
         margin-right: 0;
         box-sizing: border-box;
@@ -501,8 +490,8 @@
     #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
         background-color: white;
         width: 100%;
-        max-width: 100%; /* Remplace 210mm */
-        padding: 10px;
+        max-width: 210mm;
+        padding: 20px;
         box-sizing: border-box;
         margin: auto;
     }
@@ -526,14 +515,12 @@
         cursor: pointer;
     }
     #invoiceDetailPage {
-        max-width: 100%; /* S'adapte à l'écran */
-        width: 100%;
+        max-width: 600px;
         margin: 0 auto;
         background: white;
-        padding: 10px;
+        padding: 20px;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        box-sizing: border-box;
     }
     #invoiceDetailPage h1 {
         text-align: center;
@@ -545,7 +532,6 @@
         display: flex;
         gap: 10px;
         justify-content: center;
-        flex-wrap: wrap;
     }
     .no-print {
         display: block;
@@ -571,142 +557,121 @@
     }
     @media (max-width: 480px) {
         #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
-            padding: 5px; /* Réduit le padding */
-            max-width: 100%;
-            width: 100%;
+            padding: 10px;
         }
         #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
-            font-size: 1.2em; /* Réduit la taille du titre */
+            font-size: 1.2em;
         }
         #recipeBookPage input, #recipeBookPage button, #invoicePage input, #invoicePage button, #invoicePage select, #purchasesPage input, #purchasesPage button, #purchasesManagementPage input, #purchasesManagementPage button, #personnelPage input, #personnelPage button, #personnelPage select, #personnelManagementPage button {
-            font-size: 0.9em; /* Réduit la taille des éléments interactifs */
-            padding: 6px;
+            font-size: 0.9em;
         }
         #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
-            font-size: 12px; /* Réduit la taille de la police dans les tableaux */
-            padding: 4px; /* Réduit le padding */
-            white-space: normal; /* Permet au texte de s'enrouler */
+            font-size: 12px;
         }
         #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
-            padding: 5px;
-            max-width: 100%;
-            width: 100%;
-        }
-        #invoicePage .dropdown-content {
-            max-height: 60vh; /* Réduit la hauteur pour les petits écrans */
-        }
-        #invoicePage .checkbox-group .first-label {
-            margin-right: 10px; /* Réduit encore l'espacement */
-        }
-        #invoicePage table {
-            width: 100%;
-            table-layout: auto; /* S'adapte au contenu */
+            height: auto;
         }
     }
 
-    .payment-section {
+.payment-section {
         display: flex;
         align-items: center;
         gap: 10px;
-        flex-wrap: wrap; /* Permet aux éléments de s'enrouler */
     }
     .payment-section label {
         display: flex;
         align-items: center;
     }
     .spacer {
-        width: 0.5cm; /* Réduit l'espacement */
+        width: 1cm; /* Réduit de 2cm à 1cm */
     }
 
-    /* Styles pour la page Budget */
-    #budgetPage.hidden {
-        display: none !important;
-        visibility: hidden !important;
-    }
+/* Styles pour la page Budget */
+#budgetPage.hidden {
+    display: none !important;
+    visibility: hidden !important; /* Double sécurité */
+}
 
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.container input, .container label {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.container input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.result {
+    margin-top: 20px;
+}
+.negative {
+    color: red;
+}
+.container table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+.container table, .container th, .container td {
+    border: 1px solid #ddd;
+}
+.container th, .container td {
+    padding: 10px;
+    text-align: center;
+}
+.container th {
+    background-color: #f2f2f2;
+}
+#exportPdf, #exportWord {
+    background-color: #87CEEB; /* Bleu ciel */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}
+#exportPdf:hover, #exportWord:hover {
+    background-color: #00BFFF; /* Bleu profond au survol */
+}
+@media print {
     .container {
-        max-width: 100%; /* S'adapte à l'écran */
-        width: 100%;
-        margin: auto;
-        background: white;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        box-sizing: border-box;
+        page-break-inside: avoid;
     }
-    .container input, .container label {
-        width: 100%;
-        margin: 5px 0;
-        padding: 8px;
-        box-sizing: border-box;
+    .container table, .container tr, .container td, .container th {
+        page-break-inside: avoid;
     }
-    .container input {
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    .result {
-        margin-top: 20px;
-    }
-    .negative {
-        color: red;
-    }
-    .container table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-    }
-    .container table, .container th, .container td {
-        border: 1px solid #ddd;
-    }
-    .container th, .container td {
-        padding: 8px;
-        text-align: center;
-    }
-    .container th {
-        background-color: #f2f2f2;
-    }
-    #exportPdf, #exportWord {
-        background-color: #87CEEB; /* Bleu ciel */
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        margin-right: 10px;
-    }
-    #exportPdf:hover, #exportWord:hover {
-        background-color: #00BFFF; /* Bleu profond au survol */
-    }
-    @media print {
-        .container {
-            page-break-inside: avoid;
-        }
-        .container table, .container tr, .container td, .container th {
-            page-break-inside: avoid;
-        }
-    }
+}
 
-    /* Style pour la page Paramètres */
-    #settingsPage {
-        text-align: center;
-        padding: 20px;
-        max-width: 100%;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    #settingsPage button {
-        display: block;
-        width: 80%;
-        max-width: 300px;
-        margin: 10px auto;
-        padding: 15px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-</style>
+/* Style pour la page Paramètres (ajouter à la fin) */
+        #settingsPage {
+            text-align: center;
+            padding: 20px;
+        }
+        #settingsPage button {
+            display: block;
+            width: 80%;
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+
+    </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icone.png" type="image/png">
 <meta name="theme-color" content="#000000">
@@ -1308,14 +1273,13 @@ function loadMenuFromStorage() {
             menu = JSON.parse(storedMenu);
         } else {
             menu = [
-                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
                 { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
                 { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
                 { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
@@ -1326,17 +1290,16 @@ function loadMenuFromStorage() {
     } catch (e) {
         console.error('Erreur lors du chargement du menu:', e);
         menu = [
-                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
         ];
         updateMenuTvaRates(); // Initialiser les taux au chargement
     }
@@ -2285,14 +2248,13 @@ function downloadRecipesPDF() {
             menu = JSON.parse(storedMenu);
         } else {
             menu = [
-                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
                 { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
                 { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
                 { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
@@ -2303,17 +2265,16 @@ function downloadRecipesPDF() {
     } catch (e) {
         console.error('Erreur lors du chargement du menu:', e);
         menu = [
-                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
         ];
         updateMenuTvaRates(); // Initialiser les taux au chargement
     }
@@ -5156,17 +5117,16 @@ document.getElementById('exportPdf').addEventListener('click', function() {
     }
 
 const initialMenu = [
-                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+    { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+    { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Gelato à la pistache-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+    { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+    { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+    { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+    { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
 ];
 
 
