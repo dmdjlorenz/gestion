@@ -4743,6 +4743,11 @@ window.addEventListener('popstate', function(event) {
 });
 
 // Fonction pour afficher la page Budget
+
+document.getElementById('exportPdf').style.backgroundColor = 'orange';
+document.getElementById('exportWord').style.backgroundColor = 'orange';
+
+// Fonction pour afficher la page Budget
 function showBudget() {
     document.getElementById('homePage').classList.add('hidden');
     document.getElementById('recipeBookPage').classList.add('hidden');
@@ -4786,13 +4791,13 @@ function calculerResultat() {
     // Calcul des charges d'exploitation
     var loyerAnnuel = loyerMensuel * 12;
     var coutMatieres = cout * panier * jours * semaines;
-    var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes + tvaCalcul;
+    var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
 
     // Calcul des charges sociales et impôts
     var chargesUrssaf = chiffreAffaires * urssaf;
 
     // Calcul du bénéfice net
-    var beneficeNet = chiffreAffaires - (chargesExploitation + chargesUrssaf);
+    var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
 
     // Calcul de l'amortissement annuel
     var amortissement = apport / 7;
@@ -4821,16 +4826,16 @@ function calculerResultat() {
             <u>Détail des charges annuelles d'exploitation:</u>
             <ul>
                 <li>Redevance ou loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
-                <li>Charges d'électricité, gaz, eau, téléphone: ${charges.toFixed(0)} €</li>
                 <li>Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
                 <li>Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
                 <li>Charges externes: ${externes.toFixed(0)} €</li>
-		<li>TVA (si CA > 85000€): ${tvaCalcul.toFixed(0)} €</li>
+                <li>Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
             </ul>
         </ul>
         <p><strong>* Total des charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (CE)</strong></p>
+        <p><strong>* TVA (si CA > 85000€): ${tvaCalcul.toFixed(0)} € (TVA)</strong></p>
         <p><strong>* Impôts sur le revenu et Cotisations sociales de Mathis: ${chargesUrssaf.toFixed(0)} € (IRCC)</strong></p>
-        <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-CE-IRCC)</span></strong></p>
+        <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-CE-TVA-IRCC)</span></strong></p>
         
         <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
         <p>  </p>`;
@@ -4838,8 +4843,6 @@ function calculerResultat() {
     // Appel pour calculer et afficher le tableau des bénéfices nets mensuels
     afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
 }
-
-
 
 function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva, amortissement = 0) {
     for (let i = 1; i <= 300; i++) {
@@ -4856,11 +4859,8 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
             tvaCalcul = (chiffreAffaires - 85000) * tva / (1 + tva);  // Calcul de la TVA
         }
 
-        // Ajouter la TVA aux charges d'exploitation si elle est calculée
-        chargesExploitation += tvaCalcul;
-
         // Calcul du bénéfice net
-        var beneficeNet = chiffreAffaires - (chargesExploitation + chargesUrssaf);
+        var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
 
         // Affichage pour le débogage
         console.log(`Iteration: ${i} | Chiffre d'affaires: ${chiffreAffaires} | TVA: ${tvaCalcul} | Bénéfice net: ${beneficeNet}`);
@@ -4877,12 +4877,6 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
     return 300; // Valeur par défaut si aucune rentabilité n'est trouvée
 }
 
-
-
-
-
-
-
 function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva) {
     var tableau = document.getElementById('tableauBenefices');
     
@@ -4895,7 +4889,7 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
         <th>2000 €</th>
         <th>2500 €</th>
         <th>3000 €</th>
- 	<th>4000 €</th>
+        <th>4000 €</th>
     </tr>
     <tr>
         <td>Nombre de ventes journalières nécessaire</td>
@@ -4904,7 +4898,7 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
         ${calculerVentesPourBenefices(2000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
         ${calculerVentesPourBenefices(2500, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
         ${calculerVentesPourBenefices(3000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
- 	${calculerVentesPourBenefices(4000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+        ${calculerVentesPourBenefices(4000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
     </tr>`;
 }
 
@@ -4915,9 +4909,9 @@ function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaine
         var chargesPersonnel = salaire * 12 * (1 + patronales);
         var loyerAnnuel = loyerMensuel * 12;
         var coutMatieres = cout * i * jours * semaines;
-        var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes + tvaCalcul;
+        var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
         var chargesUrssaf = chiffreAffaires * urssaf;
-        var beneficeNet = chiffreAffaires - (chargesExploitation + chargesUrssaf);
+        var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
         
         if (beneficeNet >= (beneficeMensuel * 12)) {
             return `<td>${i}</td>`;
@@ -4998,9 +4992,9 @@ document.getElementById('exportWord').addEventListener('click', function () {
         <p>Nombre de jours de travail par semaine: ${document.getElementById('jours').value}</p>
         <p>Nombre de semaines de travail par an: ${document.getElementById('semaines').value}</p>
         <p>Redevance ou loyer CC mensuel (€): ${document.getElementById('loyer').value}</p>
-        <p>Charges annuelles d'électricité, gaz, eau, téléphone (€): ${document.getElementById('charges').value}</p>
         <p>Salaire du personnel brut mensuel (temps partiel ou temps plein) (€): ${document.getElementById('salaire').value}</p>
         <p>Taux de cotisation des charges patronales (%): ${document.getElementById('patronales').value}</p>
+        <p>Charges annuelles d'électricité, gaz, eau, téléphone, assurance (€): ${document.getElementById('charges').value}</p>
         <p>Charges annuelles externes (€): ${document.getElementById('externes').value}</p>
         <p>Taux de cotisations sociales (%): ${document.getElementById('urssaf').value}</p>
         <p>Apport financier ou emprunt (€): ${document.getElementById('apport').value}</p>
@@ -5037,9 +5031,29 @@ document.getElementById('exportWord').addEventListener('click', function () {
     document.body.removeChild(fileDownload);
 });
 
-
 // Fonction pour exporter le contenu HTML en PDF
+
 document.getElementById('exportPdf').addEventListener('click', function() {
+    // Get the known buttons
+    const exportPdfBtn = document.getElementById('exportPdf');
+    const exportWordBtn = document.getElementById('exportWord');
+    const retourBtn = document.getElementById('retour');
+
+    // Find all buttons to catch any additional "retour" buttons (e.g., blue one)
+    const allButtons = document.querySelectorAll('button, [id*="retour"], [class*="retour"], [class*="back"], [class*="return"]');
+    console.log("All buttons found:", allButtons); // Debug: Log all buttons to identify the blue one
+
+    // Hide known buttons if they exist
+    if (exportPdfBtn) exportPdfBtn.style.display = 'none';
+    if (exportWordBtn) exportWordBtn.style.display = 'none';
+    if (retourBtn) retourBtn.style.display = 'none';
+
+    // Hide all other buttons that might be the blue "retour" button
+    allButtons.forEach(button => {
+        console.log("Hiding button:", button.id, button.className, button.textContent); // Debug: Log button details
+        button.style.display = 'none';
+    });
+
     var element = document.querySelector('.container');
     var opt = {
         margin:       0.5,
@@ -5049,12 +5063,30 @@ document.getElementById('exportPdf').addEventListener('click', function() {
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
     };
-    html2pdf().from(element).set(opt).toPdf().get('pdf').then(function (pdf) {
+
+    html2pdf().from(element).set(opt).toPdf().get('pdf').then(function(pdf) {
         // Diviser en 3 pages
         var totalPages = pdf.internal.getNumberOfPages();
         if (totalPages > 3) {
             // Ajuster le contenu ou la mise en page si nécessaire
         }
+        // Restore known buttons
+        if (exportPdfBtn) exportPdfBtn.style.display = 'block';
+        if (exportWordBtn) exportWordBtn.style.display = 'block';
+        if (retourBtn) retourBtn.style.display = 'block';
+        // Restore all other buttons
+        allButtons.forEach(button => {
+            button.style.display = 'block';
+        });
+    }).catch(function(error) {
+        console.error("Error generating PDF:", error);
+        // Restore buttons in case of error
+        if (exportPdfBtn) exportPdfBtn.style.display = 'block';
+        if (exportWordBtn) exportWordBtn.style.display = 'block';
+        if (retourBtn) retourBtn.style.display = 'block';
+        allButtons.forEach(button => {
+            button.style.display = 'block';
+        });
     }).save();
 });
 
