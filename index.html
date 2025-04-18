@@ -7,7 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-    <style>
+   
+<style>
     body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -18,25 +19,27 @@
         min-height: 100vh;
         touch-action: manipulation;
         overscroll-behavior-y: none;
+        width: 100%;
+        overflow-x: hidden; /* Empêche le débordement horizontal */
+        box-sizing: border-box;
     }
     .hidden {
-    display: none !important;
-}
+        display: none !important;
+    }
 
-.standard-popup {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    z-index: 999;
-    min-width: 250px;
-    max-width: 90%;
-}
-
+    .standard-popup {
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        z-index: 999;
+        min-width: 250px;
+        max-width: 90%;
+    }
 
     #homePage {
         max-width: 600px;
@@ -83,63 +86,65 @@
     #homePage #invoiceBtn:hover {
         background: #0000CC;
     }
-#homePage #budgetBtn {
-    background: #FFA500; /* Orange */
-}
-#homePage #budgetBtn:hover {
-    background: #E59400;
-}
+    #homePage #budgetBtn {
+        background: #FFA500; /* Orange */
+    }
+    #homePage #budgetBtn:hover {
+        background: #E59400;
+    }
 
-#passwordPage {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#passwordPage h2 {
-    color: #333;
-    margin-bottom: 20px;
-}
-
-#passwordPage input {
-    padding: 10px;
-    width: 80%;
-    max-width: 300px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-#passwordPage button {
-    padding: 10px 20px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#passwordPage button:hover {
-    background: #0056b3;
-}
-
-    #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
+    #passwordPage {
         max-width: 600px;
         margin: 0 auto;
-        background: white;
+        text-align: center;
         padding: 20px;
+        background: white;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #passwordPage h2 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    #passwordPage input {
+        padding: 10px;
+        width: 80%;
+        max-width: 300px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    #passwordPage button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    #passwordPage button:hover {
+        background: #0056b3;
+    }
+
+    #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
+        max-width: 100%; /* S'adapte à la largeur de l'écran */
+        width: 100%;
+        margin: 0 auto;
+        background: white;
+        padding: 10px; /* Réduit le padding pour les petits écrans */
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-sizing: border-box;
     }
     #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
         text-align: center;
@@ -182,10 +187,10 @@
         background: #2AB82A;
     }
     /* Boutons "Supprimer" et "Effacer" */
-    #deleteProductBtn, #deleteRecipeBtn,#deleteDetailBtn, #clearInvoiceBtn, .delete-btn {
+    #deleteProductBtn, #deleteRecipeBtn, #deleteDetailBtn, #clearInvoiceBtn, .delete-btn {
         background: #FF0000; /* Rouge */
     }
-    #deleteProductBtn:hover, #deleteRecipeBtn:hover,#deleteDetailBtn:hover, #clearInvoiceBtn:hover, .delete-btn:hover {
+    #deleteProductBtn:hover, #deleteRecipeBtn:hover, #deleteDetailBtn:hover, #clearInvoiceBtn:hover, .delete-btn:hover {
         background: #CC0000;
     }
     /* Boutons "Bilan" */
@@ -196,13 +201,13 @@
         background: #0000CC;
     }
     /* Boutons "Imprimer" */
-#printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn, #printBluetoothSalesBtn {
-    background: #FFFF00; /* Jaune */
-    color: #000; /* Texte noir pour lisibilité */
-}
-#printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover, #printBluetoothSalesBtn:hover {
-    background: #CCCC00;
-}
+    #printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn, #printBluetoothSalesBtn {
+        background: #FFFF00; /* Jaune */
+        color: #000; /* Texte noir pour lisibilité */
+    }
+    #printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover, #printBluetoothSalesBtn:hover {
+        background: #CCCC00;
+    }
 
     /* Boutons "Envoyer" */
     #sendSmsInvoiceBtn, #sendEmailInvoiceBtn {
@@ -276,9 +281,6 @@
         flex-direction: column;
         gap: 10px;
         margin-bottom: 20px;
-
-
-
     }
     #invoicePage .checkbox-group label, #purchasesPage .radio-group label, #personnelPage .select-group label {
         display: flex;
@@ -296,6 +298,7 @@
         gap: 0;
         width: 100%;
         text-align: left;
+        flex-wrap: wrap; /* Permet aux checkboxes de s'enrouler */
     }
     #invoicePage .checkbox-group label {
         display: inline-flex;
@@ -304,7 +307,7 @@
         padding: 0;
     }
     #invoicePage .checkbox-group .first-label {
-        margin-right: 30px;
+        margin-right: 20px; /* Réduit l'espacement */
     }
     #invoicePage .checkbox-group input[type="checkbox"] {
         margin: 0 0 0 5px;
@@ -364,12 +367,16 @@
         list-style: none;
         padding: 0;
         margin: 0;
+        width: 100%;
     }
     #invoicePage #productList li {
         padding: 8px;
         border-bottom: 1px solid #ddd;
         display: flex;
         align-items: center;
+        flex-wrap: wrap; /* Permet au contenu de s'enrouler */
+        width: 100%;
+        box-sizing: border-box;
     }
     #invoicePage #productList input[type="checkbox"] {
         margin-right: 10px;
@@ -379,7 +386,7 @@
         margin-top: 20px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         width: 100%;
-        max-width: 210mm;
+        max-width: 100%; /* Remplace 210mm */
         margin-left: auto;
         margin-right: auto;
         box-sizing: border-box;
@@ -388,6 +395,7 @@
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
+        table-layout: auto; /* Permet aux colonnes de s'adapter au contenu */
     }
     #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
         border: 1px solid #ddd;
@@ -395,6 +403,7 @@
         text-align: left;
         font-size: 14px;
         min-height: 30px;
+        white-space: normal; /* Permet au texte de s'enrouler */
     }
     #invoicePage th, #recipeManagementPage th, #invoiceManagementPage th, #purchasesManagementPage th, #personnelManagementPage th {
         background-color: #f2f2f2;
@@ -417,7 +426,7 @@
     #recipeManagementPage #exportRecipeBtn:hover {
         background: #E59400;
     }
-    /* Télécharger PDF - Bilan des Ventes (inchangé, déjà corrigé) */
+    /* Télécharger PDF - Bilan des Ventes */
     #recipeManagementPage #exportPurchasesPdfBtn {
         background: #FFA500; /* Orange */
     }
@@ -469,17 +478,19 @@
         text-align: center;
         margin-bottom: 20px;
         position: relative;
+        width: 100%;
+        box-sizing: border-box;
     }
     #invoicePage #invoiceHeader .invoice-number {
-        position: absolute;
-        top: 0;
-        right: 0;
-        font-size: 16px;
-        font-weight: bold;
+        position: static; /* Évite les débordements */
+        display: block;
+        text-align: right;
+        font-size: 14px;
+        margin-bottom: 10px;
     }
     #invoicePage .total-table, #personnelPage .total-table {
         width: 100%;
-        max-width: 300px;
+        max-width: 100%; /* S'adapte à l'écran */
         margin-left: auto;
         margin-right: 0;
         box-sizing: border-box;
@@ -490,8 +501,8 @@
     #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
         background-color: white;
         width: 100%;
-        max-width: 210mm;
-        padding: 20px;
+        max-width: 100%; /* Remplace 210mm */
+        padding: 10px;
         box-sizing: border-box;
         margin: auto;
     }
@@ -515,12 +526,14 @@
         cursor: pointer;
     }
     #invoiceDetailPage {
-        max-width: 600px;
+        max-width: 100%; /* S'adapte à l'écran */
+        width: 100%;
         margin: 0 auto;
         background: white;
-        padding: 20px;
+        padding: 10px;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-sizing: border-box;
     }
     #invoiceDetailPage h1 {
         text-align: center;
@@ -532,6 +545,7 @@
         display: flex;
         gap: 10px;
         justify-content: center;
+        flex-wrap: wrap;
     }
     .no-print {
         display: block;
@@ -557,121 +571,142 @@
     }
     @media (max-width: 480px) {
         #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
-            padding: 10px;
+            padding: 5px; /* Réduit le padding */
+            max-width: 100%;
+            width: 100%;
         }
         #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
-            font-size: 1.2em;
+            font-size: 1.2em; /* Réduit la taille du titre */
         }
         #recipeBookPage input, #recipeBookPage button, #invoicePage input, #invoicePage button, #invoicePage select, #purchasesPage input, #purchasesPage button, #purchasesManagementPage input, #purchasesManagementPage button, #personnelPage input, #personnelPage button, #personnelPage select, #personnelManagementPage button {
-            font-size: 0.9em;
+            font-size: 0.9em; /* Réduit la taille des éléments interactifs */
+            padding: 6px;
         }
         #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
-            font-size: 12px;
+            font-size: 12px; /* Réduit la taille de la police dans les tableaux */
+            padding: 4px; /* Réduit le padding */
+            white-space: normal; /* Permet au texte de s'enrouler */
         }
         #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
-            height: auto;
+            padding: 5px;
+            max-width: 100%;
+            width: 100%;
+        }
+        #invoicePage .dropdown-content {
+            max-height: 60vh; /* Réduit la hauteur pour les petits écrans */
+        }
+        #invoicePage .checkbox-group .first-label {
+            margin-right: 10px; /* Réduit encore l'espacement */
+        }
+        #invoicePage table {
+            width: 100%;
+            table-layout: auto; /* S'adapte au contenu */
         }
     }
 
-.payment-section {
+    .payment-section {
         display: flex;
         align-items: center;
         gap: 10px;
+        flex-wrap: wrap; /* Permet aux éléments de s'enrouler */
     }
     .payment-section label {
         display: flex;
         align-items: center;
     }
     .spacer {
-        width: 1cm; /* Réduit de 2cm à 1cm */
+        width: 0.5cm; /* Réduit l'espacement */
     }
 
-/* Styles pour la page Budget */
-#budgetPage.hidden {
-    display: none !important;
-    visibility: hidden !important; /* Double sécurité */
-}
+    /* Styles pour la page Budget */
+    #budgetPage.hidden {
+        display: none !important;
+        visibility: hidden !important;
+    }
 
-.container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-.container input, .container label {
-    width: 100%;
-    margin: 10px 0;
-    padding: 10px;
-    box-sizing: border-box;
-}
-.container input {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.result {
-    margin-top: 20px;
-}
-.negative {
-    color: red;
-}
-.container table {
-    width: 100%;
-    margin-top: 20px;
-    border-collapse: collapse;
-}
-.container table, .container th, .container td {
-    border: 1px solid #ddd;
-}
-.container th, .container td {
-    padding: 10px;
-    text-align: center;
-}
-.container th {
-    background-color: #f2f2f2;
-}
-#exportPdf, #exportWord {
-    background-color: #87CEEB; /* Bleu ciel */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-right: 10px;
-}
-#exportPdf:hover, #exportWord:hover {
-    background-color: #00BFFF; /* Bleu profond au survol */
-}
-@media print {
     .container {
-        page-break-inside: avoid;
+        max-width: 100%; /* S'adapte à l'écran */
+        width: 100%;
+        margin: auto;
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-sizing: border-box;
     }
-    .container table, .container tr, .container td, .container th {
-        page-break-inside: avoid;
+    .container input, .container label {
+        width: 100%;
+        margin: 5px 0;
+        padding: 8px;
+        box-sizing: border-box;
     }
-}
-
-/* Style pour la page Paramètres (ajouter à la fin) */
-        #settingsPage {
-            text-align: center;
-            padding: 20px;
+    .container input {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .result {
+        margin-top: 20px;
+    }
+    .negative {
+        color: red;
+    }
+    .container table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+    .container table, .container th, .container td {
+        border: 1px solid #ddd;
+    }
+    .container th, .container td {
+        padding: 8px;
+        text-align: center;
+    }
+    .container th {
+        background-color: #f2f2f2;
+    }
+    #exportPdf, #exportWord {
+        background-color: #87CEEB; /* Bleu ciel */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+    #exportPdf:hover, #exportWord:hover {
+        background-color: #00BFFF; /* Bleu profond au survol */
+    }
+    @media print {
+        .container {
+            page-break-inside: avoid;
         }
-        #settingsPage button {
-            display: block;
-            width: 80%;
-            max-width: 300px;
-            margin: 10px auto;
-            padding: 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .container table, .container tr, .container td, .container th {
+            page-break-inside: avoid;
         }
+    }
 
-
-    </style>
+    /* Style pour la page Paramètres */
+    #settingsPage {
+        text-align: center;
+        padding: 20px;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    #settingsPage button {
+        display: block;
+        width: 80%;
+        max-width: 300px;
+        margin: 10px auto;
+        padding: 15px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icone.png" type="image/png">
 <meta name="theme-color" content="#000000">
