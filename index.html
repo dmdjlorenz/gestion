@@ -1308,13 +1308,14 @@ function loadMenuFromStorage() {
             menu = JSON.parse(storedMenu);
         } else {
             menu = [
-                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
                 { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
                 { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
                 { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
@@ -1325,16 +1326,17 @@ function loadMenuFromStorage() {
     } catch (e) {
         console.error('Erreur lors du chargement du menu:', e);
         menu = [
-            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
         ];
         updateMenuTvaRates(); // Initialiser les taux au chargement
     }
@@ -2283,13 +2285,14 @@ function downloadRecipesPDF() {
             menu = JSON.parse(storedMenu);
         } else {
             menu = [
-                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
                 { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
                 { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
                 { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
@@ -2300,16 +2303,17 @@ function downloadRecipesPDF() {
     } catch (e) {
         console.error('Erreur lors du chargement du menu:', e);
         menu = [
-            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
         ];
         updateMenuTvaRates(); // Initialiser les taux au chargement
     }
@@ -5152,16 +5156,17 @@ document.getElementById('exportPdf').addEventListener('click', function() {
     }
 
 const initialMenu = [
-    { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-    { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-    { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-    { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-    { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-    { name: "Gelato à la pistache-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-    { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-    { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-    { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-    { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+                { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
 ];
 
 
