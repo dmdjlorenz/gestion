@@ -133,29 +133,13 @@
     background: #0056b3;
 }
 
-    #recipeBookPage, #recipeManagementPage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
+    #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
         max-width: 600px;
         margin: 0 auto;
         background: white;
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-
-#invoicePage {
-    max-width: 100%; /* Remplace 600px */
-    width: 100%;
-    margin: 0 auto;
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    box-sizing: border-box;
-}
-
-
-
-
-
     }
     #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
         text-align: center;
@@ -355,19 +339,17 @@
         background: #006600;
     }
     #invoicePage .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #fff;
-    width: 100%;
-    max-width: 100%; /* Assure qu'il ne dépasse pas */
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    padding: 12px 16px;
-    z-index: 1;
-    max-height: 80vh;
-    overflow-y: auto;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        width: 100%;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 4px;
+    }
     #invoicePage .show { display: block; }
     #invoicePage input, #invoicePage select, #personnelPage select {
         width: 100%;
@@ -495,28 +477,17 @@
         font-size: 16px;
         font-weight: bold;
     }
-    #personnelPage .total-table {
+    #invoicePage .total-table, #personnelPage .total-table {
         width: 100%;
         max-width: 300px;
         margin-left: auto;
         margin-right: 0;
         box-sizing: border-box;
     }
-
-#invoicePage .total-table {
-    width: 100%;
-    max-width: 100%; /* Remplace 300px */
-    margin-left: auto;
-    margin-right: 0;
-    box-sizing: border-box;
-}
-
-
-
     #invoicePage .total-table td:last-child, #personnelPage .total-table td:last-child {
         text-align: right;
     }
-    #personnelPage #personnelContainer {
+    #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
         background-color: white;
         width: 100%;
         max-width: 210mm;
@@ -524,20 +495,6 @@
         box-sizing: border-box;
         margin: auto;
     }
-
-#invoicePage #invoiceContainer {
-    background-color: white;
-    width: 100%; /* Remplace max-width: 210mm */
-    max-width: 100%; /* S'adapte à l'écran */
-    padding: 10px;
-    box-sizing: border-box;
-    margin: auto;
-}
-
-
-
-
-
     #recipeManagementPage .date-filter, #invoiceManagementPage .date-filter, #purchasesManagementPage .date-filter, #personnelManagementPage .date-filter {
         display: flex;
         flex-direction: column;
@@ -4926,10 +4883,10 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
     tableau.innerHTML = `
     <tr>
         <th>Revenu net mensuel Mathis</th>
-        <th>1000€</th>
-        <th>2000€</th>
-        <th>3000€</th>
-        <th>4000€</th>
+        <th>1000 €</th>
+        <th>2000 €</th>
+        <th>3000 €</th>
+        <th>4000 €</th>
     </tr>
     <tr>
         <td>Nombre de ventes journalières nécessaire</td>
