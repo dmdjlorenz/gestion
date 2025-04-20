@@ -23,6 +23,27 @@
     display: none !important;
 }
 
+#tableauBenefices {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px; /* Garder une bonne lisibilité */
+  table-layout: auto;
+}
+
+#tableauBenefices th, #tableauBenefices td {
+  padding: 6px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  #tableauBenefices {
+    font-size: 12px;
+  }
+}
+
+
+
 .standard-popup {
     position: fixed;
     top: 10%;
@@ -1131,13 +1152,14 @@
         </div>
         
         <table id="tableauBenefices">
-            <!-- Le tableau des bénéfices nets sera affiché ici -->
-        </table>
-       <div class="buttons"> 
-        <button id="exportPdf">Exporter en PDF</button>
-        <button id="exportWord">Exporter en Word</button>
-        <button onclick="backToHome()">Retour</button>
-       </div>
+    <!-- Le tableau des bénéfices nets sera affiché ici -->
+</table>
+
+<div class="buttons" style="margin-top: 10px;">
+    <button id="exportPdf">Exporter en PDF</button>
+    <button id="exportWord">Exporter en Word</button>
+    <button onclick="backToHome()">Retour</button>
+</div>
     </div>
 </div>
 
@@ -4896,7 +4918,7 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
     // Création du tableau des bénéfices
     tableau.innerHTML = `
     <tr>
-        <th>Revenu net mensuel Mathis Congés compris</th>
+        <th>Revenu net mensuel Mathis réparti sur 12 mois</th>
         <th>1000€</th>
         <th>2000€</th>
         <th>3000€</th>
@@ -4910,6 +4932,9 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
         ${calculerVentesPourBenefices(4000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
     </tr>`;
 }
+
+
+
 
 function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva) {
     for (let i = 0; i <= 1000; i++) {
