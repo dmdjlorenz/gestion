@@ -133,13 +133,29 @@
     background: #0056b3;
 }
 
-    #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
+    #recipeBookPage, #recipeManagementPage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
         max-width: 600px;
         margin: 0 auto;
         background: white;
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+#invoicePage {
+    max-width: 100%; /* Remplace 600px */
+    width: 100%;
+    margin: 0 auto;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+
+
+
+
+
     }
     #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
         text-align: center;
@@ -339,17 +355,19 @@
         background: #006600;
     }
     #invoicePage .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #fff;
-        width: 100%;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        padding: 12px 16px;
-        z-index: 1;
-        max-height: 80vh;
-        overflow-y: auto;
-        border-radius: 4px;
-    }
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    width: 100%;
+    max-width: 100%; /* Assure qu'il ne dépasse pas */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
     #invoicePage .show { display: block; }
     #invoicePage input, #invoicePage select, #personnelPage select {
         width: 100%;
@@ -477,17 +495,28 @@
         font-size: 16px;
         font-weight: bold;
     }
-    #invoicePage .total-table, #personnelPage .total-table {
+    #personnelPage .total-table {
         width: 100%;
         max-width: 300px;
         margin-left: auto;
         margin-right: 0;
         box-sizing: border-box;
     }
+
+#invoicePage .total-table {
+    width: 100%;
+    max-width: 100%; /* Remplace 300px */
+    margin-left: auto;
+    margin-right: 0;
+    box-sizing: border-box;
+}
+
+
+
     #invoicePage .total-table td:last-child, #personnelPage .total-table td:last-child {
         text-align: right;
     }
-    #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
+    #personnelPage #personnelContainer {
         background-color: white;
         width: 100%;
         max-width: 210mm;
@@ -495,6 +524,20 @@
         box-sizing: border-box;
         margin: auto;
     }
+
+#invoicePage #invoiceContainer {
+    background-color: white;
+    width: 100%; /* Remplace max-width: 210mm */
+    max-width: 100%; /* S'adapte à l'écran */
+    padding: 10px;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+
+
+
+
     #recipeManagementPage .date-filter, #invoiceManagementPage .date-filter, #purchasesManagementPage .date-filter, #personnelManagementPage .date-filter {
         display: flex;
         flex-direction: column;
@@ -824,17 +867,16 @@
     <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
         <ul id="productList"></ul>
         <div style="display: flex; align-items: center; gap: 10px;">
-            <button onclick="addSelectedToOrder()">Ajouter à la commande</button>
             <div class="payment-section">
-                <span>Paiement :</span>
+                <span style="font-weight: bold;">Paiement</span>
                 <label>
                     Carte <input type="radio" name="paymentMethod" value="Carte" id="paymentCard">
                 </label>
-                <div class="spacer"></div>
                 <label>
                     Espèce <input type="radio" name="paymentMethod" value="Espèce" id="paymentCash">
                 </label>
             </div>
+            <button onclick="addSelectedToOrder()">Ajouter à la commande</button>
         </div>
     </div>
 </div>
@@ -1080,8 +1122,8 @@
 <!-- Budget -->
 <div id="budgetPage" class="hidden">
     <div class="container">
-        <h1>BUDGET PREVISIONNEL</h1>
-        <h1>Sandwicherie BARTH</h1>
+        <h1 style="text-align: center;">BUDGET PREVISIONNEL</h1>
+        <h2 style="text-align: center;">Sandwicherie CHEZ BARTH</h2>
         <p>Entrepreneur :  Mathis MOUHOU</p>
         <p>Enseigne / nom commercial :  CHEZ BARTH</p>
         <p>Statut Juridique : Entreprise Individuelle</p>
@@ -1107,7 +1149,7 @@
         <input type="number" id="semaines" value="48" oninput="calculerResultat()">
         
         <label for="loyer">Redevance ou loyer CC mensuel (€):</label>
-        <input type="number" id="loyer" value="1120" oninput="calculerResultat()">
+        <input type="number" id="loyer" value="1103" oninput="calculerResultat()">
         
         <label for="charges">Charges annuelles d'électricité, gaz, eau, téléphone, assurance (€):</label>
         <input type="number" id="charges" value="3000" oninput="calculerResultat()">
@@ -4767,23 +4809,23 @@ function calculerResultat() {
     // Récupération des valeurs des inputs
     var prix = parseFloat(document.getElementById('prix').value);
     var cout = parseFloat(document.getElementById('cout').value);
-    var tva = parseFloat(document.getElementById('tva').value) / 100;
     var panier = parseFloat(document.getElementById('panier').value);
     var jours = parseFloat(document.getElementById('jours').value);
     var semaines = parseFloat(document.getElementById('semaines').value);
     var loyerMensuel = parseFloat(document.getElementById('loyer').value);
     var charges = parseFloat(document.getElementById('charges').value);
+    var externes = parseFloat(document.getElementById('externes').value);
     var salaire = parseFloat(document.getElementById('salaire').value);
     var patronales = parseFloat(document.getElementById('patronales').value) / 100;
-    var externes = parseFloat(document.getElementById('externes').value);
     var urssaf = parseFloat(document.getElementById('urssaf').value) / 100;
+    var tva = parseFloat(document.getElementById('tva').value) / 100;
     var apport = parseFloat(document.getElementById('apport').value);
 
     // Calcul du chiffre d'affaires annuel
     var chiffreAffaires = prix * panier * jours * semaines;
 
-    // Calcul de la TVA (à partir de 85000€ de CA)
-    var tvaCalcul = (chiffreAffaires > 85000) ? (chiffreAffaires - 85000) * tva / (1 + tva) : 0;
+    // Calcul de la TVA (à partir de 85000€ de CA) TVA encaissée -TVA déductible de 0.055% sur TTC Achat
+    var tvaCalcul = (chiffreAffaires > 85000) ? (chiffreAffaires - 85000) * (tva / (1 + tva) - (cout / prix) * (0.055 / (1 + 0.055))) : 0;
 
     // Calcul des charges de personnel (salaire brut annuel + charges patronales)
     var chargesPersonnel = salaire * 12 * (1 + patronales);
@@ -4818,24 +4860,24 @@ function calculerResultat() {
     resultat.innerHTML = `
         <p><strong>RESULTATS</strong> (calculés automatiquement) : </p>
         <p><strong>   </p>
-        <h2>COMPTE DE RESULTAT PREVISIONNEL</h2>
+        <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
         <p><strong>   </p>
         <p><strong>* Chiffre d'affaires annuel: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
  
         <ul>
-            <u>Détail des charges annuelles d'exploitation:</u>
+            <p>Détail charges annuelles d'exploitation:</p>
             <ul>
-                <li>Redevance ou loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
-                <li>Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
-                <li>Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
-                <li>Charges externes: ${externes.toFixed(0)} €</li>
-                <li>Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Charges externes: ${externes.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
             </ul>
         </ul>
-        <p><strong>* Total des charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (CE)</strong></p>
-        <p><strong>* TVA (si CA > 85000€): ${tvaCalcul.toFixed(0)} € (TVA)</strong></p>
-        <p><strong>* Impôts sur le revenu et Cotisations sociales de Mathis: ${chargesUrssaf.toFixed(0)} € (IRCC)</strong></p>
-        <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-CE-TVA-IRCC)</span></strong></p>
+        <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (CE)</strong></p>
+        <p><strong>* TVA (si CA > 85000€ -TVA déductible): ${tvaCalcul.toFixed(0)} € (TVA)</strong></p>
+        <p><strong>* Impôts et Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (IRCS)</strong></p>
+        <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-CE-TVA-IRCS)</span></strong></p>
         
         <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
         <p>  </p>`;
@@ -4884,19 +4926,15 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
     tableau.innerHTML = `
     <tr>
         <th>Revenu net mensuel Mathis</th>
-        <th>1000 €</th>
-        <th>1500 €</th>
-        <th>2000 €</th>
-        <th>2500 €</th>
-        <th>3000 €</th>
-        <th>4000 €</th>
+        <th>1000€</th>
+        <th>2000€</th>
+        <th>3000€</th>
+        <th>4000€</th>
     </tr>
     <tr>
         <td>Nombre de ventes journalières nécessaire</td>
         ${calculerVentesPourBenefices(1000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
-        ${calculerVentesPourBenefices(1500, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
         ${calculerVentesPourBenefices(2000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
-        ${calculerVentesPourBenefices(2500, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
         ${calculerVentesPourBenefices(3000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
         ${calculerVentesPourBenefices(4000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
     </tr>`;
@@ -4973,10 +5011,10 @@ document.getElementById('exportWord').addEventListener('click', function () {
             }
         </style>
         </head><body>
-        <h1>BUDGET PREVISIONNEL</h1>
-        <h2>Sandwicherie BARTH</h2>
+        <h1 style="text-align: center;">BUDGET PREVISIONNEL</h1>
+        <h2 style="text-align: center;">Sandwicherie CHEZ BARTH</h2>
         <p>Entrepreneur :  Mathis MOUHOU</p>
-        <p>Enseigne / nom commercial :  BARTH</p>
+        <p>Enseigne / nom commercial :  CHEZ BARTH</p>
         <p>Statut Juridique : Entreprise Individuelle</p>
         <p>Régime fiscal/social :  Micro-entrepreneur</p>
         <br><p><strong>DONNEES D'ENTREE</strong> :</p>
@@ -4987,16 +5025,16 @@ document.getElementById('exportWord').addEventListener('click', function () {
     var data = `
         <p>Prix de vente du panier moyen (€): ${document.getElementById('prix').value}</p>
         <p>Coût de revient matière du panier moyen (€): ${document.getElementById('cout').value}</p>
-        <p>Taux de TVA (%): ${document.getElementById('tva').value}</p>
         <p>Nombre de paniers par jour: ${document.getElementById('panier').value}</p>
         <p>Nombre de jours de travail par semaine: ${document.getElementById('jours').value}</p>
         <p>Nombre de semaines de travail par an: ${document.getElementById('semaines').value}</p>
-        <p>Redevance ou loyer CC mensuel (€): ${document.getElementById('loyer').value}</p>
-        <p>Salaire du personnel brut mensuel (temps partiel ou temps plein) (€): ${document.getElementById('salaire').value}</p>
-        <p>Taux de cotisation des charges patronales (%): ${document.getElementById('patronales').value}</p>
+        <p>Loyer CC mensuel (€): ${document.getElementById('loyer').value}</p>
         <p>Charges annuelles d'électricité, gaz, eau, téléphone, assurance (€): ${document.getElementById('charges').value}</p>
         <p>Charges annuelles externes (€): ${document.getElementById('externes').value}</p>
+        <p>Salaire du personnel brut mensuel (temps partiel ou temps plein) (€): ${document.getElementById('salaire').value}</p>
+        <p>Taux de cotisation des charges patronales (%): ${document.getElementById('patronales').value}</p>
         <p>Taux de cotisations sociales (%): ${document.getElementById('urssaf').value}</p>
+        <p>Taux de TVA (%): ${document.getElementById('tva').value}</p>
         <p>Apport financier ou emprunt (€): ${document.getElementById('apport').value}</p>
     `;
 
