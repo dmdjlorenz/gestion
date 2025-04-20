@@ -1274,6 +1274,7 @@ function loadMenuFromStorage() {
             menu = [
                 { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
                 { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
                 { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
                 { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
                 { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
@@ -1291,6 +1292,7 @@ function loadMenuFromStorage() {
         menu = [
             { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
             { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+            { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
             { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
             { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
             { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
@@ -2249,6 +2251,7 @@ function downloadRecipesPDF() {
             menu = [
                 { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
                 { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
                 { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
                 { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
                 { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
@@ -2266,6 +2269,7 @@ function downloadRecipesPDF() {
         menu = [
             { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
             { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+            { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
             { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
             { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
             { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
@@ -4778,66 +4782,76 @@ function calculerResultat() {
     var tva = parseFloat(document.getElementById('tva').value) / 100;
     var apport = parseFloat(document.getElementById('apport').value);
 
-    // Calcul du chiffre d'affaires annuel
-    var chiffreAffaires = prix * panier * jours * semaines;
+   // Calcul du chiffre d'affaires annuel
+var chiffreAffaires = prix * panier * jours * semaines;
 
-    // Calcul de la TVA (à partir de 85000€ de CA) TVA encaissée -TVA déductible de 0.055% sur TTC Achat
-    var tvaCalcul = (chiffreAffaires > 85000) ? (chiffreAffaires - 85000) * (tva / (1 + tva) - (cout / prix) * (0.055 / (1 + 0.055))) : 0;
+// Calcul des charges fixes utilisées dans plusieurs calculs
+var loyerAnnuel = loyerMensuel * 12;
+var coutMatieres = cout * panier * jours * semaines;
 
-    // Calcul des charges de personnel (salaire brut annuel + charges patronales)
-    var chargesPersonnel = salaire * 12 * (1 + patronales);
+// Calcul de la TVA (à partir de 85000€ de CA)
+// TVA encaissée - TVA déductible sur achats (5,5%) - TVA déductible sur loyer/charges externes (20%)
+var tvaCalcul = (chiffreAffaires > 85000) ? 
+    (chiffreAffaires - 85000) * (
+        (tva / (1 + tva)) - 
+        (cout / prix) * (0.055 / (1 + 0.055)) - 
+        ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+    ) 
+    : 0;
 
-    // Calcul des charges d'exploitation
-    var loyerAnnuel = loyerMensuel * 12;
-    var coutMatieres = cout * panier * jours * semaines;
-    var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
+// Calcul des charges de personnel (salaire brut annuel + charges patronales)
+var chargesPersonnel = salaire * 12 * (1 + patronales);
 
-    // Calcul des charges sociales et impôts
-    var chargesUrssaf = chiffreAffaires * urssaf;
+// Calcul des charges d'exploitation
+var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
 
-    // Calcul du bénéfice net
-    var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
+// Calcul des charges sociales et impôts
+var chargesUrssaf = chiffreAffaires * urssaf;
 
-    // Calcul de l'amortissement annuel
-    var amortissement = apport / 7;
+// Calcul du bénéfice net
+var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
 
-    // Calcul du résultat financier
-    var resultatFinancier = beneficeNet - amortissement;
+// Calcul de l'amortissement annuel
+var amortissement = apport / 7;
 
-    // Calcul de la rentabilité économique minimum (Nb ventes pour bénéfice net > 0)
-    var nbVentesEconomique = calculerRentabiliteMinimum('economique', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva);
+// Calcul du résultat financier
+var resultatFinancier = beneficeNet - amortissement;
 
-    // Calcul de la rentabilité financière minimum (Nb ventes pour résultat financier > 0)
-    var nbVentesFinanciere = calculerRentabiliteMinimum('financiere', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
+// Calcul de la rentabilité économique minimum (Nb ventes pour bénéfice net > 0)
+var nbVentesEconomique = calculerRentabiliteMinimum('economique', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva);
 
-    // Affichage des résultats avec formatage et vérification des valeurs négatives
-    var resultat = document.getElementById('resultat');
-    var beneficeNetClass = beneficeNet < 0 ? 'negative' : '';
-    
-    resultat.innerHTML = `
-        <p><strong>RESULTATS</strong> (calculés automatiquement) : </p>
-        <p><strong>   </p>
-        <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
-        <p><strong>   </p>
-        <p><strong>* Chiffre d'affaires annuel: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
- 
+// Calcul de la rentabilité financière minimum (Nb ventes pour résultat financier > 0)
+var nbVentesFinanciere = calculerRentabiliteMinimum('financiere', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
+
+// Affichage des résultats avec formatage et vérification des valeurs négatives
+var resultat = document.getElementById('resultat');
+var beneficeNetClass = beneficeNet < 0 ? 'negative' : '';
+
+resultat.innerHTML = `
+    <p><strong>RESULTATS</strong> (calculés automatiquement) : </p>
+    <p><strong>   </p>
+    <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
+    <p><strong>   </p>
+    <p><strong>* Chiffre d'affaires annuel: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
+
+    <ul>
+        <p>Détail charges annuelles d'exploitation:</p>
         <ul>
-            <p>Détail charges annuelles d'exploitation:</p>
-            <ul>
-                <li style="font-weight: normal;">Loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
-                <li style="font-weight: normal;">Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
-                <li style="font-weight: normal;">Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
-                <li style="font-weight: normal;">Charges externes: ${externes.toFixed(0)} €</li>
-                <li style="font-weight: normal;">Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
-            </ul>
+            <li style="font-weight: normal;">Loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Charges externes: ${externes.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
         </ul>
-        <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (CE)</strong></p>
-        <p><strong>* TVA (si CA > 85000€ -TVA déductible): ${tvaCalcul.toFixed(0)} € (TVA)</strong></p>
-        <p><strong>* Impôts et Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (IRCS)</strong></p>
-        <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-CE-TVA-IRCS)</span></strong></p>
-        
-        <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
-        <p>  </p>`;
+    </ul>
+    <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (C)</strong></p>
+    <p><strong>* TVA (si CA > 85000€ -TVA déductible): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
+    <p><strong>* Impôts et Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
+    <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
+
+    <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
+    <p>  </p>`;
+
     
     // Appel pour calculer et afficher le tableau des bénéfices nets mensuels
     afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
@@ -4855,7 +4869,7 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
         // Calcul de la TVA seulement si le chiffre d'affaires dépasse 85 000€
         var tvaCalcul = 0;
         if (chiffreAffaires > 85000) {
-            tvaCalcul = (chiffreAffaires - 85000) * tva / (1 + tva);  // Calcul de la TVA
+            tvaCalcul = (chiffreAffaires - 85000) * (tva / (1 + tva) - (cout / prix) * (0.055 / (1 + 0.055)) - ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / 1 + 0.2));
         }
 
         // Calcul du bénéfice net
@@ -4882,11 +4896,11 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
     // Création du tableau des bénéfices
     tableau.innerHTML = `
     <tr>
-        <th>Revenu net mensuel Mathis</th>
-        <th>1000 €</th>
-        <th>2000 €</th>
-        <th>3000 €</th>
-        <th>4000 €</th>
+        <th>Revenu net mensuel Mathis Congés compris</th>
+        <th>1000€</th>
+        <th>2000€</th>
+        <th>3000€</th>
+        <th>4000€</th>
     </tr>
     <tr>
         <td>Nombre de ventes journalières nécessaire</td>
@@ -4899,21 +4913,30 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
 
 function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva) {
     for (let i = 0; i <= 1000; i++) {
-        var chiffreAffaires = prix * i * jours * semaines;
-        var tvaCalcul = (chiffreAffaires > 85000) ? (chiffreAffaires - 85000) * tva / (1 + tva) : 0;
-        var chargesPersonnel = salaire * 12 * (1 + patronales);
         var loyerAnnuel = loyerMensuel * 12;
+        var chiffreAffaires = prix * i * jours * semaines;
+
+        var tvaCalcul = (chiffreAffaires > 85000) ?
+            (chiffreAffaires - 85000) * (
+                (tva / (1 + tva)) -
+                (cout / prix) * (0.055 / (1 + 0.055)) -
+                ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+            ) :
+            0;
+
+        var chargesPersonnel = salaire * 12 * (1 + patronales);
         var coutMatieres = cout * i * jours * semaines;
         var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
         var chargesUrssaf = chiffreAffaires * urssaf;
         var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
-        
+
         if (beneficeNet >= (beneficeMensuel * 12)) {
             return `<td>${i}</td>`;
         }
     }
     return `<td>Non atteint</td>`;
 }
+
 
 // Appel initial pour afficher les résultats par défaut
 calculerResultat();
@@ -5114,6 +5137,7 @@ document.getElementById('exportPdf').addEventListener('click', function() {
 const initialMenu = [
     { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
     { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
     { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
     { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
     { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
