@@ -2951,53 +2951,55 @@ function filterInvoices() {
     const invoiceList = document.getElementById('invoiceList');
     invoiceList.innerHTML = `
         <h2>Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
-        <table>
-            <tr>
-                <th>Fact N°</th>
-                <th>Date</th>
-                <th>Total HT</th>
-                <th>TVA 5,5%</th>
-                <th>TVA 10%</th>
-                <th>Total TTC</th>
-                <th>Paiement</th>
-            </tr>
-            ${filteredInvoices.map(invoice => `
-                <tr onclick="viewInvoiceDetail(${invoice.number})">
-                    <td>${invoice.number}</td>
-                    <td>${new Date(invoice.date).toLocaleDateString('fr-FR')}</td>
-                    <td>${invoice.items.reduce((sum, item) => sum + item.priceHT, 0).toFixed(2)}€</td>
-                    <td>${invoice.items.filter(item => item.tvaRate === 0.055).reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0).toFixed(2)}€</td>
-                    <td>${invoice.items.filter(item => item.tvaRate === 0.1).reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0).toFixed(2)}€</td>
-                    <td>${invoice.totalTTC.toFixed(2)}€</td>
-                    <td>${invoice.paymentMethod || 'Non spécifié'}</td>
+        <div style="overflow-x: auto; width: 100%;">
+            <table style="width: 100%; max-width: 100%; table-layout: auto; border-collapse: collapse; font-size: 14px;">
+                <tr style="background-color: #f2f2f2;">
+                    <th style="padding: 5px; text-align: left;">Fact N°</th>
+                    <th style="padding: 5px; text-align: left;">Date</th>
+                    <th style="padding: 5px; text-align: right;">Total HT</th>
+                    <th style="padding: 5px; text-align: right;">TVA 5,5%</th>
+                    <th style="padding: 5px; text-align: right;">TVA 10%</th>
+                    <th style="padding: 5px; text-align: right;">Total TTC</th>
+                    <th style="padding: 5px; text-align: left;">Paiement</th>
                 </tr>
-            `).join('')}
-            <tr style="height: 10px;"><td colspan="7"></td></tr>
-            <tr>
-                <td colspan="2"><strong>Total par Carte</strong></td>
-                <td>${totalHTCard.toFixed(2)}€</td>
-                <td>${totalTVA55Card.toFixed(2)}€</td>
-                <td>${totalTVA10Card.toFixed(2)}€</td>
-                <td>${totalTTCCard.toFixed(2)}€</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td colspan="2"><strong>Total par Espèce</strong></td>
-                <td>${totalHTCash.toFixed(2)}€</td>
-                <td>${totalTVA55Cash.toFixed(2)}€</td>
-                <td>${totalTVA10Cash.toFixed(2)}€</td>
-                <td>${totalTTCCash.toFixed(2)}€</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td colspan="2"><strong>Total Général</strong></td>
-                <td><strong>${totalHT.toFixed(2)}€</strong></td>
-                <td><strong>${totalTVA55.toFixed(2)}€</strong></td>
-                <td><strong>${totalTVA10.toFixed(2)}€</strong></td>
-                <td><strong>${totalTTC.toFixed(2)}€</strong></td>
-                <td></td>
-            </tr>
-        </table>
+                ${filteredInvoices.map(invoice => `
+                    <tr onclick="viewInvoiceDetail(${invoice.number})" style="cursor: pointer;">
+                        <td style="padding: 5px;">${invoice.number}</td>
+                        <td style="padding: 5px;">${new Date(invoice.date).toLocaleDateString('fr-FR')}</td>
+                        <td style="padding: 5px; text-align: right;">${invoice.items.reduce((sum, item) => sum + item.priceHT, 0).toFixed(2)}€</td>
+                        <td style="padding: 5px; text-align: right;">${invoice.items.filter(item => item.tvaRate === 0.055).reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0).toFixed(2)}€</td>
+                        <td style="padding: 5px; text-align: right;">${invoice.items.filter(item => item.tvaRate === 0.1).reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0).toFixed(2)}€</td>
+                        <td style="padding: 5px; text-align: right;">${invoice.totalTTC.toFixed(2)}€</td>
+                        <td style="padding: 5px;">${invoice.paymentMethod || 'Non spécifié'}</td>
+                    </tr>
+                `).join('')}
+                <tr style="height: 10px;"><td colspan="7"></td></tr>
+                <tr style="background-color: #f9f9f9;">
+                    <td colspan="2" style="padding: 5px;"><strong>Total par Carte</strong></td>
+                    <td style="padding: 5px; text-align: right;">${totalHTCard.toFixed(2)}€</td>
+                    <td style="padding: 5px; text-align: right;">${totalTVA55Card.toFixed(2)}€</td>
+                    <td style="padding: 5px; text-align: right;">${totalTVA10Card.toFixed(2)}€</td>
+                    <td style="padding: 5px; text-align: right;">${totalTTCCard.toFixed(2)}€</td>
+                    <td style="padding: 5px;"></td>
+                </tr>
+                <tr style="background-color: #f9f9f9;">
+                    <td colspan="2" style="padding: 5px;"><strong>Total par Espèce</strong></td>
+                    <td style="padding: 5px; text-align: right;">${totalHTCash.toFixed(2)}€</td>
+                    <td style="padding: 5px; text-align: right;">${totalTVA55Cash.toFixed(2)}€</td>
+                    <td style="padding: 5px; text-align: right;">${totalTVA10Cash.toFixed(2)}€</td>
+                    <td style="padding: 5px; text-align: right;">${totalTTCCash.toFixed(2)}€</td>
+                    <td style="padding: 5px;"></td>
+                </tr>
+                <tr style="background-color: #f2f2f2;">
+                    <td colspan="2" style="padding: 5px;"><strong>Total Général</strong></td>
+                    <td style="padding: 5px; text-align: right;"><strong>${totalHT.toFixed(2)}€</strong></td>
+                    <td style="padding: 5px; text-align: right;"><strong>${totalTVA55.toFixed(2)}€</strong></td>
+                    <td style="padding: 5px; text-align: right;"><strong>${totalTVA10.toFixed(2)}€</strong></td>
+                    <td style="padding: 5px; text-align: right;"><strong>${totalTTC.toFixed(2)}€</strong></td>
+                    <td style="padding: 5px;"></td>
+                </tr>
+            </table>
+        </div>
     `;
 }
 
