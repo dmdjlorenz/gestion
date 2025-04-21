@@ -1167,9 +1167,6 @@
         
         <label for="cout">Coût de revient matière du panier moyen (€):</label>
         <input type="number" id="cout" value="3.5" oninput="calculerResultat()">
-        
-        <label for="tva">Taux de TVA %:</label>
-        <input type="number" id="tva" value="10" oninput="calculerResultat()">
 
         <label for="panier">Nombre de paniers par jour:</label>
         <input type="number" id="panier" value="70" oninput="calculerResultat()">
@@ -1180,23 +1177,26 @@
         <label for="semaines">Nombre de semaines de travail par an:</label>
         <input type="number" id="semaines" value="48" oninput="calculerResultat()">
         
-        <label for="loyer">Redevance ou loyer CC mensuel (€):</label>
+        <label for="loyer">Loyer mensuel (€):</label>
         <input type="number" id="loyer" value="1103" oninput="calculerResultat()">
         
-        <label for="charges">Charges annuelles d'électricité, gaz, eau, téléphone, assurance (€):</label>
-        <input type="number" id="charges" value="3000" oninput="calculerResultat()">
-        
-        <label for="salaire">Salaire du personnel brut mensuel (temps partiel ou temps plein) (€):</label>
+        <label for="salaire">Salaire brut mensuel du personnel (temps partiel ou temps plein) (€):</label>
         <input type="number" id="salaire" value="1800" oninput="calculerResultat()">
         
         <label for="patronales">Taux de cotisation des charges patronales (bas salaires)(%):</label>
         <input type="number" id="patronales" value="25" oninput="calculerResultat()">
+
+        <label for="charges">Charges annuelles d'électricité, gaz, eau, téléphone, assurance (€):</label>
+        <input type="number" id="charges" value="3000" oninput="calculerResultat()">
         
         <label for="externes">Charges annuelles externes (TPE, banque, commission CB, transport, entretien, honoraires, compta, pub, autres) (€):</label>
         <input type="number" id="externes" value="10000" oninput="calculerResultat()">
         
         <label for="urssaf">Taux de cotisations sociales (12.415% reduit première année 6.2%) et impôt sur le revenu libératoire de 1% de Mathis et formation 0.3% (%):</label>
         <input type="number" id="urssaf" value="7.5" oninput="calculerResultat()">
+
+        <label for="tva">Taux de TVA % (vente):</label>
+        <input type="number" id="tva" value="10" oninput="calculerResultat()">
         
         <label for="apport">Apport financier ou emprunt (€):</label>
         <input type="number" id="apport" value="75000" oninput="calculerResultat()">
@@ -1348,17 +1348,17 @@ function loadMenuFromStorage() {
             menu = JSON.parse(storedMenu);
         } else {
             menu = [
-                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+    { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+    { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Gelato à la pistache", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+    { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+    { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+    { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+    { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
             ];
             saveMenuToStorage();
         }
@@ -1366,17 +1366,17 @@ function loadMenuFromStorage() {
     } catch (e) {
         console.error('Erreur lors du chargement du menu:', e);
         menu = [
-            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-            { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+    { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+    { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Gelato à la pistache", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+    { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+    { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+    { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+    { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
         ];
         updateMenuTvaRates(); // Initialiser les taux au chargement
     }
@@ -1842,7 +1842,7 @@ function showPurchases() {
         doc.setFont('helvetica', 'bold');
         doc.rect(margin, y, pageWidth - 2 * margin, 20);
         doc.text(`LIVRE DES RECETTES ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
-        doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence', pageWidth / 2, y + 16, { align: 'center' });
+        doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence SIRET : 93253222900014', pageWidth / 2, y + 16, { align: 'center' });
         y += 25;
         doc.setFontSize(10);
         doc.rect(x, y, colWidths[0], rowHeight); doc.text('Date', x + 2, y + 6);
@@ -1950,7 +1950,7 @@ function exportRecipeToPdfofficiel() {
         doc.setFont('helvetica', 'bold');
         doc.rect(margin, y, pageWidth - 2 * margin, 20);
         doc.text(`LIVRE DES RECETTES ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
-        doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence', pageWidth / 2, y + 16, { align: 'center' });
+        doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence SIRET : 93253222900014', pageWidth / 2, y + 16, { align: 'center' });
         y += 25;
         doc.setFontSize(10);
         doc.rect(x, y, colWidths[0], rowHeight); doc.text('Date', x + 2, y + 6);
@@ -2325,17 +2325,17 @@ function downloadRecipesPDF() {
             menu = JSON.parse(storedMenu);
         } else {
             menu = [
-                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+    { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+    { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Gelato à la pistache", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+    { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+    { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+    { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+    { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
             ];
             saveMenuToStorage();
         }
@@ -2343,17 +2343,17 @@ function downloadRecipesPDF() {
     } catch (e) {
         console.error('Erreur lors du chargement du menu:', e);
         menu = [
-            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-            { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+    { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+    { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Gelato à la pistache", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+    { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+    { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+    { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+    { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
         ];
         updateMenuTvaRates(); // Initialiser les taux au chargement
     }
@@ -2612,9 +2612,16 @@ function updateOrderList() {
     const totalTTC = totalHT + totalTVA55 + totalTVA10;
 
     invoiceHeader.innerHTML = `
-        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
             <tr>
-                <td style="text-align: center;">CHEZ BARTH - 16 place des Prêcheurs, 13100 Aix en Provence Tél 09 77 53 78 71   Ent Indiv SIRET : 93253222900014 - APE : 56.10C</td>
+                <td style="text-align: center;">
+                    <div style="width: 100%; margin: 0 auto;">
+                        <div>CHEZ BARTH</div>
+                        <div>16 place des Prêcheurs, 13100 Aix en Provence</div>
+                        <div>Téléphone : 09 77 53 78 71</div>
+                        <div>Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td style="text-align: center;">Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' <strong>TVA non applicable art 293B du CGI</strong>' : ''}</td>
@@ -2623,24 +2630,24 @@ function updateOrderList() {
     `;
 
     orderList.innerHTML = caBelow ? `
-        <table>
+        <table style="width: 100%; max-width: 600px; margin: 0 auto;">
             <tr><th>Produit</th><th>Prix TTC</th></tr>
             ${order.map(item => `<tr><td>${item.name}</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
         </table>
     ` : `
-        <table>
+        <table style="width: 100%; max-width: 600px; margin: 0 auto;">
             <tr><th>Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
             ${order.map(item => `<tr><td>${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
         </table>
     `;
 
     orderTotal.innerHTML = caBelow ? `
-        <table class="total-table">
+        <table class="total-table" style="width: 100%; max-width: 600px; margin: 0 auto;">
             <tr><td><strong>Total TTC:</strong></td><td><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
             <tr><td>Paiement</td><td>${currentPaymentMethod}</td></tr>
         </table>
     ` : `
-        <table class="total-table">
+        <table class="total-table" style="width: 100%; max-width: 600px; margin: 0 auto;">
             <tr><td>Total HT:</td><td>${totalHT.toFixed(2)}€</td></tr>
             <tr><td>TVA 5.5%:</td><td>${totalTVA55.toFixed(2)}€</td></tr>
             <tr><td>TVA 10%:</td><td>${totalTVA10.toFixed(2)}€</td></tr>
@@ -2649,8 +2656,6 @@ function updateOrderList() {
         </table>
     `;
 }
-
-
 
 
 
@@ -2689,7 +2694,7 @@ function saveInvoice() {
         totalTVA55: totalTVA55,
         totalTVA10: totalTVA10,
         totalTTC: totalTTC,
-        paymentMethod: currentPaymentMethod // Ajouter le mode de paiement global à la facture
+        paymentMethod: currentPaymentMethod
     };
 
     invoices.push(invoice);
@@ -2697,9 +2702,16 @@ function saveInvoice() {
 
     const invoiceHeader = document.getElementById('invoiceHeader');
     invoiceHeader.innerHTML = `
-        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse; box-sizing: border-box;">
             <tr>
-                <td style="text-align: center;">CHEZ BARTH - 16 place des Prêcheurs, 13100 Aix en Provence Téléphone : 09 77 53 78 71 - Ent Indiv SIRET : 93253222900014 - APE : 56.10C</td>
+                <td style="text-align: center;">
+                    <div style="text-align: center;">
+                        <div>CHEZ BARTH</div>
+                        <div>16 place des Prêcheurs, 13100 Aix en Provence</div>
+                        <div>Téléphone : 09 77 53 78 71</div>
+                        <div>Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td style="text-align: center;">Fact N° ${invoiceNumber} Facture du ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' <strong>TVA non applicable art 293B du CGI</strong>' : ''}</td>
@@ -2708,11 +2720,6 @@ function saveInvoice() {
     `;
 
     alert(`Facture enregistrée avec succès sous le numéro ${invoiceNumber}`);
-
-    // Suppression de la réinitialisation
-    // order = [];
-    // currentPaymentMethod = 'Non spécifié'; // Réinitialiser après sauvegarde
-    // updateOrderList(); // Pas besoin si l'affichage est déjà correct
 }
 
 function exportInvoiceToPdf() {
@@ -3015,12 +3022,14 @@ function viewInvoiceDetail(number) {
         <div id="invoiceHeader">
             CHEZ BARTH<br>
             16 place des Prêcheurs<br>
-	    13100 Aix en Provence<br>
+            13100 Aix en Provence<br>
             Téléphone : 09 77 53 78 71<br>
             Ent Indiv SIRET : 93253222900014<br>
-	    APE : 56.10C<br>
+            APE : 56.10C<br>
+            <br>
             <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
             <div class="invoice-number">${invoice.caBelow ? 'TVA non applicable art 293B du CGI' : ''}</div>
+            <br>
         </div>
         <div id="orderList">
             ${invoice.caBelow ? `
@@ -3034,6 +3043,7 @@ function viewInvoiceDetail(number) {
                     ${invoice.items.map(item => `<tr><td>${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
                 </table>
             `}
+            <br>
         </div>
         <div id="orderTotal">
             ${invoice.caBelow ? `
@@ -5300,14 +5310,14 @@ document.getElementById('exportPdf').addEventListener('click', function() {
     }
 
 const initialMenu = [
-    { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-    { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-    { name: "Cheesy Veggie-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-    { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-    { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-    { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-    { name: "Gelato à la pistache-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-    { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+    { name: "Pulled Beef", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Prosciutto al Tartufo", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Bacon", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+    { name: "Chicken Azul", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Philly Cheesesteak", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Gelato à la pistache", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+    { name: "Nocciolata", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
     { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
     { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
     { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
