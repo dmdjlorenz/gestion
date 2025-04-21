@@ -927,7 +927,7 @@
         <button id="printBluetoothBtn" onclick="printToBluetoothThermal()">Imprimer Bluetooth</button>
         <button id="printInvoiceBtn" onclick="printInvoice()">Imprimer</button>
         <button id="sendSmsInvoiceBtn" onclick="sendInvoiceBySms()">Envoyer SMS</button>
-        <button id="sendEmailInvoiceBtn" onclick="sendInvoiceByEmail()">Envoyer Email (PC Mac)</button>
+        <button id="sendEmailInvoiceBtn" onclick="sendInvoiceByEmail()">Envoyer Email</button>
         <button id="manageInvoicesBtn" onclick="showInvoiceManagement()">Bilan des Commandes Factures</button>
         <button onclick="backToHome()">Retour</button>
     </div>
@@ -944,7 +944,7 @@
     </div>
     <div id="invoiceList"></div>
     <div class="buttons no-print">
-        <button id="printAllInvoicesBtn" onclick="printAllInvoices()">Imprimer toutes les factures de la liste</button>
+        <button id="printAllInvoicesBtn" onclick="printAllInvoices()">Imprimer la liste des factures</button>
         <button onclick="backToInvoice()">Retour</button>
     </div>
 </div>
@@ -2915,29 +2915,38 @@ function filterInvoices() {
         return invoiceDate >= startDate && invoiceDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Calcul des totaux
-    let totalHT = 0;
-    let totalTVA55 = 0;
-    let totalTVA10 = 0;
-    let totalTTC = 0;
+    // Calcul des totaux par méthode de paiement
+    let totalHTCard = 0, totalTVA55Card = 0, totalTVA10Card = 0, totalTTCCard = 0;
+    let totalHTCash = 0, totalTVA55Cash = 0, totalTVA10Cash = 0, totalTTCCash = 0;
+    let totalHT = 0, totalTVA55 = 0, totalTVA10 = 0, totalTTC = 0;
 
     filteredInvoices.forEach(invoice => {
-        totalHT += invoice.items.reduce((sum, item) => sum + item.priceHT, 0);
-        totalTVA55 += invoice.items
+        const ht = invoice.items.reduce((sum, item) => sum + item.priceHT, 0);
+        const tva55 = invoice.items
             .filter(item => item.tvaRate === 0.055)
             .reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0);
-        totalTVA10 += invoice.items
+        const tva10 = invoice.items
             .filter(item => item.tvaRate === 0.1)
             .reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0);
-        totalTTC += invoice.totalTTC;
-    });
+        const ttc = invoice.totalTTC;
 
-    const totalTTCCard = filteredInvoices
-        .filter(invoice => invoice.paymentMethod === 'Carte')
-        .reduce((sum, invoice) => sum + invoice.totalTTC, 0);
-    const totalTTCCash = filteredInvoices
-        .filter(invoice => invoice.paymentMethod === 'Espèce')
-        .reduce((sum, invoice) => sum + invoice.totalTTC, 0);
+        if (invoice.paymentMethod === 'Carte') {
+            totalHTCard += ht;
+            totalTVA55Card += tva55;
+            totalTVA10Card += tva10;
+            totalTTCCard += ttc;
+        } else if (invoice.paymentMethod === 'Espèce') {
+            totalHTCash += ht;
+            totalTVA55Cash += tva55;
+            totalTVA10Cash += tva10;
+            totalTTCCash += ttc;
+        }
+
+        totalHT += ht;
+        totalTVA55 += tva55;
+        totalTVA10 += tva10;
+        totalTTC += ttc;
+    });
 
     const invoiceList = document.getElementById('invoiceList');
     invoiceList.innerHTML = `
@@ -2963,31 +2972,29 @@ function filterInvoices() {
                     <td>${invoice.paymentMethod || 'Non spécifié'}</td>
                 </tr>
             `).join('')}
+            <tr style="height: 10px;"><td colspan="7"></td></tr>
             <tr>
-                <td><strong>Total Général</strong></td>
-                <td></td>
-                <td><strong>${totalHT.toFixed(2)}€</strong></td>
-                <td><strong>${totalTVA55.toFixed(2)}€</strong></td>
-                <td><strong>${totalTVA10.toFixed(2)}€</strong></td>
-                <td><strong>${totalTTC.toFixed(2)}€</strong></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Total TTC par Carte</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="2"><strong>Total par Carte</strong></td>
+                <td>${totalHTCard.toFixed(2)}€</td>
+                <td>${totalTVA55Card.toFixed(2)}€</td>
+                <td>${totalTVA10Card.toFixed(2)}€</td>
                 <td>${totalTTCCard.toFixed(2)}€</td>
                 <td></td>
             </tr>
             <tr>
-                <td>Total TTC par Espèce</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="2"><strong>Total par Espèce</strong></td>
+                <td>${totalHTCash.toFixed(2)}€</td>
+                <td>${totalTVA55Cash.toFixed(2)}€</td>
+                <td>${totalTVA10Cash.toFixed(2)}€</td>
                 <td>${totalTTCCash.toFixed(2)}€</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Total Général</strong></td>
+                <td><strong>${totalHT.toFixed(2)}€</strong></td>
+                <td><strong>${totalTVA55.toFixed(2)}€</strong></td>
+                <td><strong>${totalTVA10.toFixed(2)}€</strong></td>
+                <td><strong>${totalTTC.toFixed(2)}€</strong></td>
                 <td></td>
             </tr>
         </table>
@@ -3108,10 +3115,43 @@ function printAllInvoices() {
         return;
     }
 
+    // Calcul des totaux par méthode de paiement
+    let totalHTCard = 0, totalTVA55Card = 0, totalTVA10Card = 0, totalTTCCard = 0;
+    let totalHTCash = 0, totalTVA55Cash = 0, totalTVA10Cash = 0, totalTTCCash = 0;
+    let totalHT = 0, totalTVA55 = 0, totalTVA10 = 0, totalTTC = 0;
+
+    filteredInvoices.forEach(invoice => {
+        const ht = invoice.items.reduce((sum, item) => sum + item.priceHT, 0);
+        const tva55 = invoice.items
+            .filter(item => item.tvaRate === 0.055)
+            .reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0);
+        const tva10 = invoice.items
+            .filter(item => item.tvaRate === 0.1)
+            .reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0);
+        const ttc = invoice.totalTTC;
+
+        if (invoice.paymentMethod === 'Carte') {
+            totalHTCard += ht;
+            totalTVA55Card += tva55;
+            totalTVA10Card += tva10;
+            totalTTCCard += ttc;
+        } else if (invoice.paymentMethod === 'Espèce') {
+            totalHTCash += ht;
+            totalTVA55Cash += tva55;
+            totalTVA10Cash += tva10;
+            totalTTCCash += ttc;
+        }
+
+        totalHT += ht;
+        totalTVA55 += tva55;
+        totalTVA10 += tva10;
+        totalTTC += ttc;
+    });
+
     const doc = new jsPDF();
     const margin = 10;
     let y = margin;
-    const colWidths = [30, 40, 30, 30, 30];
+    const colWidths = [15, 30, 30, 30, 30, 30, 20]; // Current widths
     const rowHeight = 10;
     const tableX = margin;
 
@@ -3126,6 +3166,8 @@ function printAllInvoices() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Total HT', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('TVA 5,5%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('TVA 10%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); doc.text('Total TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], y, colWidths[6], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 2, y + 6);
     y += rowHeight;
 
     doc.setFont('helvetica', 'normal');
@@ -3143,6 +3185,8 @@ function printAllInvoices() {
             doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Total HT', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('TVA 5,5%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('TVA 10%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); doc.text('Total TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], y, colWidths[6], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 2, y + 6);
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
@@ -3151,8 +3195,48 @@ function printAllInvoices() {
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${invoice.totalHT.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${invoice.totalTVA55.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${invoice.totalTVA10.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); doc.text(`${invoice.totalTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], y, colWidths[6], rowHeight); doc.text(`${invoice.paymentMethod || 'Non spécifié'}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 2, y + 6);
         y += rowHeight;
     });
+
+    // Ajout d'une ligne vide
+    y += rowHeight;
+
+    // Ajout des totaux
+    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+        doc.addPage();
+        y = margin;
+    }
+
+    // Total par Carte
+    doc.setFont('helvetica', 'normal');
+    doc.rect(tableX, y, colWidths[0] + colWidths[1], rowHeight); doc.text('Total par Carte', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalHTCard.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalTVA55Card.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totalTVA10Card.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); doc.text(`${totalTTCCard.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], y, colWidths[6], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 2, y + 6);
+    y += rowHeight;
+
+    // Total par Espèce
+    doc.rect(tableX, y, colWidths[0] + colWidths[1], rowHeight); doc.text('Total par Espèce', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalHTCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalTVA55Cash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totalTVA10Cash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); doc.text(`${totalTTCCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], y, colWidths[6], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 2, y + 6);
+    y += rowHeight;
+
+    // Total Général
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0] + colWidths[1], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalHT.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalTVA55.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totalTVA10.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); doc.text(`${totalTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], y, colWidths[6], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 2, y + 6);
+    y += rowHeight;
 
     window.open(doc.output('bloburl'), '_blank');
 }
