@@ -27,7 +27,18 @@
     overflow-x: hidden;
 }
 
+.button-container {
+    display: flex;
+    flex-wrap: nowrap; /* Empêche les boutons de passer à la ligne */
+    gap: 8px; /* Espace entre les boutons */
+    justify-content: center; /* Centre les boutons horizontalement */
+}
 
+#addProductBtn, #deleteProductBtn {
+    padding: 6px 10px; /* Réduit le padding pour une taille compacte */
+    font-size: 12px; /* Réduit la taille de la police pour smartphones */
+    white-space: nowrap; /* Empêche le texte de se casser */
+}
 
     .hidden {
     display: none !important;
@@ -872,21 +883,23 @@
         <label>CA sup à 85000€ <input type="checkbox" id="caAbove85000" onchange="toggleCA(this)" checked></label>
     </div>
     <div class="dropdown">
-        <button onclick="toggleDropdown('menuDropdown')">Le MENU Chez BARTH</button>
-        <div id="menuDropdown" class="dropdown-content" onclick="event.stopPropagation()">
-            <select id="productSelect"></select>
+    <button onclick="toggleDropdown('menuDropdown')">Le MENU Chez BARTH</button>
+    <div id="menuDropdown" class="dropdown-content" onclick="event.stopPropagation()">
+        <select id="productSelect"></select>
+        <div class="button-container">
             <button id="addProductBtn" onclick="showMenuAction('add')">Ajouter un produit</button>
             <button id="deleteProductBtn" onclick="deleteProductFromMenu()">Supprimer le produit</button>
-            <div id="menuActionArea"></div>
         </div>
+        <div id="menuActionArea"></div>
     </div>
+</div>
     <!-- Reste du code inchangé -->
-   <div class="dropdown">
+  <div class="dropdown">
     <button onclick="toggleDropdown('commandeDropdown')">COMMANDE A SAISIR / FACTURE</button>
     <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
         <ul id="productList"></ul>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="payment-section">
+        <div>
+            <div class="payment-section" style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-weight: bold;">Paiement</span>
                 <label>
                     Carte <input type="radio" name="paymentMethod" value="Carte" id="paymentCard">
