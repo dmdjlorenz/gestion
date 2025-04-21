@@ -742,7 +742,32 @@
             border-radius: 5px;
             cursor: pointer;
         }
+/* Styles spécifiques pour les boutons de la section facture */
+.invoice-button-group.buttons.no-print {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Espace vertical entre les lignes */
+}
 
+.invoice-button-group .button-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px; /* Espace horizontal entre les boutons */
+}
+
+.invoice-button-group .button-row button {
+    /* Ne redéfinir que le nécessaire pour éviter d'écraser les styles existants */
+    min-width: 120px; /* Assure une largeur minimale pour l'alignement */
+    text-align: center;
+}
+
+/* S'assurer que les styles d'impression restent inchangés */
+@media print {
+    .invoice-button-group.buttons.no-print {
+        display: none !important;
+    }
+}
 
     </style>
 <link rel="manifest" href="manifest.json">
@@ -920,17 +945,25 @@
             <div id="orderTotal"></div>
         </div>
     </div>
-    <div class="buttons no-print">
+    <div class="buttons no-print invoice-button-group">
+    <div class="button-row">
         <button id="saveInvoiceBtn" onclick="saveInvoice()">Enregistrer</button>
         <button id="clearInvoiceBtn" onclick="clearOrder()">Effacer</button>
         <button id="exportInvoicePdfBtn" onclick="exportInvoiceToPdf()">Télécharger</button>
-        <button id="printBluetoothBtn" onclick="printToBluetoothThermal()">Imprimer Bluetooth</button>
+    </div>
+    <div class="button-row">
         <button id="printInvoiceBtn" onclick="printInvoice()">Imprimer</button>
+        <button id="printBluetoothBtn" onclick="printToBluetoothThermal()">Imprimer Bluetooth</button>
+    </div>
+    <div class="button-row">
         <button id="sendSmsInvoiceBtn" onclick="sendInvoiceBySms()">Envoyer SMS</button>
         <button id="sendEmailInvoiceBtn" onclick="sendInvoiceByEmail()">Envoyer Email</button>
+    </div>
+    <div class="button-row">
         <button id="manageInvoicesBtn" onclick="showInvoiceManagement()">Bilan des Commandes Factures</button>
         <button onclick="backToHome()">Retour</button>
     </div>
+</div>
 </div>
 
 <!-- Bilan des Factures -->
