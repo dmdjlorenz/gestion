@@ -547,9 +547,8 @@
     width: 100%;
     max-width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Ensures columns share space evenly */
+    table-layout: auto; /* Allows columns to adjust dynamically */
     box-sizing: border-box;
-    border: 1px solid #333; /* Visible outer border */
 }
 
 
@@ -613,45 +612,30 @@
 }
 
 
-/* Style for table headers and cells with visible grid lines */
+* Style for table headers and cells */
 #personnelManagementPage th, #personnelManagementPage td {
-    padding: 6px;
-    border: 1px solid #333; /* Visible grid lines */
+    padding: 6px; /* Slightly reduced from 8px for compactness */
+    border: 1px solid #ddd;
     text-align: left;
     font-size: 14px; /* Consistent with your existing styles */
-    word-wrap: break-word; /* Ensure long text wraps */
+    word-wrap: break-word; /* Ensure long text (e.g., comments) wraps */
     overflow-wrap: break-word; /* Modern equivalent */
-    box-sizing: border-box;
+    max-width: 100px; /* Limit column width to prevent overflow */
+    min-width: 40px; /* Ensure columns don't collapse too much */
 }
 
-/* Distribute column widths to fit screen */
-#personnelManagementPage th:nth-child(1), #personnelManagementPage td:nth-child(1) { /* Date */
-    width: 20%;
-}
-#personnelManagementPage th:nth-child(2), #personnelManagementPage td:nth-child(2) { /* Employé */
-    width: 20%;
-}
-#personnelManagementPage th:nth-child(3), #personnelManagementPage td:nth-child(3) { /* Début */
-    width: 15%;
-}
-#personnelManagementPage th:nth-child(4), #personnelManagementPage td:nth-child(4) { /* Fin */
-    width: 15%;
-}
-#personnelManagementPage th:nth-child(5), #personnelManagementPage td:nth-child(5) { /* Heures */
-    width: 15%;
-}
-#personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) { /* Commentaire */
-    width: 15%;
+/* Specific style for the comment column (6th column when visible) */
+#personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) {
+    max-width: 70px; /* Tighter limit for comment column */
     white-space: normal; /* Allow text wrapping */
-    overflow: visible; /* Prevent truncation */
 }
 
-/* Ensure the table container prevents overflow */
+/* Wrap the table in a container to control overflow */
 .table-container {
     width: 100%;
     max-width: 100%;
+    overflow-x: auto; /* Fallback for extreme cases, but wrapping should prevent this */
     box-sizing: border-box;
-    overflow-x: hidden; /* Explicitly prevent horizontal scrolling */
 }
 
 /* Responsive adjustments for small screens */
@@ -661,31 +645,13 @@
     }
 
     #personnelManagementPage th, #personnelManagementPage td {
-        padding: 4px; /* Compact padding for mobile */
-        font-size: 12px;
-        border: 1px solid #333; /* Maintain visible grid lines */
+        padding: 4px; /* Further reduce padding for compactness */
+        max-width: 70px; /* Tighter columns on mobile */
+        min-width: 30px; /* Prevent columns from becoming too narrow */
     }
 
-    /* Adjust column widths for smaller screens */
-    #personnelManagementPage th:nth-child(1), #personnelManagementPage td:nth-child(1) { /* Date */
-        width: 18%;
-    }
-    #personnelManagementPage th:nth-child(2), #personnelManagementPage td:nth-child(2) { /* Employé */
-        width: 22%;
-    }
-    #personnelManagementPage th:nth-child(3), #personnelManagementPage td:nth-child(3) { /* Début */
-        width: 15%;
-    }
-    #personnelManagementPage th:nth-child(4), #personnelManagementPage td:nth-child(4) { /* Fin */
-        width: 15%;
-    }
-    #personnelManagementPage th:nth-child(5), #personnelManagementPage td:nth-child(5) { /* Heures */
-        width: 15%;
-    }
-    #personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) { /* Commentaire */
-        width: 15%;
-        white-space: normal;
-        overflow: visible;
+    #personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) {
+        max-width: 50px; /* Even tighter for comments on mobile */
     }
 }
 
