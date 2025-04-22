@@ -527,11 +527,23 @@
 }
 
 
-    #recipeManagementPage table, #invoiceManagementPage table, #purchasesManagementPage table, #personnelManagementPage table {
+    #recipeManagementPage table, #invoiceManagementPage table, #personnelManagementPage table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
     }
+
+/* Ensure the purchases table is responsive */
+#purchasesManagementPage table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Allows columns to adjust dynamically */
+    box-sizing: border-box;
+}
+
+
+
 
 #invoicePage table {
     width: 100%;
@@ -541,13 +553,58 @@
 
 
 
-    #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
+    #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
         font-size: 14px;
         min-height: 30px;
     }
+
+/* Style for table headers and cells */
+#purchasesManagementPage th, #purchasesManagementPage td {
+    padding: 6px; /* Slightly reduced from 8px for compactness */
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 14px; /* Consistent with your existing styles */
+    word-wrap: break-word; /* Ensure long text (e.g., comments) wraps */
+    overflow-wrap: break-word; /* Modern equivalent */
+    max-width: 120px; /* Limit column width to prevent overflow */
+    min-width: 50px; /* Ensure columns don't collapse too much */
+}
+
+/* Specific style for the comment column (5th column when visible) */
+#purchasesManagementPage th:nth-child(5), #purchasesManagementPage td:nth-child(5) {
+    max-width: 80px; /* Tighter limit for comment column */
+    white-space: normal; /* Allow text wrapping */
+}
+
+/* Wrap the table in a container to control overflow */
+.table-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto; /* Fallback for extreme cases, but wrapping should prevent this */
+    box-sizing: border-box;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 480px) {
+    #purchasesManagementPage table {
+        font-size: 12px; /* Match your existing small-screen font size */
+    }
+
+    #purchasesManagementPage th, #purchasesManagementPage td {
+        padding: 4px; /* Further reduce padding for compactness */
+        max-width: 80px; /* Tighter columns on mobile */
+        min-width: 40px; /* Prevent columns from becoming too narrow */
+    }
+
+    #purchasesManagementPage th:nth-child(5), #purchasesManagementPage td:nth-child(5) {
+        max-width: 60px; /* Even tighter for comments on mobile */
+    }
+}
+
+
     #invoicePage th, #recipeManagementPage th, #invoiceManagementPage th, #purchasesManagementPage th, #personnelManagementPage th {
         background-color: #f2f2f2;
     }
@@ -3647,46 +3704,48 @@ function filterPurchases() {
     // Generate the table with purchases and totals
     purchasesList.innerHTML = `
         <h2>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
-        <table>
-            <tr>
-                <th>Date</th>
-                <th>Montant TTC (€)</th>
-                <th>Type</th>
-                <th>Paiement</th>
-                ${showComments ? '<th>Commentaire</th>' : ''}
-            </tr>
-            ${filteredPurchases.map((purchase, index) => `
-                <tr style="cursor:pointer" onclick="showPurchaseDetailFromIndex(${index})">
-                    <td>${new Date(purchase.date).toLocaleDateString('fr-FR')}</td>
-                    <td>${Math.round(purchase.amountTTC)} €</td>
-                    <td>${purchase.type}</td>
-                    <td>${purchase.payment}</td>
-                    ${showComments ? `<td>${purchase.comment || ''}</td>` : ''}
-                </tr>
-            `).join('')}
-            ${Object.keys(totalsByType).map(type => `
+        <div class="table-container">
+            <table>
                 <tr>
-                    <td style="color:#003366; font-weight:bold;">Total ${type}</td>
-                    <td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td>
+                    <th>Date</th>
+                    <th>Montant TTC (€)</th>
+                    <th>Type</th>
+                    <th>Paiement</th>
+                    ${showComments ? '<th>Commentaire</th>' : ''}
+                </tr>
+                ${filteredPurchases.map((purchase, index) => `
+                    <tr style="cursor:pointer" onclick="showPurchaseDetailFromIndex(${index})">
+                        <td>${new Date(purchase.date).toLocaleDateString('fr-FR')}</td>
+                        <td>${Math.round(purchase.amountTTC)} €</td>
+                        <td>${purchase.type}</td>
+                        <td>${purchase.payment}</td>
+                        ${showComments ? `<td>${purchase.comment || ''}</td>` : ''}
+                    </tr>
+                `).join('')}
+                ${Object.keys(totalsByType).map(type => `
+                    <tr>
+                        <td style="color:#003366; font-weight:bold;">Total ${type}</td>
+                        <td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td>
+                        <td></td><td></td>
+                        ${showComments ? '<td></td>' : ''}
+                    </tr>
+                `).join('')}
+                ${Object.keys(totalsByPayment).map(payment => `
+                    <tr>
+                        <td style="color:green; font-weight:bold;">Total ${payment}</td>
+                        <td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[payment])} €</td>
+                        <td></td><td></td>
+                        ${showComments ? '<td></td>' : ''}
+                    </tr>
+                `).join('')}
+                <tr>
+                    <td style="font-weight:bold;">Total Général</td>
+                    <td style="font-weight:bold;">${Math.round(grandTotal)} €</td>
                     <td></td><td></td>
                     ${showComments ? '<td></td>' : ''}
                 </tr>
-            `).join('')}
-            ${Object.keys(totalsByPayment).map(payment => `
-                <tr>
-                    <td style="color:green; font-weight:bold;">Total ${payment}</td>
-                    <td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[payment])} €</td>
-                    <td></td><td></td>
-                    ${showComments ? '<td></td>' : ''}
-                </tr>
-            `).join('')}
-            <tr>
-                <td style="font-weight:bold;">Total Général</td>
-                <td style="font-weight:bold;">${Math.round(grandTotal)} €</td>
-                <td></td><td></td>
-                ${showComments ? '<td></td>' : ''}
-            </tr>
-        </table>
+            </table>
+        </div>
     `;
 }
 
