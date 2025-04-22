@@ -26,10 +26,63 @@
     width: 100vw;
     overflow-x: hidden;
 }
+/* Styles spécifiques pour les boutons de la section facture */
+.invoice-button-group.buttons.no-print {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px; /* Réduit l'espace vertical entre les lignes */
+    width: 100%; /* S'assure que le conteneur respecte la largeur du parent */
+    max-width: 100%; /* Empêche le dépassement */
+    box-sizing: border-box;
+}
+
+.invoice-button-group .button-row {
+    display: flex;
+    flex-wrap: nowrap; /* Maintient les boutons sur une seule ligne par défaut */
+    gap: 10px; /* Réduit l'espace horizontal entre les boutons */
+    width: 100%; /* S'adapte à la largeur du conteneur */
+    max-width: 100%; /* Empêche le dépassement */
+    justify-content: center; /* Centre les boutons */
+}
+
+.invoice-button-group .button-row button {
+    min-width: 90px; /* Réduit la largeur minimale pour compacter les boutons */
+    text-align: center;
+    padding: 6px 8px; /* Réduit le padding pour des boutons plus petits */
+    font-size: 16px; /* Réduit légèrement la taille de la police */
+    flex: 1; /* Permet aux boutons de s'adapter à l'espace disponible */
+    max-width: 120px; /* Limite la largeur maximale */
+}
+
+/* Responsive : permet le retour à la ligne sur petits écrans si nécessaire */
+@media (max-width: 480px) {
+    .invoice-button-group .button-row {
+        flex-wrap: wrap; /* Permet le retour à la ligne si l'espace est insuffisant */
+        gap: 6px;
+    }
+    .invoice-button-group .button-row button {
+        min-width: 80px; /* Encore plus compact sur mobile */
+        font-size: 12px;
+        padding: 5px 6px;
+    }
+}
+
+/* S'assurer que les styles d'impression restent inchangés */
+@media print {
+    .invoice-button-group.buttons.no-print {
+        display: none !important;
+    }
+}
+
+
+
+
+}
 
 .buttons button {
     padding: 6px 12px; /* Réduit le padding pour des boutons plus petits */
-    font-size: 18px; /* Réduit la taille de la police */
+    font-size: 20px; /* Réduit la taille de la police */
     white-space: nowrap; /* Empêche le texte de se casser */
     border-radius: 4px; /* Conserver le style arrondi */
 }
@@ -652,7 +705,7 @@
     }
     @media (max-width: 480px) {
         #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
-            padding: 10px;
+            padding: 12px;
         }
         #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
             font-size: 1.2em;
@@ -964,56 +1017,6 @@
     </div>
 </div>
 
-<style>
-/* Styles spécifiques pour les boutons de la section facture */
-.invoice-button-group.buttons.no-print {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px; /* Réduit l'espace vertical entre les lignes */
-    width: 100%; /* S'assure que le conteneur respecte la largeur du parent */
-    max-width: 100%; /* Empêche le dépassement */
-    box-sizing: border-box;
-}
-
-.invoice-button-group .button-row {
-    display: flex;
-    flex-wrap: nowrap; /* Maintient les boutons sur une seule ligne par défaut */
-    gap: 10px; /* Réduit l'espace horizontal entre les boutons */
-    width: 100%; /* S'adapte à la largeur du conteneur */
-    max-width: 100%; /* Empêche le dépassement */
-    justify-content: center; /* Centre les boutons */
-}
-
-.invoice-button-group .button-row button {
-    min-width: 90px; /* Réduit la largeur minimale pour compacter les boutons */
-    text-align: center;
-    padding: 6px 8px; /* Réduit le padding pour des boutons plus petits */
-    font-size: 15px; /* Réduit légèrement la taille de la police */
-    flex: 1; /* Permet aux boutons de s'adapter à l'espace disponible */
-    max-width: 120px; /* Limite la largeur maximale */
-}
-
-/* Responsive : permet le retour à la ligne sur petits écrans si nécessaire */
-@media (max-width: 480px) {
-    .invoice-button-group .button-row {
-        flex-wrap: wrap; /* Permet le retour à la ligne si l'espace est insuffisant */
-        gap: 6px;
-    }
-    .invoice-button-group .button-row button {
-        min-width: 80px; /* Encore plus compact sur mobile */
-        font-size: 12px;
-        padding: 5px 6px;
-    }
-}
-
-/* S'assurer que les styles d'impression restent inchangés */
-@media print {
-    .invoice-button-group.buttons.no-print {
-        display: none !important;
-    }
-}
-</style>
 </div>
 
 <!-- Bilan des Factures -->
