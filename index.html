@@ -78,24 +78,30 @@
 
 
 
-.buttons button {
-    padding: 6px 12px; /* Réduit le padding pour des boutons plus petits */
-    font-size: 20px; /* Réduit la taille de la police */
-    white-space: nowrap; /* Empêche le texte de se casser */
-    border-radius: 4px; /* Conserver le style arrondi */
+/* Styles génériques pour les boutons dans .buttons.no-print (sauf invoicePage) */
+.buttons.no-print button {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
 }
 
-.buttons {
+.buttons.no-print {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px; /* Réduit l'espace entre les boutons (au lieu de 10px) */
+    gap: 8px;
     justify-content: center;
 }
 
+/* Media query pour petits écrans (sauf invoicePage) */
 @media (max-width: 480px) {
-    .buttons button {
-        padding: 8px 10px; /* Encore plus compact pour les petits écrans */
-        font-size: 20px; /* Taille de police réduite */
+    .buttons.no-print button {
+        padding: 6px 10px;
+        font-size: 14px;
     }
 }
 
