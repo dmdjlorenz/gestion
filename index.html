@@ -612,7 +612,7 @@
 }
 
 
-* Style for table headers and cells */
+/* Style for table headers and cells */
 #personnelManagementPage th, #personnelManagementPage td {
     padding: 6px; /* Slightly reduced from 8px for compactness */
     border: 1px solid #ddd;
@@ -1080,7 +1080,7 @@
 </div>
     <!-- Reste du code inchangé -->
   <div class="dropdown">
-    <button onclick="toggleDropdown('commandeDropdown')">COMMANDE A SAISIR / FACTURE</button>
+    <button onclick="toggleDropdown('commandeDropdown')">PRISE DE COMMANDE / FACTURE</button>
     <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
         <ul id="productList"></ul>
         <div>
@@ -4531,7 +4531,7 @@ function calculateHours() {
 function convertToHoursMinutes(decimalHours) {
     const hours = Math.floor(decimalHours);
     const minutes = Math.round((decimalHours - hours) * 60);
-    return `${hours}h${minutes}min`;
+    return `${hours}h${minutes}`;
 }
 
 const hoursTotalConvertedInput = document.getElementById('hoursTotalConverted');
@@ -4653,7 +4653,7 @@ function filterPersonnel() {
                         const minutes = Math.round((record.hours - hours) * 60);
                         hourLabel = `${hours}h`;
                         if (minutes !== 0) {
-                            hourLabel += `${minutes.toString().padStart(2, '0')}min`;
+                            hourLabel += `${minutes.toString().padStart(2, '0')}`;
                         }
                     }
                     return `
@@ -4671,7 +4671,7 @@ function filterPersonnel() {
                     const minutes = Math.round((totals[employee] - hours) * 60);
                     let hourLabel = `${hours}h`;
                     if (minutes !== 0) {
-                        hourLabel += `${minutes.toString().padStart(2, '0')}min`;
+                        hourLabel += `${minutes.toString().padStart(2, '0')}`;
                     }
                     return `
                     <tr style="font-weight: bold; color: black;">
@@ -4684,7 +4684,7 @@ function filterPersonnel() {
                 <tr style="font-weight: bold; color: black; font-size: 16px;">
                     <td>Total Général</td>
                     <td></td><td></td><td></td>
-                    <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}min</td>
+                    <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}</td>
                     ${showComments ? `<td>${totalComments}</td>` : ''}
                 </tr>
             </table>
@@ -4959,6 +4959,7 @@ function downloadPersonnelPDF() {
     if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${totalComments.toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
 
     doc.save('liste_personnel_chez_barth.pdf');
+    window.open(doc.output('bloburl'), '_blank');
 }
 
 async function printPersonnelToBluetooth() {
