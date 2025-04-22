@@ -4566,7 +4566,7 @@ function calculateHours() {
 function convertToHoursMinutes(decimalHours) {
     const hours = Math.floor(decimalHours);
     const minutes = Math.round((decimalHours - hours) * 60);
-    return `${hours}h${minutes}mn`;
+    return `${hours}h${minutes}min`;
 }
 
 const hoursTotalConvertedInput = document.getElementById('hoursTotalConverted');
@@ -4688,7 +4688,7 @@ function filterPersonnel() {
                         const minutes = Math.round((record.hours - hours) * 60);
                         hourLabel = `${hours}h`;
                         if (minutes !== 0) {
-                            hourLabel += `${minutes.toString().padStart(2, '0')}mn`;
+                            hourLabel += `${minutes.toString().padStart(2, '0')}min`;
                         }
                     }
                     return `
@@ -4706,7 +4706,7 @@ function filterPersonnel() {
                     const minutes = Math.round((totals[employee] - hours) * 60);
                     let hourLabel = `${hours}h`;
                     if (minutes !== 0) {
-                        hourLabel += `${minutes.toString().padStart(2, '0')}mn`;
+                        hourLabel += `${minutes.toString().padStart(2, '0')}min`;
                     }
                     return `
                     <tr style="font-weight: bold; color: black;">
@@ -4719,7 +4719,7 @@ function filterPersonnel() {
                 <tr style="font-weight: bold; color: black; font-size: 16px;">
                     <td>Total Général</td>
                     <td></td><td></td><td></td>
-                    <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}mn</td>
+                    <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}min</td>
                     ${showComments ? `<td>${totalComments}</td>` : ''}
                 </tr>
             </table>
