@@ -101,7 +101,7 @@
 @media (max-width: 480px) {
     .buttons.no-print button {
         padding: 6px 10px;
-        font-size: 14px;
+        font-size: 16px;
     }
 }
 
@@ -920,9 +920,9 @@
 
     <!-- Boutons principaux -->
     <div class="buttons no-print">
-    <button id="exportPurchasesPdfBtn" onclick="downloadRecipesPDF()">Télécharger PDF</button>
     <button id="printAllRecipesBtn" onclick="printAllRecipes()">Imprimer</button>
     <button id="printBluetoothSalesBtn" onclick="printSalesToBluetooth()">Imprimer Bluetooth</button>
+    <button id="exportPurchasesPdfBtn" onclick="downloadRecipesPDF()">Télécharger</button>
     <button onclick="backToRecipeBook()">Retour</button>
 </div>
 
@@ -1008,7 +1008,7 @@
     </div>
     <div class="button-row">
         <button id="printInvoiceBtn" onclick="printInvoice()">Imprimer</button>
-        <button id="printBluetoothBtn" onclick="printToBluetoothThermal()">Impr Bluetooth</button>
+        <button id="printBluetoothBtn" onclick="printToBluetoothThermal()">Imprimer Bluetooth</button>
     </div>
     <div class="button-row">
         <button id="sendSmsInvoiceBtn" onclick="sendInvoiceBySms()">Envoyer SMS</button>
@@ -1032,6 +1032,7 @@
         <input type="date" id="endDate" onchange="filterInvoices()">
     </div>
     <div id="invoiceList"></div>
+    <div class="no-print" style="height: 15px;"></div>
     <div class="buttons no-print">
         <button id="printAllInvoicesBtn" onclick="printAllInvoices()">Imprimer la liste des factures</button>
         <button onclick="backToInvoice()">Retour</button>
@@ -1041,6 +1042,7 @@
 <!-- Détail de la Facture -->
 <div id="invoiceDetailPage" class="hidden">
     <div id="invoiceDetailContainer"></div>
+    <div class="no-print" style="height: 15px;"></div>
     <div class="buttons no-print">
         <button id="printDetailBtn" onclick="printInvoiceDetail()">Imprimer</button>
         <button id="deleteDetailBtn" onclick="deleteInvoiceDetail()">Supprimer</button>
@@ -1109,9 +1111,9 @@
 
     <!-- Boutons PDF et retour -->
     <div class="buttons no-print">
-        <button id="exportPurchasesPdfBtn" onclick="downloadPurchasesPDF()">Télécharger PDF</button>
         <button id="printPurchasesBtn" onclick="printPurchases()">Imprimer</button>
         <button id="printBluetoothPurchasesBtn" onclick="printPurchasesToBluetooth()">Imprimer Bluetooth</button>
+        <button id="exportPurchasesPdfBtn" onclick="downloadPurchasesPDF()">Télécharger</button>
         <button onclick="backToPurchases()">Retour</button>
     </div>
 
@@ -1205,9 +1207,9 @@
     <div id="personnelList"></div>
 
     <div class="buttons no-print">
-        <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger PDF</button>
         <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
         <button id="printBluetoothPersonnelBtn" onclick="printPersonnelToBluetooth()">Imprimer Bluetooth</button>
+        <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger</button>
         <button onclick="backToPersonnel()">Retour</button>
     </div>
 
@@ -2706,7 +2708,7 @@ function updateOrderList() {
                 <td style="text-align: center;">
                     <div style="width: 100%; margin: 0 auto;">
                         <div>CHEZ BARTH</div>
-                        <div>16 place des Prêcheurs, 13100 Aix en Provence</div>
+                        <div>16 place des Prêcheurs 13100 Aix en Provence</div>
                         <div>Téléphone : 09 77 53 78 71</div>
                         <div>Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
                     </div>
@@ -2796,7 +2798,7 @@ function saveInvoice() {
                 <td style="text-align: center;">
                     <div style="text-align: center;">
                         <div>CHEZ BARTH</div>
-                        <div>16 place des Prêcheurs, 13100 Aix en Provence</div>
+                        <div>16 place des Prêcheurs 13100 Aix en Provence</div>
                         <div>Téléphone : 09 77 53 78 71</div>
                         <div>Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
                     </div>
@@ -2861,7 +2863,7 @@ function sendInvoiceBySms() {
 
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 let smsText = "Facture Chez Barth - " + new Date().toLocaleDateString('fr-FR') + "\n\n";
-                smsText += "CHEZ BARTH\n16 place des Prêcheurs, 13100 Aix en Provence\nTel: 09 77 53 78 71\nSIRET: 93253222900014\nAPE: 56.10C\nEntreprise Individuelle\n\n";
+                smsText += "CHEZ BARTH\n16 place des Prêcheurs 13100 Aix en Provence\nTel: 09 77 53 78 71\nSIRET: 93253222900014\nAPE: 56.10C\nEntreprise Individuelle\n\n";
              
                 const caBelow = document.getElementById('caBelow85000').checked;
                 if (caBelow) {
