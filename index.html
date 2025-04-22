@@ -527,7 +527,7 @@
 }
 
 
-    #recipeManagementPage table, #invoiceManagementPage table, #personnelManagementPage table {
+    #recipeManagementPage table, #invoiceManagementPage table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
@@ -542,7 +542,15 @@
     box-sizing: border-box;
 }
 
-
+/* Ensure the personnel table is responsive */
+#personnelManagementPage table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Ensures columns share space evenly */
+    box-sizing: border-box;
+    border: 1px solid #333; /* Visible outer border */
+}
 
 
 #invoicePage table {
@@ -553,7 +561,7 @@
 
 
 
-    #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
+    #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
@@ -604,6 +612,82 @@
     }
 }
 
+
+/* Style for table headers and cells with visible grid lines */
+#personnelManagementPage th, #personnelManagementPage td {
+    padding: 6px;
+    border: 1px solid #333; /* Visible grid lines */
+    text-align: left;
+    font-size: 14px; /* Consistent with your existing styles */
+    word-wrap: break-word; /* Ensure long text wraps */
+    overflow-wrap: break-word; /* Modern equivalent */
+    box-sizing: border-box;
+}
+
+/* Distribute column widths to fit screen */
+#personnelManagementPage th:nth-child(1), #personnelManagementPage td:nth-child(1) { /* Date */
+    width: 20%;
+}
+#personnelManagementPage th:nth-child(2), #personnelManagementPage td:nth-child(2) { /* Employé */
+    width: 20%;
+}
+#personnelManagementPage th:nth-child(3), #personnelManagementPage td:nth-child(3) { /* Début */
+    width: 15%;
+}
+#personnelManagementPage th:nth-child(4), #personnelManagementPage td:nth-child(4) { /* Fin */
+    width: 15%;
+}
+#personnelManagementPage th:nth-child(5), #personnelManagementPage td:nth-child(5) { /* Heures */
+    width: 15%;
+}
+#personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) { /* Commentaire */
+    width: 15%;
+    white-space: normal; /* Allow text wrapping */
+    overflow: visible; /* Prevent truncation */
+}
+
+/* Ensure the table container prevents overflow */
+.table-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Explicitly prevent horizontal scrolling */
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 480px) {
+    #personnelManagementPage table {
+        font-size: 12px; /* Match your existing small-screen font size */
+    }
+
+    #personnelManagementPage th, #personnelManagementPage td {
+        padding: 4px; /* Compact padding for mobile */
+        font-size: 12px;
+        border: 1px solid #333; /* Maintain visible grid lines */
+    }
+
+    /* Adjust column widths for smaller screens */
+    #personnelManagementPage th:nth-child(1), #personnelManagementPage td:nth-child(1) { /* Date */
+        width: 18%;
+    }
+    #personnelManagementPage th:nth-child(2), #personnelManagementPage td:nth-child(2) { /* Employé */
+        width: 22%;
+    }
+    #personnelManagementPage th:nth-child(3), #personnelManagementPage td:nth-child(3) { /* Début */
+        width: 15%;
+    }
+    #personnelManagementPage th:nth-child(4), #personnelManagementPage td:nth-child(4) { /* Fin */
+        width: 15%;
+    }
+    #personnelManagementPage th:nth-child(5), #personnelManagementPage td:nth-child(5) { /* Heures */
+        width: 15%;
+    }
+    #personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) { /* Commentaire */
+        width: 15%;
+        white-space: normal;
+        overflow: visible;
+    }
+}
 
     #invoicePage th, #recipeManagementPage th, #invoiceManagementPage th, #purchasesManagementPage th, #personnelManagementPage th {
         background-color: #f2f2f2;
@@ -1030,7 +1114,7 @@
 </div>
     <!-- Reste du code inchangé -->
   <div class="dropdown">
-    <button onclick="toggleDropdown('commandeDropdown')">COMMANDE A SAISIR / FACTURE</button>
+    <button onclick="toggleDropdown('commandeDropdown')">PRISE DE COMMANDE / FACTURE</button>
     <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
         <ul id="productList"></ul>
         <div>
@@ -1167,6 +1251,7 @@
     <div id="purchasesList"></div>
 
     <!-- Boutons PDF et retour -->
+    <div class="no-print" style="height: 15px;"></div>
     <div class="buttons no-print">
         <button id="printPurchasesBtn" onclick="printPurchases()">Imprimer</button>
         <button id="printBluetoothPurchasesBtn" onclick="printPurchasesToBluetooth()">Imprimer Bluetooth</button>
@@ -1262,7 +1347,7 @@
     <label><input type="checkbox" id="showComments" onchange="filterPersonnel()"> Afficher commentaire</label>
 
     <div id="personnelList"></div>
-
+    <div class="no-print" style="height: 15px;"></div>
     <div class="buttons no-print">
         <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
         <button id="printBluetoothPersonnelBtn" onclick="printPersonnelToBluetooth()">Imprimer Bluetooth</button>
@@ -1358,8 +1443,8 @@
 </table>
 
 <div class="buttons" style="margin-top: 10px;">
-    <button id="exportPdf">Exporter en PDF</button>
-    <button id="exportWord">Exporter en Word</button>
+    <button id="exportPdf">Télécharger PDF</button>
+    <button id="exportWord">Télécharger Word</button>
     <button onclick="backToHome()">Retour</button>
 </div>
     </div>
@@ -4481,7 +4566,7 @@ function calculateHours() {
 function convertToHoursMinutes(decimalHours) {
     const hours = Math.floor(decimalHours);
     const minutes = Math.round((decimalHours - hours) * 60);
-    return `${hours}h${minutes}min`;
+    return `${hours}h${minutes}mn`;
 }
 
 const hoursTotalConvertedInput = document.getElementById('hoursTotalConverted');
@@ -4586,57 +4671,59 @@ function filterPersonnel() {
 
     personnelList.innerHTML = `
         <h2>Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
-        <table>
-            <tr>
-                <th>Date</th>
-                <th>Employé</th>
-                <th>Début</th>
-                <th>Fin</th>
-                <th>Heures</th>
-                ${showComments ? '<th>Commentaire</th>' : ''}
-            </tr>
-            ${filteredPersonnelRecords.map((record, index) => {
-                let hourLabel = '';
-                if (record.employee && record.employee.trim() !== '') {
-                    const hours = Math.floor(record.hours);
-                    const minutes = Math.round((record.hours - hours) * 60);
-                    hourLabel = `${hours}h`;
-                    if (minutes !== 0) {
-                        hourLabel += `${minutes.toString().padStart(2, '0')}min`;
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Employé</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Heures</th>
+                    ${showComments ? '<th>Commentaire</th>' : ''}
+                </tr>
+                ${filteredPersonnelRecords.map((record, index) => {
+                    let hourLabel = '';
+                    if (record.employee && record.employee.trim() !== '') {
+                        const hours = Math.floor(record.hours);
+                        const minutes = Math.round((record.hours - hours) * 60);
+                        hourLabel = `${hours}h`;
+                        if (minutes !== 0) {
+                            hourLabel += `${minutes.toString().padStart(2, '0')}mn`;
+                        }
                     }
-                }
-                return `
-                <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${index})">
-                    <td>${new Date(record.date).toLocaleDateString('fr-FR')}</td>
-                    <td>${record.employee || ''}</td>
-                    <td>${record.startTime}</td>
-                    <td>${record.endTime}</td>
-                    <td>${hourLabel}</td>
-                    ${showComments ? `<td>${record.comment || ''}</td>` : ''}
-                </tr>`;
-            }).join('')}
-            ${Object.keys(totals).map(employee => {
-                const hours = Math.floor(totals[employee]);
-                const minutes = Math.round((totals[employee] - hours) * 60);
-                let hourLabel = `${hours}h`;
-                if (minutes !== 0) {
-                    hourLabel += `${minutes.toString().padStart(2, '0')}min`;
-                }
-                return `
-                <tr style="font-weight: bold; color: black;">
-                    <td>Total ${employee}</td>
+                    return `
+                    <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${index})">
+                        <td>${new Date(record.date).toLocaleDateString('fr-FR')}</td>
+                        <td>${record.employee || ''}</td>
+                        <td>${record.startTime}</td>
+                        <td>${record.endTime}</td>
+                        <td>${hourLabel}</td>
+                        ${showComments ? `<td>${record.comment || ''}</td>` : ''}
+                    </tr>`;
+                }).join('')}
+                ${Object.keys(totals).map(employee => {
+                    const hours = Math.floor(totals[employee]);
+                    const minutes = Math.round((totals[employee] - hours) * 60);
+                    let hourLabel = `${hours}h`;
+                    if (minutes !== 0) {
+                        hourLabel += `${minutes.toString().padStart(2, '0')}mn`;
+                    }
+                    return `
+                    <tr style="font-weight: bold; color: black;">
+                        <td>Total ${employee}</td>
+                        <td></td><td></td><td></td>
+                        <td>${hourLabel}</td>
+                        ${showComments ? `<td>${Math.round(commentTotals[employee])}</td>` : ''}
+                    </tr>`;
+                }).join('')}
+                <tr style="font-weight: bold; color: black; font-size: 16px;">
+                    <td>Total Général</td>
                     <td></td><td></td><td></td>
-                    <td>${hourLabel}</td>
-                    ${showComments ? `<td>${Math.round(commentTotals[employee])}</td>` : ''}
-                </tr>`;
-            }).join('')}
-            <tr style="font-weight: bold; color: black; font-size: 16px;">
-                <td>Total Général</td>
-                <td></td><td></td><td></td>
-                <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}min</td>
-                ${showComments ? `<td>${totalComments}</td>` : ''}
-            </tr>
-        </table>
+                    <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}mn</td>
+                    ${showComments ? `<td>${totalComments}</td>` : ''}
+                </tr>
+            </table>
+        </div>
     `;
 }
 
