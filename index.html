@@ -40,7 +40,7 @@
 .invoice-button-group .button-row {
     display: flex;
     flex-wrap: nowrap; /* Maintient les boutons sur une seule ligne par défaut */
-    gap: 10px; /* Réduit l'espace horizontal entre les boutons */
+    gap: 9px; /* Réduit l'espace horizontal entre les boutons */
     width: 100%; /* S'adapte à la largeur du conteneur */
     max-width: 100%; /* Empêche le dépassement */
     justify-content: center; /* Centre les boutons */
@@ -50,9 +50,9 @@
     min-width: 110px; /* Réduit la largeur minimale pour compacter les boutons */
     text-align: center;
     padding: 8px 8px; /* Réduit le padding pour des boutons plus petits */
-    font-size: 22px; /* Réduit légèrement la taille de la police */
+    font-size: 16px; /* Réduit légèrement la taille de la police */
     flex: 1; /* Permet aux boutons de s'adapter à l'espace disponible */
-    max-width: 155px; /* Limite la largeur maximale */
+    max-width: 220px; /* Limite la largeur maximale */
 }
 
 /* Responsive : permet le retour à la ligne sur petits écrans si nécessaire */
@@ -63,8 +63,8 @@
     }
     .invoice-button-group .button-row button {
         min-width: 80px; /* Encore plus compact sur mobile */
-        font-size: 14px;
-        padding: 8px 6px;
+        font-size: 18px;
+        padding: 10px 6px;
     }
 }
 
@@ -80,7 +80,7 @@
 
 .buttons button {
     padding: 6px 12px; /* Réduit le padding pour des boutons plus petits */
-    font-size: 22px; /* Réduit la taille de la police */
+    font-size: 20px; /* Réduit la taille de la police */
     white-space: nowrap; /* Empêche le texte de se casser */
     border-radius: 4px; /* Conserver le style arrondi */
 }
@@ -94,8 +94,8 @@
 
 @media (max-width: 480px) {
     .buttons button {
-        padding: 6px 10px; /* Encore plus compact pour les petits écrans */
-        font-size: 16px; /* Taille de police réduite */
+        padding: 8px 10px; /* Encore plus compact pour les petits écrans */
+        font-size: 20px; /* Taille de police réduite */
     }
 }
 
