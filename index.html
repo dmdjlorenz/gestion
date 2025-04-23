@@ -4868,7 +4868,29 @@ function printPersonnel() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-    window.open(doc.output('bloburl'), '_blank');
+    // Créer un iframe temporaire pour charger le PDF
+    const blob = doc.output('blob');
+    const blobURL = URL.createObjectURL(blob);
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = blobURL;
+    document.body.appendChild(iframe);
+
+    // Attendre que l'iframe soit chargé, puis déclencher l'impression
+    iframe.onload = () => {
+        try {
+            iframe.contentWindow.print();
+        } catch (e) {
+            console.error("Erreur lors de l'impression :", e);
+            // Fallback : ouvrir le PDF si l'impression échoue
+            window.open(blobURL, '_blank');
+        }
+        // Nettoyer après un délai pour permettre l'impression
+        setTimeout(() => {
+            document.body.removeChild(iframe);
+            URL.revokeObjectURL(blobURL);
+        }, 1000);
+    };
 }
 
 function downloadPersonnelPDF() {
