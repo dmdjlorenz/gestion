@@ -2115,20 +2115,17 @@ function showPurchases() {
     }
 
     const fileName = 'Perso_Livre_des_Recettes_Chez_Barth.pdf';
-    const pdfBlob = doc.output('blob');
+    doc.save(fileName);
 
-    // Créer une URL pour l’ouvrir
-    const blobUrl = URL.createObjectURL(pdfBlob);
-    window.open(blobUrl);
+// Message de confirmation
+setTimeout(() => {
+    alert(`Le fichier "${fileName}" a bien été téléchargé dans le dossier Téléchargements.`);
 
-    // Télécharger le fichier
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = fileName;
-    link.click();
-
-    // Message de confirmation (affichage simple, à améliorer selon ton app)
-    alert(`✅ Le fichier "${fileName}" a été téléchargé dans votre dossier Téléchargements.`);
+    // 🧪 Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+}, 500);
 }
 
 
