@@ -4868,29 +4868,18 @@ function printPersonnel() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-    // Détecter si l'appareil est mobile
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+   const blob = doc.output('blob');
+const blobUrl = URL.createObjectURL(blob);
 
-    if (isMobile) {
-        // Pour smartphone : télécharger le PDF et guider l'utilisateur
-        const blob = doc.output('blob');
-        const blobURL = URL.createObjectURL(blob);
+// Crée un lien <a> invisible pour forcer l’ouverture dans un nouvel onglet
+const link = document.createElement('a');
+link.href = blobUrl;
+link.target = '_blank';
+link.click();
 
-        // Télécharger le PDF automatiquement
-        const link = document.createElement('a');
-        link.href = blobURL;
-        link.download = 'Liste_Personnel.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobURL);
+// Libération mémoire après un délai (bonne pratique)
+setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
 
-        // Afficher une alerte pour guider l'utilisateur
-        alert('Le PDF a été téléchargé. Ouvrez-le depuis la notification ou le dossier "Téléchargements" pour l\'imprimer.');
-    } else {
-        // Pour PC : ouvrir le PDF dans un nouvel onglet (comportement original)
-        window.open(doc.output('bloburl'), '_blank');
-    }
 }
 
 function downloadPersonnelPDF() {
