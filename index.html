@@ -4868,29 +4868,47 @@ function printPersonnel() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-    // Créer un iframe temporaire pour charger le PDF
-    const blob = doc.output('blob');
-    const blobURL = URL.createObjectURL(blob);
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = blobURL;
-    document.body.appendChild(iframe);
+    // Détecter si l'appareil est mobile
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-    // Attendre que l'iframe soit chargé, puis déclencher l'impression
-    iframe.onload = () => {
-        try {
-            iframe.contentWindow.print();
-        } catch (e) {
-            console.error("Erreur lors de l'impression :", e);
-            // Fallback : ouvrir le PDF si l'impression échoue
-            window.open(blobURL, '_blank');
-        }
-        // Nettoyer après un délai pour permettre l'impression
-        setTimeout(() => {
-            document.body.removeChild(iframe);
+    if (isMobile) {
+        // Pour smartphone : utiliser navigator.share ou télécharger
+        const blob = doc.output('blob');
+        const blobURL = URL.createObjectURL(blob);
+        const file = new File([blob], 'Liste_Personnel.pdf', { type: 'application/pdf' });
+
+        if (navigator.share) {
+            navigator.share({
+                files: [file],
+                title: 'Liste du personnel',
+                text: 'Imprimer ou partager la liste du personnel',
+            })
+            .then(() => console.log('Partage réussi'))
+            .catch((error) => {
+                console.error('Erreur lors du partage :', error);
+                // Fallback : forcer le téléchargement
+                const link = document.createElement('a');
+                link.href = blobURL;
+                link.download = 'Liste_Personnel.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobURL);
+            });
+        } else {
+            // Si le partage n'est pas disponible, forcer le téléchargement
+            const link = document.createElement('a');
+            link.href = blobURL;
+            link.download = 'Liste_Personnel.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
             URL.revokeObjectURL(blobURL);
-        }, 1000);
-    };
+        }
+    } else {
+        // Pour PC : ouvrir le PDF dans un nouvel onglet (comportement original)
+        window.open(doc.output('bloburl'), '_blank');
+    }
 }
 
 function downloadPersonnelPDF() {
