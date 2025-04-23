@@ -2943,6 +2943,10 @@ function exportInvoiceToPdf() {
 }
 
 function printInvoice() {
+            window.print();
+        }
+
+/*function printInvoice() {
     const invoiceContainer = document.getElementById('invoiceContainer');
     html2canvas(invoiceContainer, {
         scale: 2,
@@ -2961,7 +2965,7 @@ function printInvoice() {
         pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
         window.open(pdf.output('bloburl'), '_blank');
     });
-}
+}*/
 
 function sendInvoiceBySms() {
                 if (order.length === 0) {
