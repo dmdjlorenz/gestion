@@ -2119,7 +2119,7 @@ function showPurchases() {
 
 // Message de confirmation
 setTimeout(() => {
-    alert(`Le fichier "${fileName}" a bien été téléchargé dans le dossier Téléchargements.`);
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
 
     // 🧪 Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
     const blob = doc.output('blob');
@@ -2236,18 +2236,18 @@ function exportRecipeToPdfofficiel() {
         doc.deletePage(doc.getNumberOfPages());
     }
 
-    const fileName = 'Livre_des_Recettes_officiel_Chez_Barth.pdf'; // ou l'autre nom selon la fonction
-doc.save(fileName);
+    const fileName = 'Livre_des_Recettes_officiel_Chez_Barth.pdf'; 
+    doc.save(fileName);
 
-// ✅ Message de confirmation
-setTimeout(() => {
-    alert(`✅ Le fichier "${fileName}" a bien été téléchargé dans le dossier Téléchargements.`);
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
 
-    // 🧪 Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
     const blob = doc.output('blob');
     const blobUrl = URL.createObjectURL(blob);
     window.open(blobUrl, '_blank');
-}, 500);
+    }, 500);
 
 }
 
@@ -2535,8 +2535,19 @@ function downloadRecipesPDF() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(totalCash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(totalSales)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
 
-    doc.save('liste_ventes_chez_barth.pdf');
-    window.open(doc.output('bloburl'), '_blank');
+    const fileName = 'Liste_ventes_Chez_Barth.pdf'; 
+    doc.save(fileName);
+
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    }, 500);
+
 }
 
     // --- Facture ---
@@ -2957,13 +2968,27 @@ function exportInvoiceToPdf() {
             unit: 'mm',
             format: 'a5'
         });
+
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        const fileName = `Facture_Chez_Barth_${new Date().toISOString().split('T')[0]}.pdf`;
+
         pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
-        pdf.save(`Facture_Chez_Barth_${new Date().toISOString().split('T')[0]}.pdf`);
+        pdf.save(fileName);
+
+        // Message de confirmation et tentative d'ouverture
+        setTimeout(() => {
+            alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+            const blob = pdf.output('blob');
+            const blobUrl = URL.createObjectURL(blob);
+            window.open(blobUrl, '_blank');
+        }, 500);
     });
 }
+
 
 function printInvoice() {
     const invoiceContainer = document.getElementById('invoiceContainer');
@@ -4095,8 +4120,22 @@ function downloadPurchasesPDF() {
 
   const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
   const endStr = endDate.toLocaleDateString('fr-CA');
-  doc.save(`Achats_${startStr}_au_${endStr}.pdf`);
-  window.open(doc.output('bloburl'), '_blank');
+
+
+  const fileName = 'Chez_Barth_Achats_${startStr}_au_${endStr}.pdf'; 
+    doc.save(fileName);
+
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    }, 500);
+
+
 }
 
 
@@ -5018,8 +5057,20 @@ function downloadPersonnelPDF() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-    doc.save('liste_personnel_chez_barth.pdf');
-    window.open(doc.output('bloburl'), '_blank');
+    const fileName = 'Activité_du_personnel_Chez_Barth.pdf'; 
+    doc.save(fileName);
+
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    }, 500);
+
+
 }
 
 async function printPersonnelToBluetooth() {
@@ -5502,64 +5553,59 @@ document.getElementById('exportWord').addEventListener('click', function () {
     document.body.removeChild(fileDownload);
 });
 
-// Fonction pour exporter le contenu HTML en PDF
-
-document.getElementById('exportPdf').addEventListener('click', function() {
-    // Get the known buttons
+document.getElementById('exportPdf').addEventListener('click', function () {
     const exportPdfBtn = document.getElementById('exportPdf');
     const exportWordBtn = document.getElementById('exportWord');
     const retourBtn = document.getElementById('retour');
 
-    // Find all buttons to catch any additional "retour" buttons (e.g., blue one)
+    // Cibler tous les boutons potentiels à masquer
     const allButtons = document.querySelectorAll('button, [id*="retour"], [class*="retour"], [class*="back"], [class*="return"]');
-    console.log("All buttons found:", allButtons); // Debug: Log all buttons to identify the blue one
 
-    // Hide known buttons if they exist
-    if (exportPdfBtn) exportPdfBtn.style.display = 'none';
-    if (exportWordBtn) exportWordBtn.style.display = 'none';
-    if (retourBtn) retourBtn.style.display = 'none';
-
-    // Hide all other buttons that might be the blue "retour" button
-    allButtons.forEach(button => {
-        console.log("Hiding button:", button.id, button.className, button.textContent); // Debug: Log button details
-        button.style.display = 'none';
+    // Masquer tous les boutons
+    [exportPdfBtn, exportWordBtn, retourBtn].forEach(btn => {
+        if (btn) btn.style.display = 'none';
     });
+    allButtons.forEach(btn => btn.style.display = 'none');
 
-    var element = document.querySelector('.container');
-    var opt = {
-        margin:       0.5,
-        filename:     'Budget Barth.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    const element = document.querySelector('.container');
+    const today = new Date().toISOString().split('T')[0];
+    const fileName = `Budget_Chez_Barth_${today}.pdf`;
+
+    const opt = {
+        margin: 0.5,
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    html2pdf().from(element).set(opt).toPdf().get('pdf').then(function(pdf) {
-        // Diviser en 3 pages
-        var totalPages = pdf.internal.getNumberOfPages();
-        if (totalPages > 3) {
-            // Ajuster le contenu ou la mise en page si nécessaire
-        }
-        // Restore known buttons
-        if (exportPdfBtn) exportPdfBtn.style.display = 'block';
-        if (exportWordBtn) exportWordBtn.style.display = 'block';
-        if (retourBtn) retourBtn.style.display = 'block';
-        // Restore all other buttons
-        allButtons.forEach(button => {
-            button.style.display = 'block';
+    html2pdf().from(element).set(opt).toPdf().get('pdf')
+        .then(function (pdf) {
+            const totalPages = pdf.internal.getNumberOfPages();
+            if (totalPages > 3) {
+                console.warn(`⚠️ Document généré avec ${totalPages} pages. Envisagez d'ajuster le contenu.`);
+            }
+
+            // ✅ Message + ouverture
+            alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+            const blob = pdf.output('blob');
+            const blobUrl = URL.createObjectURL(blob);
+            window.open(blobUrl, '_blank');
+        })
+        .catch(function (error) {
+            console.error("❌ Erreur lors de la génération du PDF :", error);
+            alert("❌ Une erreur est survenue lors de l'export du PDF.");
+        })
+        .finally(() => {
+            // Toujours restaurer les boutons
+            [exportPdfBtn, exportWordBtn, retourBtn].forEach(btn => {
+                if (btn) btn.style.display = 'block';
+            });
+            allButtons.forEach(btn => btn.style.display = 'block');
         });
-    }).catch(function(error) {
-        console.error("Error generating PDF:", error);
-        // Restore buttons in case of error
-        if (exportPdfBtn) exportPdfBtn.style.display = 'block';
-        if (exportWordBtn) exportWordBtn.style.display = 'block';
-        if (retourBtn) retourBtn.style.display = 'block';
-        allButtons.forEach(button => {
-            button.style.display = 'block';
-        });
-    }).save();
 });
+
 
 // Fonctions pour la gestion des données (remplacez les versions existantes)
     function backupData() {
