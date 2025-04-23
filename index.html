@@ -4872,41 +4872,21 @@ function printPersonnel() {
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
     if (isMobile) {
-        // Pour smartphone : charger dans un iframe et tenter l'impression
+        // Pour smartphone : télécharger le PDF et guider l'utilisateur
         const blob = doc.output('blob');
         const blobURL = URL.createObjectURL(blob);
-        
-        // Créer un iframe temporaire pour charger le PDF
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = blobURL;
-        document.body.appendChild(iframe);
 
-        // Attendre que l'iframe soit chargé, puis déclencher l'impression
-        iframe.onload = () => {
-            try {
-                iframe.contentWindow.print();
-                // Nettoyer après un délai pour permettre l'impression
-                setTimeout(() => {
-                    document.body.removeChild(iframe);
-                    URL.revokeObjectURL(blobURL);
-                }, 1000);
-            } catch (e) {
-                console.error("Erreur lors de l'impression directe :", e);
-                // Fallback : forcer le téléchargement automatique
-                const link = document.createElement('a');
-                link.href = blobURL;
-                link.download = 'Liste_Personnel.pdf';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                // Nettoyer l'iframe
-                setTimeout(() => {
-                    document.body.removeChild(iframe);
-                    URL.revokeObjectURL(blobURL);
-                }, 1000);
-            }
-        };
+        // Télécharger le PDF automatiquement
+        const link = document.createElement('a');
+        link.href = blobURL;
+        link.download = 'Liste_Personnel.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobURL);
+
+        // Afficher une alerte pour guider l'utilisateur
+        alert('Le PDF a été téléchargé. Ouvrez-le depuis la notification ou le dossier "Téléchargements" pour l\'imprimer.');
     } else {
         // Pour PC : ouvrir le PDF dans un nouvel onglet (comportement original)
         window.open(doc.output('bloburl'), '_blank');
