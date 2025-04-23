@@ -2378,7 +2378,7 @@ function deleteSale(date) {
     const doc = new jsPDF();
     const margin = 10;
     let y = margin;
-    const colWidths = [40, 40, 40, 40];
+    const colWidths = [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
 
@@ -2456,7 +2456,7 @@ function downloadRecipesPDF() {
     const doc = new jsPDF();
     const margin = 10;
     let y = margin;
-    const colWidths = [40, 40, 40, 40];
+    const colWidths = [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
 
@@ -2513,6 +2513,7 @@ function downloadRecipesPDF() {
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(totalSales)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
 
     doc.save('liste_ventes_chez_barth.pdf');
+    window.open(doc.output('bloburl'), '_blank');
 }
 
     // --- Facture ---
@@ -3858,7 +3859,7 @@ function printPurchases() {
     const margin = 10;
     const pageHeight = doc.internal.pageSize.height;
     let y = margin;
-    const colWidths = showComments ? [40, 40, 40, 40, 40] : [40, 40, 40, 40];
+    const colWidths = showComments ? [38, 38, 38, 38, 38] : [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
 
@@ -3977,7 +3978,7 @@ function downloadPurchasesPDF() {
     const margin = 10;
     const pageHeight = doc.internal.pageSize.height;
     let y = margin;
-    const colWidths = showComments ? [40, 40, 40, 40, 40] : [40, 40, 40, 40];
+    const colWidths = showComments ? [38, 38, 38, 38, 38] : [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
 
@@ -4765,7 +4766,7 @@ function printPersonnel() {
     const doc = new jsPDF();
     const margin = 10;
     let y = margin;
-    const colWidths = showComments ? [30, 40, 30, 30, 30, 40] : [30, 40, 30, 30, 30];
+    const colWidths = showComments ? [28, 38, 28, 28, 28, 38] : [28, 38, 28, 28, 28];
     const rowHeight = 10;
     const tableX = margin;
 
@@ -4780,7 +4781,8 @@ function printPersonnel() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+    if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     y += rowHeight;
 
     doc.setFont('helvetica', 'normal');
@@ -4798,16 +4800,21 @@ function printPersonnel() {
             doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+            if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
+        const hourLabel = record.employee && record.employee.trim() !== '' 
+            ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
+            : '';
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(record.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(record.hours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+        if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
 
@@ -4820,10 +4827,12 @@ function printPersonnel() {
     const totals = {};
     const commentTotals = {};
     filteredRecords.forEach(record => {
-        if (!totals[record.employee]) totals[record.employee] = 0;
-        if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
-        totals[record.employee] += record.hours;
-        if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
+        if (record.employee && record.employee.trim() !== '') {
+            if (!totals[record.employee]) totals[record.employee] = 0;
+            if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
+            totals[record.employee] += record.hours;
+            if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
+        }
     });
     const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
     const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
@@ -4833,21 +4842,31 @@ function printPersonnel() {
             doc.addPage();
             y = margin;
         }
+        const hours = Math.floor(totals[employee]);
+        const minutes = Math.round((totals[employee] - hours) * 60);
+        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(`Total ${employee}`, tableX + 2, y + 6);
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totals[employee]), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${commentTotals[employee].toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+        if (showComments) doc.text(`${commentTotals[employee].toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
 
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totalHours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${totalComments.toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    if (Object.keys(totals).length > 0) {
+        const hours = Math.floor(totalHours);
+        const minutes = Math.round((totalHours - hours) * 60);
+        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+        if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    }
 
     window.open(doc.output('bloburl'), '_blank');
 }
@@ -4874,7 +4893,7 @@ function downloadPersonnelPDF() {
     const doc = new jsPDF();
     const margin = 10;
     let y = margin;
-    const colWidths = showComments ? [30, 40, 30, 30, 30, 40] : [30, 40, 30, 30, 30];
+    const colWidths = showComments ? [28, 38, 28, 28, 28, 38] : [28, 38, 28, 28, 28];
     const rowHeight = 10;
     const tableX = margin;
 
@@ -4889,7 +4908,8 @@ function downloadPersonnelPDF() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+    if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     y += rowHeight;
 
     doc.setFont('helvetica', 'normal');
@@ -4907,16 +4927,21 @@ function downloadPersonnelPDF() {
             doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+            if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
+        const hourLabel = record.employee && record.employee.trim() !== '' 
+            ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
+            : '';
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(record.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(record.hours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+        if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
 
@@ -4929,10 +4954,12 @@ function downloadPersonnelPDF() {
     const totals = {};
     const commentTotals = {};
     filteredRecords.forEach(record => {
-        if (!totals[record.employee]) totals[record.employee] = 0;
-        if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
-        totals[record.employee] += record.hours;
-        if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
+        if (record.employee && record.employee.trim() !== '') {
+            if (!totals[record.employee]) totals[record.employee] = 0;
+            if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
+            totals[record.employee] += record.hours;
+            if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
+        }
     });
     const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
     const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
@@ -4942,21 +4969,31 @@ function downloadPersonnelPDF() {
             doc.addPage();
             y = margin;
         }
+        const hours = Math.floor(totals[employee]);
+        const minutes = Math.round((totals[employee] - hours) * 60);
+        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(`Total ${employee}`, tableX + 2, y + 6);
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totals[employee]), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${commentTotals[employee].toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+        if (showComments) doc.text(`${commentTotals[employee].toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
 
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totalHours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${totalComments.toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    if (Object.keys(totals).length > 0) {
+        const hours = Math.floor(totalHours);
+        const minutes = Math.round((totalHours - hours) * 60);
+        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
+        if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    }
 
     doc.save('liste_personnel_chez_barth.pdf');
     window.open(doc.output('bloburl'), '_blank');
@@ -5001,22 +5038,37 @@ async function printPersonnelToBluetooth() {
 
         filteredRecords.forEach(record => {
             const dateStr = new Date(record.date).toLocaleDateString('fr-FR').substring(0, 5);
-            const employeeStr = record.employee.substring(0, 8).padEnd(8);
-            text += `${dateStr} ${employeeStr} ${formatHours(record.hours)}\n`;
+            const employeeStr = (record.employee || '').substring(0, 8).padEnd(8);
+            const hourLabel = record.employee && record.employee.trim() !== '' 
+                ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
+                : '';
+            text += `${dateStr} ${employeeStr} ${hourLabel}\n`;
         });
 
         text += "-------------------------------\n";
         const totals = {};
         filteredRecords.forEach(record => {
-            if (!totals[record.employee]) totals[record.employee] = 0;
-            totals[record.employee] += record.hours;
+            if (record.employee && record.employee.trim() !== '') {
+                if (!totals[record.employee]) totals[record.employee] = 0;
+                totals[record.employee] += record.hours;
+            }
         });
         const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
 
         for (const employee in totals) {
-            text += `Total ${employee}: ${formatHours(totals[employee])}\n`;
+            const hours = Math.floor(totals[employee]);
+            const minutes = Math.round((totals[employee] - hours) * 60);
+            const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
+            text += `Total ${employee}: ${hourLabel}\n`;
         }
-        text += `Total Général: ${formatHours(totalHours)}\n`;
+
+        if (Object.keys(totals).length > 0) {
+            const hours = Math.floor(totalHours);
+            const minutes = Math.round((totalHours - hours) * 60);
+            const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
+            text += `Total Général: ${hourLabel}\n`;
+        }
+
         text += "\nBilan du personnel terminé !\n\n";
 
         const encoder = new TextEncoder();
