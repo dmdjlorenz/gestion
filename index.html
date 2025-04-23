@@ -4745,6 +4745,10 @@ function formatHours(hours) {
 }
 
 function printPersonnel() {
+            window.print();
+        }
+
+/*function printPersonnel() {
     const startDateInput = document.getElementById('personnelStartDate').value;
     const endDateInput = document.getElementById('personnelEndDate').value;
     const showComments = document.getElementById('showComments').checked;
@@ -4879,7 +4883,7 @@ document.body.removeChild(link);
 URL.revokeObjectURL(blobUrl);
 
 
-}
+}*/
 
 function downloadPersonnelPDF() {
     const startDateInput = document.getElementById('personnelStartDate').value;
