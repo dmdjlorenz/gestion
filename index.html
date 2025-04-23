@@ -4868,17 +4868,16 @@ function printPersonnel() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-   const blob = doc.output('blob');
+  const blob = doc.output('blob');
 const blobUrl = URL.createObjectURL(blob);
-
-// Crée un lien <a> invisible pour forcer l’ouverture dans un nouvel onglet
 const link = document.createElement('a');
 link.href = blobUrl;
-link.target = '_blank';
+link.download = `Liste_Personnel_${startDate.toLocaleDateString('fr-FR')}_au_${endDate.toLocaleDateString('fr-FR')}.pdf`;
+document.body.appendChild(link);
 link.click();
+document.body.removeChild(link);
+URL.revokeObjectURL(blobUrl);
 
-// Libération mémoire après un délai (bonne pratique)
-setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
 
 }
 
