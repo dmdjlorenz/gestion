@@ -2943,10 +2943,6 @@ function exportInvoiceToPdf() {
 }
 
 function printInvoice() {
-            window.print();
-        }
-
-/*function printInvoice() {
     const invoiceContainer = document.getElementById('invoiceContainer');
     html2canvas(invoiceContainer, {
         scale: 2,
@@ -2965,7 +2961,7 @@ function printInvoice() {
         pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
         window.open(pdf.output('bloburl'), '_blank');
     });
-}*/
+}
 
 function sendInvoiceBySms() {
                 if (order.length === 0) {
@@ -4749,10 +4745,6 @@ function formatHours(hours) {
 }
 
 function printPersonnel() {
-            window.print();
-        }
-
-/*function printPersonnel() {
     const startDateInput = document.getElementById('personnelStartDate').value;
     const endDateInput = document.getElementById('personnelEndDate').value;
     const showComments = document.getElementById('showComments').checked;
@@ -4876,18 +4868,8 @@ function printPersonnel() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-  const blob = doc.output('blob');
-const blobUrl = URL.createObjectURL(blob);
-const link = document.createElement('a');
-link.href = blobUrl;
-link.download = `Liste_Personnel_${startDate.toLocaleDateString('fr-FR')}_au_${endDate.toLocaleDateString('fr-FR')}.pdf`;
-document.body.appendChild(link);
-link.click();
-document.body.removeChild(link);
-URL.revokeObjectURL(blobUrl);
-
-
-}*/
+    window.open(doc.output('bloburl'), '_blank');
+}
 
 function downloadPersonnelPDF() {
     const startDateInput = document.getElementById('personnelStartDate').value;
