@@ -890,18 +890,24 @@
 .container th {
     background-color: #f2f2f2;
 }
-#exportPdf, #exportWord {
-    background-color: #87CEEB; /* Bleu ciel */
+
+/* Style des boutons d'export */
+.export-button {
+    background: #FFA500; /* Orange */
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 10px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
-    margin-right: 10px;
+    transition: background 0.3s ease;
 }
-#exportPdf:hover, #exportWord:hover {
-    background-color: #00BFFF; /* Bleu profond au survol */
+
+.export-button:hover {
+    background: #E59400;
+}
+
+
+
 }
 @media print {
     .container {
@@ -1026,7 +1032,7 @@
     <div id="recipeList"></div>
 
     <!-- Boutons principaux -->
-    <div class="buttons no-print">
+    <div class="buttons no-print" style="margin-top: 10px;">
     <button id="printAllRecipesBtn" onclick="printAllRecipes()">Imprimer</button>
     <button id="printBluetoothSalesBtn" onclick="printSalesToBluetooth()">Imprimer Bluetooth</button>
     <button id="exportPurchasesPdfBtn" onclick="downloadRecipesPDF()">Télécharger</button>
@@ -1217,7 +1223,7 @@
     <div id="purchasesList"></div>
 
     <!-- Boutons PDF et retour -->
-    <div class="buttons no-print">
+    <div class="buttons no-print" style="margin-top: 10px;">
         <button id="printPurchasesBtn" onclick="printPurchases()">Imprimer</button>
         <button id="printBluetoothPurchasesBtn" onclick="printPurchasesToBluetooth()">Imprimer Bluetooth</button>
         <button id="exportPurchasesPdfBtn" onclick="downloadPurchasesPDF()">Télécharger</button>
@@ -1313,7 +1319,7 @@
 
     <div id="personnelList"></div>
 
-    <div class="buttons no-print">
+    <div class="buttons no-print" style="margin-top: 10px;">
         <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
         <button id="printBluetoothPersonnelBtn" onclick="printPersonnelToBluetooth()">Imprimer Bluetooth</button>
         <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger</button>
@@ -1407,11 +1413,12 @@
     <!-- Le tableau des bénéfices nets sera affiché ici -->
 </table>
 
-<div class="buttons" style="margin-top: 10px;">
-    <button id="exportPdf">Exporter en PDF</button>
-    <button id="exportWord">Exporter en Word</button>
+<div class="buttons no-print" style="margin-top: 10px;">
+    <button id="exportPdf" class="export-button">Télécharger PDF</button>
+    <button id="exportWord" class="export-button">Télécharger Word</button>
     <button onclick="backToHome()">Retour</button>
 </div>
+
     </div>
 </div>
 
@@ -2957,6 +2964,17 @@ function saveInvoice() {
 
 function exportInvoiceToPdf() {
     const invoiceContainer = document.getElementById('invoiceContainer');
+
+    // 1. Extraction du numéro de facture depuis l'élément affiché
+    // Supposons que tu as quelque part dans l'invoiceContainer du texte comme "Fact N°12345"
+    const invoiceNumberMatch = invoiceContainer.innerText.match(/Fact(?:ure)? N°\s*(\d+)/i);
+    const invoiceNumber = invoiceNumberMatch ? invoiceNumberMatch[1] : 'Inconnue';
+
+    // 2. Générer un nom de fichier avec date + numéro de facture
+    const dateStr = new Date().toISOString().split('T')[0];
+    const fileName = `Fact_N°${invoiceNumber}_${dateStr}_Facture_Chez_Barth.pdf`;
+
+    // 3. Génération du PDF
     html2canvas(invoiceContainer, {
         scale: 2,
         useCORS: true,
@@ -2973,12 +2991,10 @@ function exportInvoiceToPdf() {
         const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        const fileName = `Facture_Chez_Barth_${new Date().toISOString().split('T')[0]}.pdf`;
-
         pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
         pdf.save(fileName);
 
-        // Message de confirmation et tentative d'ouverture
+        // Message et ouverture
         setTimeout(() => {
             alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
 
@@ -2988,6 +3004,7 @@ function exportInvoiceToPdf() {
         }, 500);
     });
 }
+
 
 
 function printInvoice() {
@@ -5246,10 +5263,8 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-// Fonction pour afficher la page Budget
 
-document.getElementById('exportPdf').style.backgroundColor = 'orange';
-document.getElementById('exportWord').style.backgroundColor = 'orange';
+
 
 // Fonction pour afficher la page Budget
 function showBudget() {
@@ -5333,22 +5348,22 @@ resultat.innerHTML = `
     <p><strong>   </p>
     <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
     <p><strong>   </p>
-    <p><strong>* Chiffre d'affaires annuel: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
+    <p><strong>* CHIFFRE D'AFFAIRES ANNUEL: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
 
     <ul>
         <p>Détail charges annuelles d'exploitation:</p>
         <ul>
-            <li style="font-weight: normal;">Loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Charges externes: ${externes.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Loyer :  ${loyerAnnuel.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Salaires et charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Achats alimentaires (Coût de revient matières): ${coutMatieres.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Charges externes (compta, pub, banque...): ${externes.toFixed(0)} €</li>
             <li style="font-weight: normal;">Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
         </ul>
     </ul>
     <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (C)</strong></p>
-    <p><strong>* TVA (si CA > 85000€ -TVA déductible): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
-    <p><strong>* Impôts et Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
-    <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
+    <p><strong>* TVA-TVA déductible (si CA > 85000€): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
+    <p><strong>* Impôts Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
+    <p><strong>* BENEFICE NET ANNUEL: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
 
     <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
     <p>  </p>`;
@@ -5397,7 +5412,7 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
     // Création du tableau des bénéfices
     tableau.innerHTML = `
     <tr>
-        <th>Revenu net mensuel Mathis réparti sur 12 mois</th>
+        <th>Revenu net moyen mensuel Mathis sur 12 mois (congés compris)</th>
         <th>1000€</th>
         <th>2000€</th>
         <th>3000€</th>
