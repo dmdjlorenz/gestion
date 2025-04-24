@@ -3053,10 +3053,17 @@ function sendInvoiceBySms() {
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const date = new Date();
-    const formattedDate = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Ajout de caractères invisibles pour éviter la détection automatique
+    const preventAutoLink = str => str.split('').join('\u200C');
+    const formattedDate = preventAutoLink(date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }));
+
     let smsText = "Facture Chez Barth - " + formattedDate + "\n\n";
-    smsText += "CHEZ BARTH\n16" + "\u200B" + " place" + "\u200B" + " des" + "\u200B" + " Prêcheurs," + "\u200B" + " 13100" + "\u200B" + " Aix" + "\u200B" + " en" + "\u200B" + " Provence\nTel: 09" + "\u200B" + "77" + "\u200B" + "53" + "\u200B" + "78" + "\u200B" + "71\nSIRET: 932" + "\u200B" + "532" + "\u200B" + "229" + "\u200B" + "00014\nAPE: 56.10C\nEntreprise Individuelle\n\n";
- 
+    smsText += "CHEZ BARTH\n16\u200B place\u200B des\u200B Prêcheurs,\u200B " + preventAutoLink("13100") + "\u200B Aix\u200B en\u200B Provence\n";
+    smsText += "Tel: 09\u200B77\u200B53\u200B78\u200B71\n";
+    smsText += "SIRET: " + preventAutoLink("93253222900014") + "\n";
+    smsText += "APE: 56.10C\nEntreprise Individuelle\n\n";
+
     const caBelow = document.getElementById('caBelow85000').checked;
     if (caBelow) {
         smsText += "FACTURE DU " + formattedDate + "\n";
@@ -3093,9 +3100,8 @@ function sendInvoiceBySms() {
         smsText += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
         smsText += `Paiement: ${currentPaymentMethod}\n\n`;
     }
-    smsText += "Chez Barth vous remercie de votre visite.";
-    smsText += `\n`;
-    smsText += "A bientôt !";
+
+    smsText += "Chez Barth vous remercie de votre visite.\nA bientôt !";
 
     const phoneNumber = prompt("Entrez le numéro de téléphone (ex: 06....):");
     if (!phoneNumber) return;
@@ -3114,6 +3120,7 @@ function sendInvoiceBySms() {
         }
     }
 }
+
 
 function sendInvoiceByEmail() {
     const caBelow = document.getElementById('caBelow85000').checked;
