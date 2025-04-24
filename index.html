@@ -3066,14 +3066,14 @@ function sendInvoiceBySms() {
 
     const caBelow = document.getElementById('caBelow85000').checked;
     if (caBelow) {
-        smsText += "FACTURE DU " + formattedDate + "\n";
+        smsText += "Fact N° ${invoiceCounter} du " + formattedDate + "\n";
         smsText += "TVA non applicable art 293B du CGI\n\n";
         smsText += "Détail:\n";
         order.forEach(item => {
             smsText += `${item.name}: ${item.priceTTC.toFixed(2)}€ TTC\n`;
         });
     } else {
-        smsText += "FACTURE DU " + formattedDate + "\n\n";
+        smsText += "Fact N° ${invoiceCounter} du " + formattedDate + "\n\n";
         smsText += "Detail:\n";
         order.forEach(item => {
             smsText += `${item.name}: ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
