@@ -3059,7 +3059,9 @@ function sendInvoiceBySms() {
     const formattedDate = preventAutoLink(date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }));
 
     let smsText = "Facture Chez Barth - " + formattedDate + "\n\n";
-    smsText += "CHEZ BARTH\n16\u200B place\u200B des\u200B Prêcheurs,\u200B " + preventAutoLink("13100") + "\u200B Aix\u200B en\u200B Provence\n";
+    smsText += "CHEZ BARTH\n";
+    smsText += "16\u200B place\u200B des\u200B Prêcheurs\n";
+    smsText += preventAutoLink("13100") + "\u200B Aix\u200B en\u200B Provence\n";
     smsText += "Tel: 09\u200B77\u200B53\u200B78\u200B71\n";
     smsText += "SIRET: " + preventAutoLink("93253222900014") + "\n";
     smsText += "APE: 56.10C\nEntreprise Individuelle\n\n";
@@ -3255,7 +3257,7 @@ function filterInvoices() {
 
     const invoiceList = document.getElementById('invoiceList');
     invoiceList.innerHTML = `
-        <h2>Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+        <h3>Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
         <div style="overflow-x: auto; width: 100%;">
             <table style="width: 100%; max-width: 100%; table-layout: auto; border-collapse: collapse; font-size: 14px;">
                 <tr style="background-color: #f2f2f2;">
