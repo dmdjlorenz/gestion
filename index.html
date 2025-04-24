@@ -2901,13 +2901,18 @@ function updateOrderList() {
         </table>
     ` : `
         <table class="total-table" style="width: 100%; max-width: 600px; margin: 0 auto;">
-            <tr><td>Total HT:</td><td>${totalHT.toFixed(2)}€</td></tr>
-            <tr><td>TVA 5.5%:</td><td>${totalTVA55.toFixed(2)}€</td></tr>
-            <tr><td>TVA 10%:</td><td>${totalTVA10.toFixed(2)}€</td></tr>
-            <tr><td><strong>Total TTC:</strong></td><td><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
-            <tr><td>Paiement</td><td>${currentPaymentMethod}</td></tr>
-            <tr><td colspan="2" style="text-align: left; font-style: italic;">Chez Barth vous remercie de votre visite. A bientôt !</td></tr>
-        </table>
+  <tr><td>Total HT:</td><td>${totalHT.toFixed(2)}€</td></tr>
+  <tr><td>TVA 5.5%:</td><td>${totalTVA55.toFixed(2)}€</td></tr>
+  <tr><td>TVA 10%:</td><td>${totalTVA10.toFixed(2)}€</td></tr>
+  <tr><td><strong>Total TTC:</strong></td><td><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
+  <tr><td>Paiement</td><td>${currentPaymentMethod}</td></tr>
+  <tr>
+    <td colspan="2" style="text-align: left; font-style: italic; border: none;">
+      Chez Barth vous remercie de votre visite.<br>A bientôt !
+    </td>
+  </tr>
+</table>
+
     `;
 }
 
