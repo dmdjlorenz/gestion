@@ -4814,7 +4814,11 @@ function calculateHours() {
 function convertToHoursMinutes(decimalHours) {
     const hours = Math.floor(decimalHours);
     const minutes = Math.round((decimalHours - hours) * 60);
-    return `${hours}h${minutes}`;
+    let result = `${hours} h`;
+    if (minutes !== 0) {
+        result += ` ${minutes.toString().padStart(2, '0')}`;
+    }
+    return result;
 }
 
 const hoursTotalConvertedInput = document.getElementById('hoursTotalConverted');
@@ -4876,13 +4880,29 @@ function deletePersonnelRecord(index) {
     }
 }
 
+
+
 function filterPersonnel() {
     const startDateInput = document.getElementById('personnelStartDate').value;
     const endDateInput = document.getElementById('personnelEndDate').value;
     const showComments = document.getElementById('showComments').checked;
 
-    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-12-11');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    // Vérifier si les dates sont valides
+    if (isNaN(startDate) || isNaN(endDate)) {
+        document.getElementById('personnelList').innerHTML = '<p>Erreur : Dates invalides.</p>';
+        return;
+    }
+
+    // Générer toutes les dates entre startDate et endDate
+    const allDates = [];
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        allDates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
 
     filteredPersonnelRecords = personnelRecords.filter(record => {
         const recordDate = new Date(record.date);
@@ -4891,7 +4911,13 @@ function filterPersonnel() {
 
     const personnelList = document.getElementById('personnelList');
 
-    if (filteredPersonnelRecords.length === 0) {
+    // Vérifier si personnelList existe
+    if (!personnelList) {
+        console.error("Erreur : L'élément 'personnelList' n'existe pas.");
+        return;
+    }
+
+    if (allDates.length === 0) {
         personnelList.innerHTML = '<p>Aucune donnée à afficher pour cette période.</p>';
         return;
     }
@@ -4902,78 +4928,129 @@ function filterPersonnel() {
     filteredPersonnelRecords.forEach(record => {
         if (record.employee && record.employee.trim() !== '') {
             if (!totals[record.employee]) {
-                totals[record.employee] = 0;
+                totals[record.employee] = { hours: 0, minutes: 0 };
                 commentTotals[record.employee] = 0;
             }
-            totals[record.employee] += record.hours;
+            // Convertir les heures en heures et minutes pour ignorer les secondes
+            const hours = Math.floor(record.hours || 0);
+            const minutes = Math.round((record.hours - hours) * 60);
+            totals[record.employee].hours += hours;
+            totals[record.employee].minutes += minutes;
+            // Normaliser les minutes si elles dépassent 60
+            if (totals[record.employee].minutes >= 60) {
+                totals[record.employee].hours += Math.floor(totals[record.employee].minutes / 60);
+                totals[record.employee].minutes = totals[record.employee].minutes % 60;
+            }
             if (showComments && record.comment && !isNaN(parseFloat(record.comment))) {
                 commentTotals[record.employee] += parseFloat(record.comment);
             }
         }
     });
 
-    const totalHoursDecimal = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
-    const totalHours = Math.floor(totalHoursDecimal);
-    const totalMinutes = Math.round((totalHoursDecimal - totalHours) * 60);
-    const totalComments = Math.round(Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0));
+    // Calculer le total général
+    let totalHours = 0;
+    let totalMinutes = 0;
+    Object.keys(totals).forEach(employee => {
+        totalHours += totals[employee].hours;
+        totalMinutes += totals[employee].minutes;
+    });
+    // Normaliser le total général
+    totalHours += Math.floor(totalMinutes / 60);
+    totalMinutes = totalMinutes % 60;
+
+    const totalComments = Math.round(Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0) || 0);
+
+    // Définir les abréviations des jours, avec M pour mercredi
+    const dayAbbreviations = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+
+    // Construire les lignes du tableau
+    let tableRows = '';
+    allDates.forEach(date => {
+        const dateRecords = filteredPersonnelRecords.filter(record => 
+            new Date(record.date).toDateString() === date.toDateString()
+        );
+        
+        if (dateRecords.length === 0) {
+            // Afficher une ligne vide pour les dates sans enregistrement
+            const dayAbbr = dayAbbreviations[date.getDay()];
+            tableRows += `
+                <tr>
+                    <td style="white-space: nowrap;">${dayAbbr} ${date.toLocaleDateString('fr-FR')}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    ${showComments ? '<td></td>' : ''}
+                </tr>`;
+        } else {
+            // Afficher les enregistrements existants
+            tableRows += dateRecords.map((record, index) => {
+                let hourLabel = '';
+                if (record.employee && record.employee.trim() !== '') {
+                    hourLabel = convertToHoursMinutes(record.hours || 0);
+                }
+                const dayAbbr = dayAbbreviations[new Date(record.date).getDay()];
+                return `
+                    <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${filteredPersonnelRecords.indexOf(record)})">
+                        <td style="white-space: nowrap;">${dayAbbr} ${new Date(record.date).toLocaleDateString('fr-FR')}</td>
+                        <td>${record.employee || ''}</td>
+                        <td>${record.startTime || ''}</td>
+                        <td>${record.endTime || ''}</td>
+                        <td>${hourLabel}</td>
+                        ${showComments ? `<td>${record.comment || ''}</td>` : ''}
+                    </tr>`;
+            }).join('');
+        }
+    });
+
+    // Ajouter les totaux par employé
+    tableRows += Object.keys(totals).map(employee => {
+        const hours = totals[employee].hours;
+        const minutes = totals[employee].minutes;
+        let hourLabel = `${hours} h`;
+        if (minutes !== 0) {
+            hourLabel += ` ${minutes.toString().padStart(2, '0')}`;
+        }
+        return `
+            <tr style="font-weight: bold; color: black;">
+                <td>Total ${employee}</td>
+                <td></td><td></td><td></td>
+                <td>${hourLabel}</td>
+                ${showComments ? `<td>${Math.round(commentTotals[employee])}</td>` : ''}
+            </tr>`;
+    }).join('');
+
+    // Afficher le total général
+    let totalHourLabel = `${totalHours} h`;
+    if (totalMinutes !== 0) {
+        totalHourLabel += ` ${totalMinutes.toString().padStart(2, '0')}`;
+    }
+    tableRows += `
+        <tr style="font-weight: bold; color: black; font-size: 16px;">
+            <td>Total Général</td>
+            <td></td><td></td><td></td>
+            <td>${totalHourLabel}</td>
+            ${showComments ? `<td>${totalComments}</td>` : ''}
+        </tr>`;
 
     personnelList.innerHTML = `
         <h3>Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
         <div class="table-container">
             <table>
                 <tr>
-                    <th>Date</th>
+                    <th style="width: 200px; white-space: nowrap;">Date</th>
                     <th>Employé</th>
                     <th>Début</th>
                     <th>Fin</th>
                     <th>Heures</th>
                     ${showComments ? '<th>Commentaire</th>' : ''}
                 </tr>
-                ${filteredPersonnelRecords.map((record, index) => {
-                    let hourLabel = '';
-                    if (record.employee && record.employee.trim() !== '') {
-                        const hours = Math.floor(record.hours);
-                        const minutes = Math.round((record.hours - hours) * 60);
-                        hourLabel = `${hours}h`;
-                        if (minutes !== 0) {
-                            hourLabel += `${minutes.toString().padStart(2, '0')}`;
-                        }
-                    }
-                    return `
-                    <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${index})">
-                        <td>${new Date(record.date).toLocaleDateString('fr-FR')}</td>
-                        <td>${record.employee || ''}</td>
-                        <td>${record.startTime}</td>
-                        <td>${record.endTime}</td>
-                        <td>${hourLabel}</td>
-                        ${showComments ? `<td>${record.comment || ''}</td>` : ''}
-                    </tr>`;
-                }).join('')}
-                ${Object.keys(totals).map(employee => {
-                    const hours = Math.floor(totals[employee]);
-                    const minutes = Math.round((totals[employee] - hours) * 60);
-                    let hourLabel = `${hours}h`;
-                    if (minutes !== 0) {
-                        hourLabel += `${minutes.toString().padStart(2, '0')}`;
-                    }
-                    return `
-                    <tr style="font-weight: bold; color: black;">
-                        <td>Total ${employee}</td>
-                        <td></td><td></td><td></td>
-                        <td>${hourLabel}</td>
-                        ${showComments ? `<td>${Math.round(commentTotals[employee])}</td>` : ''}
-                    </tr>`;
-                }).join('')}
-                <tr style="font-weight: bold; color: black; font-size: 16px;">
-                    <td>Total Général</td>
-                    <td></td><td></td><td></td>
-                    <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}</td>
-                    ${showComments ? `<td>${totalComments}</td>` : ''}
-                </tr>
+                ${tableRows}
             </table>
         </div>
     `;
 }
+
 
 
 function showPersonnelDetailFromIndex(index) {
