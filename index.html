@@ -1096,7 +1096,12 @@
     <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
         <ul id="productList"></ul>
         <div>
-            <div class="payment-section" style="display: flex; align-items: center; gap: 10px;">
+            <div class="input-field" style="margin-top: 10px;">
+                <span style="font-weight: bold;">Client</span>
+                <input type="text" id="customerNameInput" placeholder="Entrez le nom du client, société, adresse..." style="margin-top: 4px; width: 100%;">
+            </div>
+
+            <div class="payment-section" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                 <span style="font-weight: bold;">Paiement</span>
                 <label>
                     Carte <input type="radio" name="paymentMethod" value="Carte" id="paymentCard">
@@ -1109,6 +1114,7 @@
         </div>
     </div>
 </div>
+
 
     <div id="invoice">
         <div id="invoiceContainer">
@@ -2849,11 +2855,10 @@ function updateOrderList() {
     const orderTotal = document.getElementById('orderTotal');
     const invoiceHeader = document.getElementById('invoiceHeader');
     const caBelow = document.getElementById('caBelow85000').checked;
+    const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
-    // Définir la hauteur de ligne pour le tableau des produits (modifiable ici)
-    const lineHeightOrderList = "normal"; // Valeur par défaut : "normal" (~1.4). Exemples : "1.1", "1.2", "14px"
-    // Définir la hauteur de ligne pour le tableau des totaux (modifiable ici)
-    const lineHeightOrderTotal = "normal"; // Valeur par défaut : "normal" (~1.4). Exemples : "1.1", "1.2", "14px"
+    const lineHeightOrderList = "normal"; 
+    const lineHeightOrderTotal = "normal"; 
 
     let totalHT = 0;
     let totalTVA55 = 0;
@@ -2866,25 +2871,32 @@ function updateOrderList() {
     const totalTTC = totalHT + totalTVA55 + totalTVA10;
 
     invoiceHeader.innerHTML = `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto 4px auto; font-size: 12px; border-collapse: collapse;">
-            <tr>
-                <td style="text-align: center; padding: 2px;">
-                    <div style="margin: 0; padding: 0; line-height: 1.2;">
-                        <div style="margin: 0; padding: 0;">CHEZ BARTH</div>
-                        <div style="margin: 0; padding: 0;">16 place des Prêcheurs 13100 Aix en Provence</div>
-                        <div style="margin: 0; padding: 0;">Téléphone : 09 77 53 78 71</div>
-                        <div style="margin: 0; padding: 0;">Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: center; padding: 3px 0;">
-                    Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}
-                    ${caBelow ? '<div style="margin-top: 2px; font-weight: bold;">(TVA non applicable art 293B du CGI)</div>' : ''}
-                </td>
-            </tr>
-        </table>
-    `;
+    <table style="width: 100%; max-width: 600px; margin: 0 auto 4px auto; font-size: 12px; border-collapse: collapse;">
+        <tr>
+            <td style="text-align: center; padding: 2px;">
+                <div style="margin: 0; padding: 0; line-height: 1.2;">
+                    <div style="margin: 0; padding: 0;">CHEZ BARTH</div>
+                    <div style="margin: 0; padding: 0;">16 place des Prêcheurs 13100 Aix en Provence</div>
+                    <div style="margin: 0; padding: 0;">Téléphone : 09 77 53 78 71</div>
+                    <div style="margin: 0; padding: 0;">Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; padding: 3px 0;">
+                Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}
+                ${caBelow ? '<div style="margin-top: 2px; font-weight: bold;">(TVA non applicable art 293B du CGI)</div>' : ''}
+            </td>
+        </tr>
+        ${customerName ? `
+        <tr>
+            <td style="text-align: left; padding: 3px 0;">
+                <strong>Client : ${customerName}</strong>
+            </td>
+        </tr>` : ''}
+    </table>
+`;
+
 
     orderList.innerHTML = caBelow ? `
         <table style="width: 100%; max-width: 600px; margin: 0 auto 2px auto; font-size: 12px; border-collapse: collapse;">
@@ -2949,10 +2961,19 @@ function updateOrderList() {
 
 
 
+
 function clearOrder() {
     order = [];
+
+    const customerNameInput = document.getElementById('customerNameInput');
+    if (customerNameInput) {
+        customerNameInput.value = '';
+    }
+
     updateOrderList();
 }
+
+
 
 function saveInvoice() {
     if (order.length === 0) {
@@ -2964,6 +2985,7 @@ function saveInvoice() {
     const invoiceNumber = invoiceCounter;
     const timestamp = new Date().toISOString();
     const caBelow = document.getElementById('caBelow85000').checked;
+    const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
     let totalHT = 0;
     let totalTVA55 = 0;
@@ -2984,13 +3006,14 @@ function saveInvoice() {
         totalTVA55: totalTVA55,
         totalTVA10: totalTVA10,
         totalTTC: totalTTC,
-        paymentMethod: currentPaymentMethod
+        paymentMethod: currentPaymentMethod,
+        customerName: customerName // 🔥 Nouveau champ ajouté ici
     };
 
     invoices.push(invoice);
     saveInvoicesToStorage();
 
-     const invoiceHeader = document.getElementById('invoiceHeader');
+    const invoiceHeader = document.getElementById('invoiceHeader');
     invoiceHeader.innerHTML = `
         <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse; box-sizing: border-box;">
             <tr>
@@ -3007,6 +3030,7 @@ function saveInvoice() {
                 <td style="text-align: center;">
                     Fact N° ${invoiceNumber} Facture du ${new Date().toLocaleDateString('fr-FR')}
                     ${caBelow ? '<div style="margin-top: 10px; font-weight: bold;">(TVA non applicable art 293B du CGI)</div>' : ''}
+                    ${customerName ? `<div style="text-align: left; margin-top: 10px;"><strong>Client : ${customerName}</strong></div>` : ''}
                 </td>
             </tr>
         </table>
@@ -3014,6 +3038,7 @@ function saveInvoice() {
 
     alert(`Facture enregistrée avec succès sous le numéro ${invoiceNumber}`);
 }
+
 
 function exportInvoiceToPdf() {
     const invoiceContainer = document.getElementById('invoiceContainer');
@@ -3089,8 +3114,8 @@ function sendInvoiceBySms() {
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const date = new Date();
+    const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
-    // Ajout de caractères invisibles pour éviter la détection automatique
     const preventAutoLink = str => str.split('').join('\u200C');
     const formattedDate = preventAutoLink(date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }));
 
@@ -3103,21 +3128,22 @@ function sendInvoiceBySms() {
     smsText += "APE: 56.10C\nEntreprise Individuelle\n\n";
 
     const caBelow = document.getElementById('caBelow85000').checked;
-    if (caBelow) {
     smsText += `Fact N° ${invoiceCounter} du ${formattedDate}\n`;
-    smsText += "TVA non applicable art 293B du CGI\n\n";
-    smsText += "Produits:\n";
-    order.forEach(item => {
-        smsText += `${item.name}: ${item.priceTTC.toFixed(2)}€ TTC\n`;
-    });
-} else {
-    smsText += `Fact N° ${invoiceCounter} du ${formattedDate}\n\n`;
-    smsText += "Produits:\n";
-    order.forEach(item => {
-        smsText += `${item.name}: ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
-    });
-}
-
+    if (customerName) {
+        smsText += `Client : ${customerName}\n`;
+    }
+    if (caBelow) {
+        smsText += "TVA non applicable art 293B du CGI\n\n";
+        smsText += "Produits:\n";
+        order.forEach(item => {
+            smsText += `${item.name}: ${item.priceTTC.toFixed(2)}€ TTC\n`;
+        });
+    } else {
+        smsText += "\nProduits:\n";
+        order.forEach(item => {
+            smsText += `${item.name}: ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
+        });
+    }
 
     let totalHT = 0;
     let totalTVA55 = 0;
@@ -3161,8 +3187,11 @@ function sendInvoiceBySms() {
 }
 
 
+
 function sendInvoiceByEmail() {
     const caBelow = document.getElementById('caBelow85000').checked;
+    const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
+
     let totalHT = 0;
     let totalTVA55 = 0;
     let totalTVA10 = 0;
@@ -3175,13 +3204,15 @@ function sendInvoiceByEmail() {
 
     const date = new Date();
     const formattedDate = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-    
-    // Corps détaillé pour email avec toutes les informations
+
     let emailBody = "Facture Chez BARTH\n";
-    emailBody += "16" + "\u200B" + " place" + "\u200B" + " des" + "\u200B" + " Prêcheurs," + "\u200B" + " 13100" + "\u200B" + " Aix" + "\u200B" + " en" + "\u200B" + " Provence\n";
-    emailBody += "Tel: 09" + "\u200B" + "77" + "\u200B" + "53" + "\u200B" + "78" + "\u200B" + "71\n";
-    emailBody += "Ent. Indiv. SIRET: 932" + "\u200B" + "532" + "\u200B" + "229" + "\u200B" + "00014 - APE: 56.10C\n";
+    emailBody += "16\u200B place\u200B des\u200B Prêcheurs,\u200B 13100\u200B Aix\u200B en\u200B Provence\n";
+    emailBody += "Tel: 09\u200B77\u200B53\u200B78\u200B71\n";
+    emailBody += "Ent. Indiv. SIRET: 932\u200B532\u200B229\u200B00014 - APE: 56.10C\n";
     emailBody += `Fact N° ${invoiceCounter} - ${formattedDate}${caBelow ? ' (TVA non applicable)' : ''}\n`;
+    if (customerName) {
+        emailBody += `Client : ${customerName}\n`;
+    }
     emailBody += "----------------------------\n";
     emailBody += "Produits\n";
     order.forEach(item => {
@@ -3192,7 +3223,6 @@ function sendInvoiceByEmail() {
         }
     });
     emailBody += "----------------------------\n";
-    emailBody += "Produits\n";
     if (!caBelow) {
         emailBody += `Total HT: ${totalHT.toFixed(2)}€\n`;
         emailBody += `TVA 5.5%: ${totalTVA55.toFixed(2)}€\n`;
@@ -3200,13 +3230,12 @@ function sendInvoiceByEmail() {
     }
     emailBody += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
     emailBody += `Paiement: ${currentPaymentMethod}\n`;
-    emailBody += `\n`;
-    emailBody += "Chez Barth vous remercie de votre visite. A Bientôt !";
-   
+    emailBody += "\nChez Barth vous remercie de votre visite.\nA Bientôt !";
 
     const emailUrl = `mailto:?subject=Facture Chez BARTH&body=${encodeURIComponent(emailBody)}`;
     window.open(emailUrl);
 }
+
 
 async function printToBluetoothThermal() {
     if (!navigator.bluetooth) {
@@ -3224,20 +3253,75 @@ async function printToBluetoothThermal() {
         const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
         const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
 
-        let text = "CHEZ BARTH\n16 place des Precheurs\n13100 Aix en Provence\n\n";
-        text += `Facture du ${new Date().toLocaleDateString('fr-FR')}\n\n`;
+        const customerNameInput = document.getElementById('customerNameInput');
+        const customerName = customerNameInput ? customerNameInput.value.trim() : '';
+        const caBelow = document.getElementById('caBelow85000').checked;
+        const date = new Date().toLocaleDateString('fr-FR');
+
+        let text = "";
+
+        // En-tête
+        text += "CHEZ BARTH\n";
+        text += "16 place des Precheurs\n";
+        text += "13100 Aix en Provence\n";
+        text += "Téléphone : 09 77 53 78 71\n";
+        text += "Ent. Indiv. SIRET : 93253222900014\n";
+        text += "APE : 56.10C\n";
+        text += "\n";
+
+        // Facture
+        text += `Fact N° ${invoiceCounter} du ${date}\n`;
+        if (customerName) {
+            text += `Client : ${customerName}\n`;
+        }
+        if (caBelow) {
+            text += "(TVA non applicable art 293B du CGI)\n";
+        }
+        text += "\n";
+
+        // Produits
         text += "-------------------------------\n";
+        text += "Produits\n";
+        text += "-------------------------------\n";
+        if (caBelow) {
+            order.forEach(item => {
+                text += `${item.name.padEnd(20)} ${item.priceTTC.toFixed(2)}€ TTC\n`;
+            });
+        } else {
+            order.forEach(item => {
+                text += `${item.name.padEnd(20)} ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
+            });
+        }
+        text += "-------------------------------\n";
+
+        // Totaux
+        let totalHT = 0;
+        let totalTVA55 = 0;
+        let totalTVA10 = 0;
         order.forEach(item => {
-            text += `${item.name.padEnd(20)} ${item.priceTTC.toFixed(2)}€\n`;
+            totalHT += item.priceHT;
+            if (item.tvaRate === 0.055) totalTVA55 += item.priceTTC - item.priceHT;
+            else totalTVA10 += item.priceTTC - item.priceHT;
         });
-        const totalTTC = order.reduce((sum, item) => sum + item.priceTTC, 0).toFixed(2);
-        text += "-------------------------------\n";
-        text += `Total TTC: ${totalTTC}€\n`;
-        text += `Paiement: ${currentPaymentMethod}\n\n`;
-        text += "\nMerci de votre visite !\n\n";
+        const totalTTC = (totalHT + totalTVA55 + totalTVA10).toFixed(2);
+
+        if (caBelow) {
+            text += `Total TTC: ${totalTTC}€\n`;
+        } else {
+            text += `Total HT: ${totalHT.toFixed(2)}€\n`;
+            text += `TVA 5.5%: ${totalTVA55.toFixed(2)}€\n`;
+            text += `TVA 10%: ${totalTVA10.toFixed(2)}€\n`;
+            text += `Total TTC: ${totalTTC}€\n`;
+        }
+
+        // Paiement
+        text += `Paiement: ${currentPaymentMethod}\n`;
+
+        // Remerciement
+        text += "\nMerci de votre visite !\nA bientôt !\n\n";
 
         const encoder = new TextEncoder();
-        const data = encoder.encode(text + '\x1B\x64\x02\x1D\x56\x00');
+        const data = encoder.encode(text + '\x1B\x64\x02\x1D\x56\x00'); // commandes ESC/POS pour découpe
         await characteristic.writeValue(data);
 
         alert("Impression Bluetooth réussie !");
@@ -3247,6 +3331,7 @@ async function printToBluetoothThermal() {
         alert("Erreur lors de l'impression Bluetooth : " + error.message);
     }
 }
+
 
 function filterInvoices() {
     const startDateInput = document.getElementById('startDate').value;
@@ -3358,7 +3443,7 @@ function viewInvoiceDetail(number) {
     // Appliquer styles fixes pour un rendu homogène
     invoiceDetailContainer.style.fontFamily = 'Arial, sans-serif';
     invoiceDetailContainer.style.fontSize = '12px';
-    invoiceDetailContainer.style.lineHeight = '1.0';
+    invoiceDetailContainer.style.lineHeight = '1.1';
     invoiceDetailContainer.style.color = '#000';
 
     invoiceDetailContainer.dataset.invoiceNumber = invoice.number;
@@ -3372,8 +3457,9 @@ function viewInvoiceDetail(number) {
             Téléphone : 09 77 53 78 71<br>
             Ent Indiv SIRET : 93253222900014<br>
             APE : 56.10C
-	    <div style="height: 6px;"></div>
+            <div style="height: 6px;"></div>
             <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
+            ${invoice.customerName ? `<div style="text-align: left; margin-top: 6px;"><strong>Client : ${invoice.customerName}</strong></div>` : ''}
             <div class="invoice-number" style="margin-top: 6px; font-weight: bold;">
                 ${invoice.caBelow ? '(TVA non applicable art 293B du CGI)' : ''}
             </div>
@@ -3424,6 +3510,7 @@ function viewInvoiceDetail(number) {
         </div>
     `;
 }
+
 
 
 function printInvoiceDetail() {
