@@ -667,6 +667,12 @@
         min-width: 30px; /* Prevent columns from becoming too narrow */
     }
 
+    /* Spécifique à la colonne "Date" */
+    #personnelManagementPage th:nth-child(1), #personnelManagementPage td:nth-child(1) {
+        max-width: 120px; /* Plus large pour la colonne Date */
+        white-space: nowrap; /* Empêche le retour à la ligne */
+    }
+
     #personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) {
         max-width: 50px; /* Even tighter for comments on mobile */
     }
@@ -4992,7 +4998,7 @@ function filterPersonnel() {
                 const dayAbbr = dayAbbreviations[new Date(record.date).getDay()];
                 return `
                     <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${filteredPersonnelRecords.indexOf(record)})">
-                        <td style="white-space: nowrap;">${dayAbbr} ${new Date(record.date).toLocaleDateString('fr-FR')}</td>
+                        <td>${dayAbbr} ${date.toLocaleDateString('fr-FR')}</td>
                         <td>${record.employee || ''}</td>
                         <td>${record.startTime || ''}</td>
                         <td>${record.endTime || ''}</td>
@@ -5038,7 +5044,7 @@ function filterPersonnel() {
         <div class="table-container">
             <table>
                 <tr>
-                    <th style="width: 208px; white-space: nowrap;">Date</th>
+                    <th>Date</th>
                     <th>Employé</th>
                     <th>Début</th>
                     <th>Fin</th>
