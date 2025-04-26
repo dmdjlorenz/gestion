@@ -511,7 +511,7 @@
 }
 
    #invoicePage #productList li {
-    padding: 4px 8px;
+    padding: 3px 8px;
     border-bottom: 1px solid #ddd;
     display: flex;
     align-items: center;
@@ -1102,29 +1102,35 @@
     </div>
 </div>
     <!-- Reste du code inchangé -->
-  <div class="dropdown">
-    <button onclick="toggleDropdown('commandeDropdown')">PRISE DE COMMANDE / FACTURE</button>
-    <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
-        <ul id="productList"></ul>
-        <div>
-            <div class="input-field" style="margin-top: 10px;">
-                <span style="font-weight: bold;">Client</span>
-                <input type="text" id="customerNameInput" placeholder="Entrez le nom du client, société, adresse..." style="margin-top: 4px; width: 100%;">
-            </div>
+ <div class="dropdown">
+  <button onclick="toggleDropdown('commandeDropdown')">PRISE DE COMMANDE / FACTURE</button>
+  <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
+    <ul id="productList"></ul>
+    <div>
+      <div class="input-field" style="margin: 3px 0 0px 0;">
+        <span style="font-weight: bold;">Client : </span>
+        <input type="text"
+               id="customerNameInput"
+               placeholder="Entrez le nom du client, société, adresse..."
+               style="margin-top: 0px; width: 100%;">
+      </div>
 
-            <div class="payment-section" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                <span style="font-weight: bold;">Paiement</span>
-                <label>
-                    Carte <input type="radio" name="paymentMethod" value="Carte" id="paymentCard">
-                </label>
-                <label>
-                    Espèce <input type="radio" name="paymentMethod" value="Espèce" id="paymentCash">
-                </label>
-            </div>
-            <button onclick="addSelectedToOrder()">Ajouter à la commande</button>
-        </div>
+      <div class="payment-section"
+           style="display: flex; align-items: center; gap: 15px; margin-top: 0px;">
+        <span style="font-weight: bold;">Paiement : </span>
+        <label>
+          Carte <input type="radio" name="paymentMethod" value="Carte" id="paymentCard">
+        </label>
+        <label>
+          Espèce <input type="radio" name="paymentMethod" value="Espèce" id="paymentCash">
+        </label>
+      </div>
+
+      <button onclick="addSelectedToOrder()">Ajouter à la commande</button>
     </div>
+  </div>
 </div>
+
 
 
     <div id="invoice">
