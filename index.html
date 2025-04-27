@@ -1997,7 +1997,7 @@ try {
     const currentDateSpan = document.getElementById('currentDate');
 
     function formatRecipeDate(date) {
-        return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        return date.toLocaleDateString('fr-FR', { weekday: 'long'  ,  day: '2-digit', month: '2-digit', year: 'numeric' });
     }
 
     function getISODate(date) {
@@ -2021,13 +2021,15 @@ try {
 }
 
     function updateRecipeDisplay() {
-        currentDateSpan.textContent = formatRecipeDate(recipeCurrentDate);
-        const dateKey = getISODate(recipeCurrentDate);
-        const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 };
-        cardInput.value = data.card || '';
-        cashInput.value = data.cash || '';
-        totalInput.value = data.total || '';
-    }
+    const dayName = recipeCurrentDate.toLocaleDateString('fr-FR', { weekday: 'long' });
+    const formattedDate = recipeCurrentDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    currentDateSpan.textContent = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${formattedDate}`;
+    const dateKey = getISODate(recipeCurrentDate);
+    const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 };
+    cardInput.value = data.card || '';
+    cashInput.value = data.cash || '';
+    totalInput.value = data.total || '';
+}
 
     function calculateRecipeTotal() {
         const card = parseFloat(cardInput.value) || 0;
@@ -4026,7 +4028,9 @@ function savePurchases() {
 }
 
 function formatRecipeDate(date) {
-    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+    const formattedDate = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${formattedDate}`;
 }
 
 function getISODate(date) {
@@ -4919,7 +4923,9 @@ function deleteEmployee() {
 }
 
 function formatPersonnelDate(date) {
-    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+    const formattedDate = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${formattedDate}`;
 }
 
 function getISODate(date) {
