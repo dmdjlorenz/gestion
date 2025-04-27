@@ -4084,79 +4084,180 @@ function deletePurchase(index) {
 }
 
 function filterPurchases() {
-    const startDateInput = document.getElementById('purchaseStartDate').value;
-    const endDateInput = document.getElementById('purchaseEndDate').value;
-    const showComments = document.getElementById('showPurchaseComments').checked;
+    // Vérifier si les éléments HTML existent
+    const startInput = document.getElementById('purchaseStartDate');
+    const endInput = document.getElementById('purchaseEndDate');
+    const showCommentsCheckbox = document.getElementById('showPurchaseComments');
+    const list = document.getElementById('purchasesList');
 
-    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
-    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+    if (!startInput || !endInput || !showCommentsCheckbox || !list) {
+        console.error('Erreur : Un ou plusieurs éléments HTML manquent.', {
+            startInput: !!startInput,
+            endInput: !!endInput,
+            showCommentsCheckbox: !!showCommentsCheckbox,
+            list: !!list
+        });
+        return;
+    }
 
-    const filteredPurchases = purchases.filter(purchase => {
-        const purchaseDate = new Date(purchase.date);
-        return purchaseDate >= startDate && purchaseDate <= endDate;
-    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+    console.log('Début de filterPurchases');
 
-    const purchasesList = document.getElementById('purchasesList');
+    const start = startInput.value;
+    const end = endInput.value;
+    const showComments = showCommentsCheckbox.checked;
 
-    // Calculate subtotals by type and payment method
+    // Définir formatRecipeDate localement
+    function formatRecipeDate(date) {
+        const jours = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+        const jour = jours[date.getDay()];
+        const dateString = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        return `${jour} ${dateString}`;
+    }
+
+    // Définir les dates avec valeurs par défaut
+    const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-09');
+    const endDate = end ? new Date(end + 'T23:59:59') : new Date(); // Date du jour
+
+    // Vérifier la validité des dates
+    if (isNaN(startDate) || isNaN(endDate)) {
+        console.error('Dates invalides:', start, end);
+        alert('Dates invalides. Veuillez vérifier les dates sélectionnées.');
+        return;
+    }
+
+    // S'assurer que startDate est avant endDate
+    if (startDate > endDate) {
+        console.warn('Date de début postérieure à la date de fin:', startDate, endDate);
+        alert('La date de début doit être antérieure à la date de fin.');
+        return;
+    }
+
+    console.log('Plage de dates:', startDate.toISOString(), endDate.toISOString());
+
+    // Charger les achats depuis localStorage
+    let purchases = [];
+    try {
+        const storedPurchases = localStorage.getItem('purchases');
+        if (storedPurchases && storedPurchases !== '[]') {
+            purchases = JSON.parse(storedPurchases).map(purchase => ({
+                ...purchase,
+                date: purchase.date.split('T')[0] // Normaliser la date
+            }));
+        }
+        console.log('Achats chargés:', purchases.length, 'achats', purchases.slice(0, 5));
+    } catch (e) {
+        console.error('Erreur lors du chargement des achats:', e);
+        alert('Erreur lors du chargement des données. Veuillez réessayer.');
+        return;
+    }
+
+    // Créer le tableau
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+        <tr>
+            <th>Date</th>
+            <th>Montant TTC (€)</th>
+            <th>Type</th>
+            <th>Paiement</th>
+            ${showComments ? '<th>Commentaire</th>' : ''}
+        </tr>
+    `;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    // Initialiser les totaux
     const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
     const totalsByPayment = { Carte: 0, Espèce: 0 };
     let grandTotal = 0;
 
-    filteredPurchases.forEach(purchase => {
-        totalsByType[purchase.type] += purchase.amountTTC;
-        totalsByPayment[purchase.payment] += purchase.amountTTC;
-        grandTotal += purchase.amountTTC;
-    });
+    // Itérer sur chaque jour entre startDate et endDate
+    for (let d = new Date(startDate); d <= endDate; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
 
-    // Generate the table with purchases and totals
-    purchasesList.innerHTML = `
-        <h3>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
-        <div class="table-container">
-            <table>
-                <tr>
-                    <th>Date</th>
-                    <th>Montant TTC (€)</th>
-                    <th>Type</th>
-                    <th>Paiement</th>
-                    ${showComments ? '<th>Commentaire</th>' : ''}
-                </tr>
-                ${filteredPurchases.map((purchase, index) => `
-                    <tr style="cursor:pointer" onclick="showPurchaseDetailFromIndex(${index})">
-                        <td>${new Date(purchase.date).toLocaleDateString('fr-FR')}</td>
-                        <td>${Math.round(purchase.amountTTC)} €</td>
-                        <td>${purchase.type}</td>
-                        <td>${purchase.payment}</td>
-                        ${showComments ? `<td>${purchase.comment || ''}</td>` : ''}
-                    </tr>
-                `).join('')}
-                ${Object.keys(totalsByType).map(type => `
-                    <tr>
-                        <td style="color:#003366; font-weight:bold;">Total ${type}</td>
-                        <td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td>
-                        <td></td><td></td>
-                        ${showComments ? '<td></td>' : ''}
-                    </tr>
-                `).join('')}
-                ${Object.keys(totalsByPayment).map(payment => `
-                    <tr>
-                        <td style="color:green; font-weight:bold;">Total ${payment}</td>
-                        <td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[payment])} €</td>
-                        <td></td><td></td>
-                        ${showComments ? '<td></td>' : ''}
-                    </tr>
-                `).join('')}
-                <tr>
-                    <td style="font-weight:bold;">Total Général</td>
-                    <td style="font-weight:bold;">${Math.round(grandTotal)} €</td>
-                    <td></td><td></td>
-                    ${showComments ? '<td></td>' : ''}
-                </tr>
-            </table>
-        </div>
+        const purchasesOnDate = purchases.filter(p => p.date === dateKey);
+
+        if (purchasesOnDate.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${formatRecipeDate(d)}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                ${showComments ? '<td></td>' : ''}
+            `;
+            tbody.appendChild(row);
+            console.log(`Date: ${dateKey}, Affichée: ${formatRecipeDate(d)}, Aucun achat`);
+        } else {
+            purchasesOnDate.forEach(purchase => {
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                try {
+                    row.onclick = () => showPurchaseDetailFromIndex(purchases.indexOf(purchase));
+                } catch (e) {
+                    console.error('Erreur dans showPurchaseDetailFromIndex:', e);
+                }
+                row.innerHTML = `
+                    <td>${formatRecipeDate(d)}</td>
+                    <td>${Math.round(purchase.amountTTC)} €</td>
+                    <td>${purchase.type}</td>
+                    <td>${purchase.payment}</td>
+                    ${showComments ? `<td>${purchase.comment || ''}</td>` : ''}
+                `;
+                tbody.appendChild(row);
+                console.log(`Date: ${dateKey}, Affichée: ${formatRecipeDate(d)}, Achat:`, purchase);
+
+                // Ajouter aux totaux
+                totalsByType[purchase.type] = (totalsByType[purchase.type] || 0) + purchase.amountTTC;
+                totalsByPayment[purchase.payment] = (totalsByPayment[purchase.payment] || 0) + purchase.amountTTC;
+                grandTotal += purchase.amountTTC;
+            });
+        }
+    }
+
+    table.appendChild(tbody);
+
+    // Ajouter les totaux dans le pied du tableau avec fond gris
+    const tfoot = document.createElement('tfoot');
+    tfoot.innerHTML = `
+        ${Object.keys(totalsByType).filter(type => totalsByType[type] > 0).map(type => `
+            <tr style="background-color: #f0f0f0;">
+                <td style="color:#003366; font-weight:bold;">Total ${type}</td>
+                <td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td>
+                <td></td>
+                <td></td>
+                ${showComments ? '<td></td>' : ''}
+            </tr>
+        `).join('')}
+        ${Object.keys(totalsByPayment).filter(payment => totalsByPayment[payment] > 0).map(payment => `
+            <tr style="background-color: #f0f0f0;">
+                <td style="color:green; font-weight:bold;">Total ${payment}</td>
+                <td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[payment])} €</td>
+                <td></td>
+                <td></td>
+                ${showComments ? '<td></td>' : ''}
+            </tr>
+        `).join('')}
+        <tr style="background-color: #f0f0f0;">
+            <td style="font-weight:bold;">Total Général</td>
+            <td style="font-weight:bold;">${Math.round(grandTotal)} €</td>
+            <td></td>
+            <td></td>
+            ${showComments ? '<td></td>' : ''}
+        </tr>
     `;
-}
+    table.appendChild(tfoot);
 
+    // Ajouter le titre et le tableau
+    list.innerHTML = `<h3>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
+    list.appendChild(table);
+
+    console.log('Fin de filterPurchases', { totalsByType, totalsByPayment, grandTotal });
+}
 
 let selectedPurchaseIndex = null;
 
@@ -5092,7 +5193,7 @@ function filterPersonnel() {
         }
     });
 
-    // Ajouter les totaux par employé
+    // Ajouter les totaux par employé avec fond gris
     tableRows += Object.keys(totals).map(employee => {
         const hours = totals[employee].hours;
         const minutes = totals[employee].minutes;
@@ -5101,7 +5202,7 @@ function filterPersonnel() {
             hourLabel += ` ${minutes.toString().padStart(2, '0')}`;
         }
         return `
-            <tr style="font-weight: bold; color: black;">
+            <tr style="font-weight: bold; color: black; background-color: #f0f0f0;">
                 <td>Total ${employee}</td>
                 <td></td><td></td><td></td>
                 <td>${hourLabel}</td>
@@ -5109,13 +5210,13 @@ function filterPersonnel() {
             </tr>`;
     }).join('');
 
-    // Afficher le total général
+    // Afficher le total général avec fond gris
     let totalHourLabel = `${totalHours} h`;
     if (totalMinutes !== 0) {
         totalHourLabel += ` ${totalMinutes.toString().padStart(2, '0')}`;
     }
     tableRows += `
-        <tr style="font-weight: bold; color: black; font-size: 16px;">
+        <tr style="font-weight: bold; color: black; font-size: 16px; background-color: #f0f0f0;">
             <td>Total Général</td>
             <td></td><td></td><td></td>
             <td>${totalHourLabel}</td>
