@@ -1044,12 +1044,30 @@
     <!-- Bouton export PDF -->
     <button id="exportRecipeBtn" onclick="exportRecipeToPdf()" style="margin-bottom: 20px;">Télécharger Livre des recettes complet (PDF)</button>
     <!-- Filtres par date -->
-    <div class="date-filter">
-        <label>Date de début :</label>
-        <input type="date" id="recipeStartDate" onchange="filterRecipes()">
-        <label>Date de fin :</label>
-        <input type="date" id="recipeEndDate" onchange="filterRecipes()">
-    </div>
+   <div class="date-filter">
+    <label>Date de début :</label>
+    <input type="date" id="recipeStartDate" onchange="filterRecipes()" value="2024-12-11">
+
+    <label>Date de fin :</label>
+    <input type="date" id="recipeEndDate" onchange="filterRecipes()">
+</div>
+
+<div id="recipeList"></div>
+
+<script>
+// Dès que la page est prête
+window.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('recipeEndDate').value = today;
+});
+
+// Ici ta fonction filterRecipes() que tu as déjà
+function filterRecipes() {
+    // ton code...
+}
+</script>
+
+
 
     <!-- Liste des ventes -->
     <div id="recipeList"></div>
@@ -1245,11 +1263,12 @@
 <br>
     <!-- Filtres de dates -->
     <div class="date-filter">
-        <label>Date de début :</label>
-        <input type="date" id="purchaseStartDate" onchange="filterPurchases()">
-        <label>Date de fin :</label>
-        <input type="date" id="purchaseEndDate" onchange="filterPurchases()">
-    </div>
+    <label>Date de début :</label>
+    <input type="date" id="purchaseStartDate" onchange="filterPurchases()" value="2024-12-09">
+
+    <label>Date de fin :</label>
+    <input type="date" id="purchaseEndDate" onchange="filterPurchases()">
+</div>
 
     <!-- Option afficher les commentaires -->
     <label>
@@ -1347,17 +1366,17 @@
     <h1>Bilan du Personnel</h1>
 <br>
     <div class="date-filter">
-        <label>Date de début :</label>
-        <input type="date" id="personnelStartDate" onchange="filterPersonnel()">
-        <label>Date de fin :</label>
-        <input type="date" id="personnelEndDate" onchange="filterPersonnel()">
-    </div>
+    <label>Date de début :</label>
+    <input type="date" id="personnelStartDate" onchange="filterPersonnel()" value="2024-12-11">
 
-    <label><input type="checkbox" id="showComments" onchange="filterPersonnel()"> Afficher commentaire</label>
+    <label>Date de fin :</label>
+    <input type="date" id="personnelEndDate" onchange="filterPersonnel()">
+</div>
+<label><input type="checkbox" id="showComments" onchange="filterPersonnel()"> Afficher commentaire</label>
 
-    <div id="personnelList"></div>
+<div id="personnelList"></div>
 
-    <div class="buttons no-print" style="margin-top: 10px;">
+<div class="buttons no-print" style="margin-top: 10px;">
         <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
         <button id="printBluetoothPersonnelBtn" onclick="printPersonnelToBluetooth()">Imprimer Bluetooth</button>
         <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger</button>
@@ -1546,6 +1565,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     history.pushState({ page: 'homePage' }, '', '#homePage');
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('personnelEndDate').value = today;
+});
+
+
+// Dès que la page est prête
+window.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('purchaseEndDate').value = today;
+});
+
+
+
+
+
+
+
 
 function showSettings() {
         navigateTo('settingsPage');
