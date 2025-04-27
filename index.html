@@ -1010,6 +1010,7 @@
     <!-- Ventes -->
     <div id="recipeBookPage" class="hidden">
         <h1>GESTION DES VENTES</h1>
+<br>
         <div class="date-nav">
             <button id="prevDay">←</button>
             <span id="currentDate"></span>
@@ -1039,10 +1040,9 @@
     <!-- Bilan des Ventes -->
 <div id="recipeManagementPage" class="hidden">
     <h1>Bilan des Ventes</h1>
-
+	<br>
     <!-- Bouton export PDF -->
-    <button id="exportRecipeBtn" onclick="exportRecipeToPdf()">Télécharger Livre des recettes complet (PDF)</button>
-
+    <button id="exportRecipeBtn" onclick="exportRecipeToPdf()" style="margin-bottom: 20px;">Télécharger Livre des recettes complet (PDF)</button>
     <!-- Filtres par date -->
     <div class="date-filter">
         <label>Date de début :</label>
@@ -1173,6 +1173,7 @@
 <!-- Bilan des Factures -->
 <div id="invoiceManagementPage" class="hidden">
     <h1>Bilan des Commandes Factures</h1>
+<br>
     <div class="date-filter">
         <label>Date de début :</label>
         <input type="date" id="startDate" onchange="filterInvoices()">
@@ -1201,6 +1202,7 @@
 <!-- Achats -->
 <div id="purchasesPage" class="hidden">
     <h1>GESTION DES ACHATS</h1>
+<br>
     <div class="date-nav">
         <button id="prevPurchaseDay">←</button>
         <span id="currentPurchaseDate"></span>
@@ -1240,7 +1242,7 @@
 <!-- Bilan des Achats -->
 <div id="purchasesManagementPage" class="hidden">
     <h1>Bilan des Achats</h1>
-
+<br>
     <!-- Filtres de dates -->
     <div class="date-filter">
         <label>Date de début :</label>
@@ -1296,6 +1298,7 @@
 <!-- Personnel -->
 <div id="personnelPage" class="hidden">
     <h1>GESTION DU PERSONNEL</h1>
+<br>
     <div class="date-nav">
         <button id="prevPersonnelDay">←</button>
         <span id="currentPersonnelDate"></span>
@@ -1342,7 +1345,7 @@
 <!-- Bilan du Personnel -->
 <div id="personnelManagementPage" class="hidden">
     <h1>Bilan du Personnel</h1>
-
+<br>
     <div class="date-filter">
         <label>Date de début :</label>
         <input type="date" id="personnelStartDate" onchange="filterPersonnel()">
@@ -1375,7 +1378,7 @@
     min-width: 250px;
     max-width: 90%;
 ">
-    <h2>Détail du personnel</h2>
+    <h2>Détail d'activité</h2>
     <p id="personnelDetailDate"></p>
     <p id="personnelDetailEmployee"></p>
     <p id="personnelDetailStartTime"></p>
@@ -1951,21 +1954,40 @@ function showPurchases() {
 };
 
 
-    let salesData = {};
-    try {
-        const storedData = localStorage.getItem('salesData');
-        if (storedData) {
-            salesData = JSON.parse(storedData);
-        } else {
-            salesData = { ...initialSalesData };
-            localStorage.setItem('salesData', JSON.stringify(salesData));
+   let salesData = { ...initialSalesData };
+console.log('Tentative de chargement des données...');
+try {
+    const storedData = localStorage.getItem('salesData');
+    console.log('Contenu brut de localStorage:', storedData);
+    if (storedData) {
+        try {
+            const parsedData = JSON.parse(storedData);
+            console.log('Données parsées de localStorage:', parsedData);
+            const normalizedData = {};
+            for (const key in parsedData) {
+                const dateMatch = key.match(/^(\d{4}-\d{2}-\d{2})/);
+                if (dateMatch) {
+                    const normalizedKey = dateMatch[1];
+                    normalizedData[normalizedKey] = parsedData[key];
+                } else {
+                    console.warn(`Clé invalide ignorée: ${key}`);
+                }
+            }
+            salesData = { ...initialSalesData, ...normalizedData };
+            console.log('Données fusionnées (clés):', Object.keys(salesData));
+        } catch (parseError) {
+            console.error('Erreur lors du parsing de localStorage:', parseError);
+            console.log('Utilisation des données initiales uniquement');
         }
-    } catch (e) {
-        console.error('Erreur avec localStorage:', e);
-        alert('Problème de stockage détecté. Les données ne seront pas persistantes.');
-        salesData = { ...initialSalesData };
+    } else {
+        console.log('Aucune donnée dans localStorage, initialisation avec initialSalesData');
+        localStorage.setItem('salesData', JSON.stringify(salesData));
     }
-
+} catch (e) {
+    console.error('Erreur d\'accès à localStorage:', e);
+    console.log('localStorage inaccessible, utilisation des données initiales uniquement');
+    alert('Impossible d\'accéder au stockage local. Seules les données initiales sont utilisées.');
+}
     const cardInput = document.getElementById('cardInput');
     const cashInput = document.getElementById('cashInput');
     const totalInput = document.getElementById('totalInput');
@@ -1979,8 +2001,24 @@ function showPurchases() {
     }
 
     function getISODate(date) {
-        return date.toISOString().split('T')[0];
+    let dateObj;
+    if (typeof date === 'string') {
+        dateObj = new Date(date);
+    } else if (date instanceof Date) {
+        dateObj = date;
+    } else {
+        console.warn('Entrée de date invalide:', date);
+        return null;
     }
+    if (isNaN(dateObj)) {
+        console.warn('Date invalide:', date);
+        return null;
+    }
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 
     function updateRecipeDisplay() {
         currentDateSpan.textContent = formatRecipeDate(recipeCurrentDate);
@@ -2002,22 +2040,43 @@ function showPurchases() {
     cardInput.addEventListener('input', calculateRecipeTotal);
     cashInput.addEventListener('input', calculateRecipeTotal);
 
-    saveRecipeBtn.addEventListener('click', () => {
-        const dateKey = getISODate(recipeCurrentDate);
-        salesData[dateKey] = {
-            card: parseFloat(cardInput.value) || 0,
-            cash: parseFloat(cashInput.value) || 0,
-            total: parseFloat(totalInput.value) || 0
-        };
-        try {
-            localStorage.setItem('salesData', JSON.stringify(salesData));
-            alert('Données enregistrées avec succès !');
-        } catch (e) {
-            console.error('Erreur lors de la sauvegarde dans localStorage:', e);
-            alert('Erreur lors de la sauvegarde.');
-        }
-        updateRecipeDisplay();
-    });
+ saveRecipeBtn.addEventListener('click', () => {
+    console.log('recipeCurrentDate:', recipeCurrentDate, 'Type:', typeof recipeCurrentDate);
+    
+    // Forcer recipeCurrentDate en objet Date
+    const dateObj = typeof recipeCurrentDate === 'string' ? new Date(recipeCurrentDate) : recipeCurrentDate;
+    
+    if (isNaN(dateObj)) {
+        alert('Date invalide. Veuillez vérifier la date sélectionnée.');
+        return;
+    }
+    
+    // Générer la clé au format YYYY-MM-DD
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const dateKey = `${year}-${month}-${day}`;
+    
+    console.log('dateKey généré:', dateKey);
+    
+    salesData[dateKey] = {
+        card: parseFloat(cardInput.value) || 0,
+        cash: parseFloat(cashInput.value) || 0,
+        total: parseFloat(totalInput.value) || 0
+    };
+    
+    try {
+        localStorage.setItem('salesData', JSON.stringify(salesData));
+        console.log('Données enregistrées, clés:', Object.keys(salesData));
+        alert('Données enregistrées avec succès !');
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde dans localStorage:', e);
+        alert('Erreur lors de la sauvegarde.');
+    }
+    
+    updateRecipeDisplay();
+    filterRecipes(); // Rafraîchir le tableau
+});
 
     const deleteRecipeBtn = document.getElementById('deleteRecipeBtn');
     if (deleteRecipeBtn) {
@@ -2333,9 +2392,23 @@ function filterRecipes() {
     const list = document.getElementById('recipeList');
     list.innerHTML = '';
 
-    // Définir les dates avec valeurs par défaut comme dans filterPurchases
-    const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-01-01');
+    // Définir formatRecipeDate localement pour éviter les conflits
+    function formatRecipeDate(date) {
+        const jours = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+        const jour = jours[date.getDay()];
+        const dateString = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        return `${jour} ${dateString}`;
+    }
+
+    // Définir les dates avec valeurs par défaut
+    const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-11');
     const endDate = end ? new Date(end + 'T23:59:59') : new Date();
+
+    // S'assurer que startDate est avant endDate
+    if (startDate > endDate) {
+        alert('La date de début doit être antérieure à la date de fin.');
+        return;
+    }
 
     const table = document.createElement('table');
     const thead = document.createElement('thead');
@@ -2356,37 +2429,41 @@ function filterRecipes() {
     let totalCash = 0;
     let totalGeneral = 0;
 
-    Object.keys(salesData)
-        .sort()
-        .forEach(date => {
-            const saleDate = new Date(date);
-            if (
-                (!start || saleDate >= startDate) &&
-                (!end || saleDate <= endDate)
-            ) {
-                const data = salesData[date];
-                const row = document.createElement('tr');
+    // Itérer sur chaque jour entre startDate et endDate
+    for (let d = new Date(startDate); d <= endDate; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
+        // Générer dateKey au format YYYY-MM-DD sans passer par UTC
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0'); // Mois de 1 à 12, format 2 chiffres
+        const day = String(d.getDate()).padStart(2, '0'); // Jour, format 2 chiffres
+        const dateKey = `${year}-${month}-${day}`;
 
-                // Ligne cliquable
-                row.style.cursor = 'pointer';
-                row.onclick = () => showRecipeDetail(date);
+        const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 }; // Données ou valeurs par défaut
+        const row = document.createElement('tr');
 
-                // Affichage avec arrondis et €
-                row.innerHTML = `
-                    <td>${formatRecipeDate(saleDate)}</td>
-                    <td>${Math.round(data.card)} €</td>
-                    <td>${Math.round(data.cash)} €</td>
-                    <td>${Math.round(data.total)} €</td>
-                `;
+        // Ligne cliquable
+        row.style.cursor = 'pointer';
+        row.onclick = () => showRecipeDetail(dateKey);
 
-                // Ajouter au total
-                totalCard += data.card;
-                totalCash += data.cash;
-                totalGeneral += data.total;
+        // Afficher la date formatée et les données (vides si pas de ventes)
+        row.innerHTML = `
+            <td>${formatRecipeDate(d)}</td>
+            <td>${data.card ? Math.round(data.card) + ' €' : ''}</td>
+            <td>${data.cash ? Math.round(data.cash) + ' €' : ''}</td>
+            <td>${data.total ? Math.round(data.total) + ' €' : ''}</td>
+        `;
 
-                tbody.appendChild(row);
-            }
-        });
+        // Log pour débogage
+        console.log(`Date: ${dateKey}, Affichée: ${formatRecipeDate(d)}, Données:`, data);
+
+        // Ajouter aux totaux uniquement si des données existent
+        if (salesData[dateKey]) {
+            totalCard += data.card;
+            totalCash += data.cash;
+            totalGeneral += data.total;
+        }
+
+        tbody.appendChild(row);
+    }
 
     table.appendChild(tbody);
 
@@ -2402,10 +2479,16 @@ function filterRecipes() {
     `;
     table.appendChild(tfoot);
 
-    // Ajouter le titre avec les dates formatées comme dans filterPurchases
+    // Ajouter le titre avec les dates formatées
     list.innerHTML = `<h3>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
     list.appendChild(table);
+
+    // Log pour débogage
+    console.log('salesData:', salesData);
 }
+
+
+
 
 
 
