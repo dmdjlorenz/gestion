@@ -544,322 +544,379 @@
 }
 
 
-    #recipeManagementPage table, #invoiceManagementPage table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-    }
+  :root {
+    --border-color: #ddd;
+    --table-header-bg: #f2f2f2;
+    --orange: #FFA500;
+    --orange-hover: #E59400;
+    --green: #32CD32;
+    --green-hover: #2AB82A;
+    --red: #FF0000;
+    --red-hover: #CC0000;
+    --font-size-base: 14px;
+    --font-size-mobile: 12px;
+    --padding-base: 8px;
+    --padding-compact: 6px;
+    --padding-mobile: 4px;
+}
 
-/* Ensure the purchases table is responsive */
-#purchasesManagementPage table {
-    width: 100%;
-    max-width: 100%;
-    border-collapse: collapse;
-    table-layout: auto; /* Allows columns to adjust dynamically */
+/* Reset box-sizing global */
+* {
     box-sizing: border-box;
 }
 
-/* Ensure the personnel table is responsive */
-#personnelManagementPage table {
+/* Styles génériques pour toutes les tables */
+table {
     width: 100%;
-    max-width: 100%;
     border-collapse: collapse;
-    table-layout: auto; /* Allows columns to adjust dynamically */
-    box-sizing: border-box;
 }
 
-
-#invoicePage table {
-    width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-}
-
-
-
-    #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-        font-size: 14px;
-        min-height: 30px;
-    }
-
-/* Style for table headers and cells */
-#purchasesManagementPage th, #purchasesManagementPage td {
-    padding: 6px; /* Slightly reduced from 8px for compactness */
-    border: 1px solid #ddd;
-    text-align: left;
-    font-size: 14px; /* Consistent with your existing styles */
-    word-wrap: break-word; /* Ensure long text (e.g., comments) wraps */
-    overflow-wrap: break-word; /* Modern equivalent */
-    max-width: 120px; /* Limit column width to prevent overflow */
-    min-width: 50px; /* Ensure columns don't collapse too much */
-}
-
-/* Specific style for the comment column (5th column when visible) */
-#purchasesManagementPage th:nth-child(5), #purchasesManagementPage td:nth-child(5) {
-    max-width: 80px; /* Tighter limit for comment column */
-    white-space: normal; /* Allow text wrapping */
-}
-
-/* Wrap the table in a container to control overflow */
+/* Conteneur pour gérer le débordement */
 .table-container {
     width: 100%;
-    max-width: 100%;
-    overflow-x: auto; /* Fallback for extreme cases, but wrapping should prevent this */
-    box-sizing: border-box;
+    overflow-x: auto;
 }
 
-/* Responsive adjustments for small screens */
-@media (max-width: 480px) {
-    #purchasesManagementPage table {
-        font-size: 12px; /* Match your existing small-screen font size */
-    }
-
-    #purchasesManagementPage th, #purchasesManagementPage td {
-        padding: 4px; /* Further reduce padding for compactness */
-        max-width: 80px; /* Tighter columns on mobile */
-        min-width: 40px; /* Prevent columns from becoming too narrow */
-    }
-
-    /* Spécifique à la colonne "Date" */
-    #purchasesManagementPage th:nth-child(1), #purchasesManagementPage td:nth-child(1) {
-        max-width: 90px; /* Plus large pour la colonne Date */
-        white-space: nowrap; /* Empêche le retour à la ligne */
-    }
-
-    #purchasesManagementPage th:nth-child(5), #purchasesManagementPage td:nth-child(5) {
-        max-width: 60px; /* Even tighter for comments on mobile */
-    }
-}
-
-
-/* Style for table headers and cells */
+/* Styles communs pour th et td */
+#invoicePage th, #invoicePage td,
+#recipeManagementPage th, #recipeManagementPage td,
+#invoiceManagementPage th, #invoiceManagementPage td,
+#purchasesManagementPage th, #purchasesManagementPage td,
 #personnelManagementPage th, #personnelManagementPage td {
-    padding: 6px; /* Slightly reduced from 8px for compactness */
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     text-align: left;
-    font-size: 14px; /* Consistent with your existing styles */
-    word-wrap: break-word; /* Ensure long text (e.g., comments) wraps */
-    overflow-wrap: break-word; /* Modern equivalent */
-    max-width: 100px; /* Limit column width to prevent overflow */
-    min-width: 40px; /* Ensure columns don't collapse too much */
+    font-size: var(--font-size-base);
 }
 
-/* Specific style for the comment column (6th column when visible) */
-#personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) {
-    max-width: 70px; /* Tighter limit for comment column */
-    white-space: normal; /* Allow text wrapping */
+/* Styles spécifiques par page */
+#recipeManagementPage table,
+#invoiceManagementPage table,
+#invoicePage table {
+    margin-bottom: 20px;
 }
 
-/* Wrap the table in a container to control overflow */
-.table-container {
+#recipeManagementPage th, #recipeManagementPage td,
+#invoiceManagementPage th, #invoiceManagementPage td,
+#invoicePage th, #invoicePage td {
+    padding: var(--padding-base);
+}
+
+#purchasesManagementPage table,
+#personnelManagementPage table {
+    table-layout: auto;
+}
+
+#purchasesManagementPage th, #purchasesManagementPage td,
+#personnelManagementPage th, #personnelManagementPage td {
+    padding: var(--padding-compact);
+    overflow-wrap: break-word;
+    max-width: 120px;
+    min-width: 50px;
+}
+
+/* En-têtes de table */
+#invoicePage th,
+#recipeManagementPage th,
+#invoiceManagementPage th,
+#purchasesManagementPage th,
+#personnelManagementPage th {
+    background-color: var(--table-header-bg);
+}
+
+/* Colonnes spécifiques */
+#purchasesManagementPage th:nth-child(5),
+#purchasesManagementPage td:nth-child(5) {
+    max-width: 80px;
+    white-space: normal;
+}
+
+#personnelManagementPage th:nth-child(6),
+#personnelManagementPage td:nth-child(6) {
+    max-width: 80px;
+    white-space: normal;
+}
+
+/* Boutons génériques */
+.btn-orange {
+    background: var(--orange);
+}
+.btn-orange:hover {
+    background: var(--orange-hover);
+}
+
+.btn-green {
+    background: var(--green);
+}
+.btn-green:hover {
+    background: var(--green-hover);
+}
+
+.btn-red {
+    background: var(--red);
+}
+.btn-red:hover {
+    background: var(--red-hover);
+}
+
+/* Styles pour les boutons */
+#recipeManagementPage #exportRecipeBtn,
+#recipeManagementPage #exportPurchasesPdfBtn,
+#purchasesManagementPage #exportPurchasesPdfBtn,
+#invoicePage #exportInvoicePdfBtn,
+#personnelManagementPage #exportPersonnelPdfBtn {
+    background: var(--orange);
+}
+#recipeManagementPage #exportRecipeBtn:hover,
+#recipeManagementPage #exportPurchasesPdfBtn:hover,
+#purchasesManagementPage #exportPurchasesPdfBtn:hover,
+#invoicePage #exportInvoicePdfBtn:hover,
+#personnelManagementPage #exportPersonnelPdfBtn:hover {
+    background: var(--orange-hover);
+}
+
+#invoicePage #commandeDropdown button {
+    background: var(--green);
+}
+#invoicePage #commandeDropdown button:hover {
+    background: var(--green-hover);
+}
+
+#personnelPage .select-group button[onclick="addEmployee()"] {
+    background: var(--green);
+}
+#personnelPage .select-group button[onclick="addEmployee()"]:hover {
+    background: var(--green-hover);
+}
+
+#personnelPage .select-group button[onclick="deleteEmployee()"] {
+    background: var(--red);
+}
+#personnelPage .select-group button[onclick="deleteEmployee()"]:hover {
+    background: var(--red-hover);
+}
+
+/* Conteneurs et totaux */
+#invoicePage #orderTotal,
+#personnelPage #personnelTotal {
     width: 100%;
-    max-width: 100%;
-    overflow-x: auto; /* Fallback for extreme cases, but wrapping should prevent this */
-    box-sizing: border-box;
+    margin-top: 20px;
 }
 
-/* Responsive adjustments for small screens */
+#invoicePage .total-table,
+#personnelPage .total-table {
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+#invoicePage .total-table td:last-child,
+#personnelPage .total-table td:last-child {
+    text-align: right;
+}
+
+#invoicePage #invoiceContainer,
+#personnelPage #personnelContainer {
+    background-color: white;
+    width: 100%;
+    max-width: 210mm;
+    padding: 20px;
+    margin: auto;
+}
+
+/* En-tête de facture */
+#invoicePage #invoiceHeader {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#invoicePage #invoiceHeader .invoice-number {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Filtres de date */
+#recipeManagementPage .date-filter,
+#invoiceManagementPage .date-filter,
+#purchasesManagementPage .date-filter,
+#personnelManagementPage .date-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#recipeManagementPage .date-filter label,
+#invoiceManagementPage .date-filter label,
+#purchasesManagementPage .date-filter label,
+#personnelManagementPage .date-filter label {
+    font-weight: bold;
+    color: #333;
+}
+
+#recipeManagementPage .date-filter input,
+#invoiceManagementPage .date-filter input,
+#purchasesManagementPage .date-filter input,
+#personnelManagementPage .date-filter input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Boutons flex */
+#budgetPage .buttons,
+#recipeBookPage .buttons,
+#recipeManagementPage .buttons,
+#invoicePage .buttons,
+#invoiceManagementPage .buttons,
+#purchasesPage .buttons,
+#purchasesManagementPage .buttons,
+#personnelPage .buttons,
+#personnelManagementPage .buttons,
+#invoiceDetailPage .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Page de détail de facture */
+#invoiceDetailPage {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#invoiceDetailPage h1 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Curseur pour th et td */
+#recipeManagementPage th, #recipeManagementPage td,
+#invoiceManagementPage th, #invoiceManagementPage td,
+#personnelManagementPage th, #personnelManagementPage td {
+    cursor: pointer;
+}
+
+/* Gestion de l'impression */
+.no-print {
+    display: block;
+}
+
+@media print {
+    .no-print,
+    button,
+    .buttons {
+        display: none !important;
+    }
+    table {
+        width: 100%;
+        page-break-inside: auto;
+    }
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+    body {
+        margin: 10mm;
+    }
+}
+
+/* Adaptation mobile */
 @media (max-width: 480px) {
-    #personnelManagementPage table {
-        font-size: 12px; /* Match your existing small-screen font size */
+    #recipeBookPage,
+    #recipeManagementPage,
+    #invoicePage,
+    #invoiceManagementPage,
+    #invoiceDetailPage,
+    #purchasesPage,
+    #purchasesManagementPage,
+    #personnelPage,
+    #personnelManagementPage {
+        padding: 12px;
     }
 
+    #recipeBookPage h1,
+    #recipeManagementPage h1,
+    #invoicePage h1,
+    #invoiceManagementPage h1,
+    #invoiceDetailPage h1,
+    #purchasesPage h1,
+    #purchasesManagementPage h1,
+    #personnelPage h1,
+    #personnelManagementPage h1 {
+        font-size: 1.2em;
+    }
+
+    #recipeBookPage input,
+    #recipeBookPage button,
+    #invoicePage input,
+    #invoicePage button,
+    #invoicePage select,
+    #purchasesPage input,
+    #purchasesPage button,
+    #purchasesManagementPage input,
+    #purchasesManagementPage button,
+    #personnelPage input,
+    #personnelPage button,
+    #personnelPage select,
+    #personnelManagementPage button {
+        font-size: 0.9em;
+    }
+
+    #invoicePage th, #invoicePage td,
+    #recipeManagementPage th, #recipeManagementPage td,
+    #invoiceManagementPage th, #invoiceManagementPage td,
+    #purchasesManagementPage th, #purchasesManagementPage td,
     #personnelManagementPage th, #personnelManagementPage td {
-        padding: 4px; /* Further reduce padding for compactness */
-        max-width: 70px; /* Tighter columns on mobile */
-        min-width: 30px; /* Prevent columns from becoming too narrow */
+        font-size: var(--font-size-mobile);
+        padding: var(--padding-mobile);
     }
 
-    /* Spécifique à la colonne "Date" */
-    #personnelManagementPage th:nth-child(1), #personnelManagementPage td:nth-child(1) {
-        max-width: 120px; /* Plus large pour la colonne Date */
-        white-space: nowrap; /* Empêche le retour à la ligne */
+    #purchasesManagementPage th, #purchasesManagementPage td,
+    #personnelManagementPage th, #personnelManagementPage td {
+        max-width: 80px;
+        min-width: 40px;
     }
 
-    #personnelManagementPage th:nth-child(6), #personnelManagementPage td:nth-child(6) {
-        max-width: 50px; /* Even tighter for comments on mobile */
+    #purchasesManagementPage th:nth-child(1),
+    #purchasesManagementPage td:nth-child(1) {
+        max-width: 90px;
+        white-space: nowrap;
+    }
+
+    #purchasesManagementPage th:nth-child(5),
+    #purchasesManagementPage td:nth-child(5) {
+        max-width: 60px;
+    }
+
+    #personnelManagementPage th:nth-child(1),
+    #personnelManagementPage td:nth-child(1) {
+        max-width: 120px;
+        white-space: nowrap;
+    }
+
+    #personnelManagementPage th:nth-child(6),
+    #personnelManagementPage td:nth-child(6) {
+        max-width: 60px;
+    }
+
+    #invoicePage #invoiceContainer,
+    #personnelPage #personnelContainer {
+        height: auto;
     }
 }
-
-    #invoicePage th, #recipeManagementPage th, #invoiceManagementPage th, #purchasesManagementPage th, #personnelManagementPage th {
-        background-color: #f2f2f2;
-    }
-    #invoicePage #orderTotal, #personnelPage #personnelTotal {
-        width: 100%;
-        margin-top: 20px;
-        box-sizing: border-box;
-    }
-    #budgetPage .buttons, #recipeBookPage .buttons, #recipeManagementPage .buttons, #invoicePage .buttons, #invoiceManagementPage .buttons, #purchasesPage .buttons, #purchasesManagementPage .buttons, #personnelPage .buttons, #personnelManagementPage .buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-    }
-    /* Télécharger Livre des Recettes - Bilan des Ventes */
-    #recipeManagementPage #exportRecipeBtn {
-        background: #FFA500; /* Orange */
-    }
-    #recipeManagementPage #exportRecipeBtn:hover {
-        background: #E59400;
-    }
-    /* Télécharger PDF - Bilan des Ventes (inchangé, déjà corrigé) */
-    #recipeManagementPage #exportPurchasesPdfBtn {
-        background: #FFA500; /* Orange */
-    }
-    #recipeManagementPage #exportPurchasesPdfBtn:hover {
-        background: #E59400;
-    }
-    /* Télécharger PDF - Bilan des Achats */
-    #purchasesManagementPage #exportPurchasesPdfBtn {
-        background: #FFA500; /* Orange */
-    }
-    #purchasesManagementPage #exportPurchasesPdfBtn:hover {
-        background: #E59400;
-    }
-    /* Télécharger - Gestion des Factures */
-    #invoicePage #exportInvoicePdfBtn {
-        background: #FFA500; /* Orange */
-    }
-    #invoicePage #exportInvoicePdfBtn:hover {
-        background: #E59400;
-    }
-    /* Ajouter à la commande dans COMMANDE A FACTURER */
-    #invoicePage #commandeDropdown button {
-        background: #32CD32; /* Vert */
-    }
-    #invoicePage #commandeDropdown button:hover {
-        background: #2AB82A;
-    }
-    /* Ajouter Employé et Supprimer Employé - Gestion du Personnel */
-    #personnelPage .select-group button[onclick="addEmployee()"] {
-        background: #32CD32; /* Vert */
-    }
-    #personnelPage .select-group button[onclick="addEmployee()"]:hover {
-        background: #2AB82A;
-    }
-    #personnelPage .select-group button[onclick="deleteEmployee()"] {
-        background: #FF0000; /* Rouge */
-    }
-    #personnelPage .select-group button[onclick="deleteEmployee()"]:hover {
-        background: #CC0000;
-    }
-    /* Télécharger - Bilan du Personnel */
-    #personnelManagementPage #exportPersonnelPdfBtn {
-        background: #FFA500; /* Orange */
-    }
-    #personnelManagementPage #exportPersonnelPdfBtn:hover {
-        background: #E59400;
-    }
-    #invoicePage #invoiceHeader {
-        text-align: center;
-        margin-bottom: 20px;
-        position: relative;
-    }
-    #invoicePage #invoiceHeader .invoice-number {
-        position: absolute;
-        top: 0;
-        right: 0;
-        font-size: 16px;
-        font-weight: bold;
-    }
-    #invoicePage .total-table, #personnelPage .total-table {
-        width: 100%;
-        max-width: 300px;
-        margin-left: auto;
-        margin-right: 0;
-        box-sizing: border-box;
-    }
-    #invoicePage .total-table td:last-child, #personnelPage .total-table td:last-child {
-        text-align: right;
-    }
-    #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
-        background-color: white;
-        width: 100%;
-        max-width: 210mm;
-        padding: 20px;
-        box-sizing: border-box;
-        margin: auto;
-    }
-    #recipeManagementPage .date-filter, #invoiceManagementPage .date-filter, #purchasesManagementPage .date-filter, #personnelManagementPage .date-filter {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    #recipeManagementPage .date-filter label, #invoiceManagementPage .date-filter label, #purchasesManagementPage .date-filter label, #personnelManagementPage .date-filter label {
-        font-weight: bold;
-        color: #333;
-    }
-    #recipeManagementPage .date-filter input, #invoiceManagementPage .date-filter input, #purchasesManagementPage .date-filter input, #personnelManagementPage .date-filter input {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
-    #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
-        cursor: pointer;
-    }
-    #invoiceDetailPage {
-        max-width: 600px;
-        margin: 0 auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    #invoiceDetailPage h1 {
-        text-align: center;
-        font-size: 1.5em;
-        margin-bottom: 20px;
-        color: #333;
-    }
-    #invoiceDetailPage .buttons {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-    }
-    .no-print {
-        display: block;
-    }
-    @media print {
-        .no-print {
-            display: none !important;
-        }
-        button, .buttons {
-            display: none !important;
-        }
-        table {
-            width: 100%;
-            page-break-inside: auto;
-        }
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
-        body {
-            margin: 10mm;
-        }
-    }
-    @media (max-width: 480px) {
-        #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
-            padding: 12px;
-        }
-        #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
-            font-size: 1.2em;
-        }
-        #recipeBookPage input, #recipeBookPage button, #invoicePage input, #invoicePage button, #invoicePage select, #purchasesPage input, #purchasesPage button, #purchasesManagementPage input, #purchasesManagementPage button, #personnelPage input, #personnelPage button, #personnelPage select, #personnelManagementPage button {
-            font-size: 0.9em;
-        }
-        #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
-            font-size: 12px;
-        }
-        #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
-            height: auto;
-        }
-    }
 
 .payment-section {
         display: flex;
@@ -4232,7 +4289,7 @@ function filterPurchases() {
         if (purchasesOnDate.length === 0) {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${formatRecipeDate(d)}</td>
+                <td style="white-space: nowrap;">${formatRecipeDate(d)}</td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -4250,7 +4307,7 @@ function filterPurchases() {
                     console.error('Erreur dans showPurchaseDetailFromIndex:', e);
                 }
                 row.innerHTML = `
-                    <td>${formatRecipeDate(d)}</td>
+                    <td style="white-space: nowrap;">${formatRecipeDate(d)}</td>
                     <td>${Math.round(purchase.amountTTC)} €</td>
                     <td>${purchase.type}</td>
                     <td>${purchase.payment}</td>
@@ -4300,9 +4357,11 @@ function filterPurchases() {
     `;
     table.appendChild(tfoot);
 
-    // Ajouter le titre et le tableau
+    // Ajouter le titre et le tableau dans un conteneur
     list.innerHTML = `<h3>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
+    list.innerHTML += '<div class="table-container">';
     list.appendChild(table);
+    list.innerHTML += '</div>';
 
     console.log('Fin de filterPurchases', { totalsByType, totalsByPayment, grandTotal });
 }
