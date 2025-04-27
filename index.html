@@ -623,6 +623,12 @@
         min-width: 40px; /* Prevent columns from becoming too narrow */
     }
 
+    /* Spécifique à la colonne "Date" */
+    #purchasesManagementPage th:nth-child(1), #purchasesManagementPage td:nth-child(1) {
+        max-width: 120px; /* Plus large pour la colonne Date */
+        white-space: nowrap; /* Empêche le retour à la ligne */
+    }
+
     #purchasesManagementPage th:nth-child(5), #purchasesManagementPage td:nth-child(5) {
         max-width: 60px; /* Even tighter for comments on mobile */
     }
