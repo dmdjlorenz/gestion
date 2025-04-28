@@ -606,6 +606,12 @@ table {
     table-layout: auto;
 }
 
+/* Forcer le retour à la ligne dans le tfoot */
+#purchasesManagementPage tfoot td {
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
 #purchasesManagementPage th, #purchasesManagementPage td,
 #personnelManagementPage th, #personnelManagementPage td {
     padding: var(--padding-compact);
@@ -4335,7 +4341,7 @@ function filterPurchases() {
     tfoot.innerHTML = `
         ${Object.keys(totalsByType).filter(type => totalsByType[type] > 0).map(type => `
             <tr style="background-color: #f0f0f0;">
-                <td style="color:#003366; font-weight:bold;">Total ${type}</td>
+                <td style="color:#003366; font-weight:bold; white-space: normal;">Total ${type}</td>
                 <td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td>
                 <td></td>
                 <td></td>
@@ -4344,7 +4350,7 @@ function filterPurchases() {
         `).join('')}
         ${Object.keys(totalsByPayment).filter(payment => totalsByPayment[payment] > 0).map(payment => `
             <tr style="background-color: #f0f0f0;">
-                <td style="color:green; font-weight:bold;">Total ${payment}</td>
+                <td style="color:green; font-weight:bold; white-space: normal;">Total ${payment}</td>
                 <td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[payment])} €</td>
                 <td></td>
                 <td></td>
@@ -4352,7 +4358,7 @@ function filterPurchases() {
             </tr>
         `).join('')}
         <tr style="background-color: #f0f0f0;">
-            <td style="font-weight:bold;">Total Général</td>
+            <td style="font-weight:bold; white-space: normal;">Total Général</td>
             <td style="font-weight:bold;">${Math.round(grandTotal)} €</td>
             <td></td>
             <td></td>
