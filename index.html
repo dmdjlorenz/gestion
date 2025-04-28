@@ -1040,7 +1040,7 @@ table {
 <body>
     <!-- Section de mot de passe -->
     <div id="passwordPage">
-        <h2>Entrez le mot de passe</h2>
+        <h2>Entrer le mot de passe</h2>
         <input type="password" id="passwordInput" placeholder="Mot de passe">
         <button onclick="checkPassword()">Valider</button>
         <p id="errorMessage" style="color: red; display: none;">Mot de passe incorrect !</p>
@@ -1256,11 +1256,12 @@ function filterRecipes() {
     <h1>Bilan des Commandes Factures</h1>
 <br>
     <div class="date-filter">
-        <label>Date de début :</label>
-        <input type="date" id="startDate" onchange="filterInvoices()">
-        <label>Date de fin :</label>
-        <input type="date" id="endDate" onchange="filterInvoices()">
-    </div>
+    <label>Date de début :</label>
+    <input type="date" id="startDate" onchange="filterInvoices()" value="2024-12-11">
+
+    <label>Date de fin :</label>
+    <input type="date" id="endDate" onchange="filterInvoices()">
+</div>
     <div id="invoiceList"></div>
     <div class="no-print" style="height: 15px;"></div>
     <div class="buttons no-print">
@@ -1641,7 +1642,10 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('purchaseEndDate').value = today;
 });
 
-
+window.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('endDate').value = today;
+});
 
 
 
