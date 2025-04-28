@@ -4198,7 +4198,7 @@ function deletePurchase(index) {
     }
 }
 
-function filterPurchases() {
+function filterPurchases() { 
     // Vérifier si les éléments HTML existent
     const startInput = document.getElementById('purchaseStartDate');
     const endInput = document.getElementById('purchaseEndDate');
@@ -4367,14 +4367,20 @@ function filterPurchases() {
     `;
     table.appendChild(tfoot);
 
-    // Ajouter le titre et le tableau dans un conteneur
+    // Nettoyer l'intérieur de list
     list.innerHTML = `<h3>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
-    list.innerHTML += '<div class="table-container">';
-    list.appendChild(table);
-    list.innerHTML += '</div>';
+
+    // Créer un conteneur pour la table
+    const container = document.createElement('div');
+    container.className = 'table-container';
+    container.appendChild(table);
+
+    // Ajouter la table dans list
+    list.appendChild(container);
 
     console.log('Fin de filterPurchases', { totalsByType, totalsByPayment, grandTotal });
 }
+
 
 let selectedPurchaseIndex = null;
 
@@ -5366,7 +5372,7 @@ function showPersonnelDetailFromIndex(index) {
     const record = filteredPersonnelRecords[index];
     selectedPersonnelRecord = record;
 
-    document.getElementById('personnelDetailDate').textContent = `Date : ${new Date(record.date).toLocaleDateString('fr-FR')}`;
+    document.getElementById('personnelDetailDate').textContent = `Date : ${formatPersonnelDate(new Date(record.date))}`;
     document.getElementById('personnelDetailEmployee').textContent = `Employé : ${record.employee}`;
     document.getElementById("personnelDetailStartTime").textContent = "Début : " + record.startTime;
     document.getElementById("personnelDetailEndTime").textContent = "Fin : " + record.endTime;
