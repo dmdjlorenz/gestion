@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -1027,6 +1028,69 @@ table {
             cursor: pointer;
         }
 
+#indicatorsPage {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+#indicatorsPage h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+#indicatorsPage table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+#indicatorsPage th, #indicatorsPage td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+#indicatorsPage th {
+    background-color: #ccc;
+}
+
+#indicatorsPage .coef-low::after {
+    content: " 😢";
+    color: #FF0000; /* Rouge */
+    font-size: 34px; /* Taille augmentée */
+}
+#indicatorsPage .coef-medium::after {
+    content: " 😐";
+    color: #FFA500; /* Orange */
+    font-size: 34px; /* Taille augmentée */
+}
+#indicatorsPage .coef-high::after {
+    content: " 😊";
+    color: #00FF00; /* Vert */
+    font-size: 34px; /* Taille augmentée */
+}
+#indicatorsPage .coef-champagne::after {
+    content: " 🥂";
+    font-size: 34px; /* Taille augmentée */
+}
+
+
+#indicatorsPage th:nth-child(2), #indicatorsPage td:nth-child(2),
+#indicatorsPage th:nth-child(3), #indicatorsPage td:nth-child(3) {
+    width: 100px; /* Réduire la largeur des colonnes Coût et Prix */
+}
+#indicatorsPage th:nth-child(4), #indicatorsPage td:nth-child(4) {
+    font-size: 18px; /* Augmenter la police pour Coef de vente */
+}
+
+#indicatorsPage canvas {
+    max-height: 300px;
+    width: 100%;
+    box-sizing: border-box;
+}
 
     </style>
 <link rel="manifest" href="manifest.json">
@@ -1063,6 +1127,7 @@ table {
         <button id="invoiceBtn" onclick="showInvoice()">Commande Facture</button>
         <button id="budgetBtn" onclick="showBudget()">Budget</button>
         <button id="recipeBookBtn" onclick="exportRecipeToPdfofficiel()">Livre des recettes officiel</button>
+        <button id="indicatorsBtn" onclick="showIndicators()" style="background:#800000; color:white;">Indicateurs</button>
         <button onclick="showSettings()" style="background:#808080; color:white;">Paramètres</button>
     </div>
 
@@ -1075,6 +1140,18 @@ table {
         <button onclick="navigateTo('homePage')" style="background:#000000; color:white;">Retour</button>
     </div>
 <!-- ... Reste du HTML ... -->
+<div id="indicatorsPage" class="page hidden">
+    <h2>Indicateurs</h2>
+    <div id="indicatorsTable"></div>
+    <canvas id="coefVenteChart" style="margin-top: 20px; max-width: 100%;"></canvas>
+    <div class="buttons no-print" style="margin-top: 20px;">
+        <button onclick="backToHome()" style="background:#000000; color:white;">Retour</button>
+    </div>
+</div>
+
+
+
+
 
     <!-- Ventes -->
     <div id="recipeBookPage" class="hidden">
@@ -1128,6 +1205,7 @@ table {
 window.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('recipeEndDate').value = today;
+    document.getElementById('indicatorsPage').classList.add('hidden');
 });
 
 // Ici ta fonction filterRecipes() que tu as déjà
@@ -1571,16 +1649,15 @@ const correctPassword = "mathis";
 // Fonction centralisée pour naviguer entre les pages et mettre à jour l'historique
 function navigateTo(pageId) {
     const pages = [
-        'passwordPage', 'homePage', 'recipeBookPage', 'recipeManagementPage', 
-        'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 
-        'purchasesPage', 'purchasesManagementPage', 'personnelPage', 
-        'personnelManagementPage', 'budgetPage', 'settingsPage'
+        'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
+        'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
+        'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
+        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage'
     ];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
     history.pushState({ page: pageId }, '', `#${pageId}`);
-
-    // Appeler les fonctions d'initialisation spécifiques si nécessaire
+    
     if (pageId === 'recipeBookPage') updateRecipeDisplay();
     if (pageId === 'purchasesPage') updatePurchaseDisplay();
     if (pageId === 'personnelPage') updatePersonnelDisplay();
@@ -1588,6 +1665,7 @@ function navigateTo(pageId) {
     if (pageId === 'invoiceManagementPage') filterInvoices();
     if (pageId === 'purchasesManagementPage') filterPurchases();
     if (pageId === 'personnelManagementPage') filterPersonnel();
+    if (pageId === 'indicatorsPage') displayIndicatorsTable();
 }
 
 
@@ -1601,7 +1679,7 @@ function checkPassword() {
             'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
             'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
             'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-            'passwordPage', 'budgetPage', 'settingsPage'
+            'passwordPage', 'budgetPage', 'settingsPage' , 'indicatorsPage'
         ];
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById('homePage').classList.remove('hidden');
@@ -1966,103 +2044,105 @@ function showPurchases() {
 
     // --- Ventes ---
     let recipeCurrentDate = new Date();
-    const initialSalesData = {
-    "2024-12-11": { card: 352, cash: 147, total: 499 },
-    "2024-12-12": { card: 164, cash: 69, total: 233 },
-    "2024-12-13": { card: 134, cash: 56, total: 190 },
-    "2024-12-14": { card: 183, cash: 76, total: 259 },
-    "2024-12-16": { card: 316, cash: 132, total: 448 },
-    "2024-12-17": { card: 212, cash: 89, total: 301 },
-    "2024-12-18": { card: 182, cash: 76, total: 257 },
-    "2024-12-19": { card: 234, cash: 98, total: 332 },
-    "2024-12-20": { card: 123, cash: 51, total: 174 },
-    "2024-12-21": { card: 212, cash: 88, total: 300 },
-    "2024-12-23": { card: 160, cash: 67, total: 226 },
-    "2024-12-24": { card: 144, cash: 60, total: 203 },
-    "2024-12-27": { card: 52, cash: 22, total: 74 },
-    "2024-12-28": { card: 169, cash: 70, total: 239 },
-    "2024-12-30": { card: 207, cash: 86, total: 293 },
-    "2024-12-31": { card: 176, cash: 73, total: 249 },
-    "2025-01-02": { card: 148, cash: 44, total: 192 },
-    "2025-01-03": { card: 209, cash: 62, total: 271 },
-    "2025-01-04": { card: 166, cash: 49, total: 215 },
-    "2025-01-06": { card: 108, cash: 32, total: 140 },
-    "2025-01-07": { card: 198, cash: 59, total: 257 },
-    "2025-01-08": { card: 285, cash: 85, total: 370 },
-    "2025-01-09": { card: 241, cash: 72, total: 313 },
-    "2025-01-10": { card: 361, cash: 108, total: 469 },
-    "2025-01-11": { card: 252, cash: 75, total: 327 },
-    "2025-01-13": { card: 313, cash: 93, total: 406 },
-    "2025-01-14": { card: 179, cash: 53, total: 232 },
-    "2025-01-15": { card: 259, cash: 100, total: 359 },
-    "2025-01-16": { card: 242, cash: 100, total: 342 },
-    "2025-01-17": { card: 296, cash: 120, total: 416 },
-    "2025-01-18": { card: 200, cash: 60, total: 259 },
-    "2025-01-20": { card: 251, cash: 100, total: 351 },
-    "2025-01-21": { card: 293, cash: 88, total: 381 },
-    "2025-01-22": { card: 290, cash: 100, total: 390 },
-    "2025-01-23": { card: 199, cash: 60, total: 259 },
-    "2025-01-24": { card: 513, cash: 153, total: 666 },
-    "2025-01-25": { card: 471, cash: 141, total: 612 },
-    "2025-01-27": { card: 506, cash: 200, total: 706 },
-    "2025-01-28": { card: 239, cash: 71, total: 310 },
-    "2025-01-29": { card: 536, cash: 160, total: 696 },
-    "2025-01-30": { card: 316, cash: 94, total: 410 },
-    "2025-01-31": { card: 478, cash: 143, total: 620 },
-    "2025-02-01": { card: 281, cash: 100, total: 381 },
-    "2025-02-03": { card: 342, cash: 100, total: 442 },
-    "2025-02-04": { card: 255, cash: 100, total: 355 },
-    "2025-02-05": { card: 440, cash: 150, total: 590 },
-    "2025-02-06": { card: 475, cash: 200, total: 675 },
-    "2025-02-07": { card: 425, cash: 150, total: 575 },
-    "2025-02-08": { card: 327, cash: 100, total: 427 },
-    "2025-02-10": { card: 544, cash: 200, total: 744 },
-    "2025-02-11": { card: 913, cash: 350, total: 1263 },
-    "2025-02-12": { card: 1253, cash: 510, total: 1763 },
-    "2025-02-13": { card: 1336, cash: 500, total: 1836 },
-    "2025-02-14": { card: 1210, cash: 400, total: 1610 },
-    "2025-02-17": { card: 648, cash: 270, total: 918 },
-    "2025-02-18": { card: 794, cash: 290, total: 1084 },
-    "2025-02-19": { card: 942, cash: 300, total: 1242 },
-    "2025-02-20": { card: 963, cash: 190, total: 1153 },
-    "2025-02-21": { card: 1000, cash: 280, total: 1280 },
-    "2025-02-25": { card: 300, cash: 200, total: 500 },
-    "2025-02-26": { card: 890, cash: 180, total: 1070 },
-    "2025-02-27": { card: 1063, cash: 200, total: 1263 },
-    "2025-02-28": { card: 728, cash: 230, total: 958 },
-    "2025-03-03": { card: 757, cash: 120, total: 877 },
-    "2025-03-04": { card: 745, cash: 360, total: 1105 },
-    "2025-03-05": { card: 792, cash: 150, total: 942 },
-    "2025-03-06": { card: 857, cash: 250, total: 1107 },
-    "2025-03-07": { card: 883, cash: 210, total: 1093 },
-    "2025-03-10": { card: 599, cash: 150, total: 749 },
-    "2025-03-11": { card: 796, cash: 170, total: 966 },
-    "2025-03-12": { card: 627, cash: 160, total: 787 },
-    "2025-03-13": { card: 784, cash: 140, total: 924 },
-    "2025-03-14": { card: 505, cash: 140, total: 645 },
-    "2025-03-17": { card: 661, cash: 130, total: 791 },
-    "2025-03-18": { card: 782, cash: 110, total: 892 },
-    "2025-03-19": { card: 486, cash: 180, total: 666 },
-    "2025-03-20": { card: 635, cash: 190, total: 825 },
-    "2025-03-21": { card: 512, cash: 120, total: 632 },
-    "2025-03-24": { card: 492, cash: 210, total: 702 },
-    "2025-03-25": { card: 626, cash: 210, total: 836 },
-    "2025-03-26": { card: 749, cash: 180, total: 929 },
-    "2025-03-27": { card: 610, cash: 180, total: 790 },
-    "2025-03-28": { card: 673, cash: 220, total: 893 },
-    "2025-03-31": { card: 640, cash: 220, total: 860 },
-    "2025-04-01": { card: 717, cash: 210, total: 927 },
-    "2025-04-02": { card: 488, cash: 190, total: 678 },
-    "2025-04-03": { card: 601, cash: 170, total: 771 },
-    "2025-04-04": { card: 639, cash: 240, total: 879 },
-    "2025-04-07": { card: 588, cash: 190, total: 778 },
-    "2025-04-08": { card: 738, cash: 200, total: 938 },
-    "2025-04-09": { card: 764, cash: 200, total: 964 },
-    "2025-04-10": { card: 467, cash: 110, total: 577 },
-    "2025-04-11": { card: 595, cash: 150, total: 745 },
-    "2025-04-14": { card: 288, cash: 100, total: 388 },
-    "2025-04-15": { card: 629, cash: 150, total: 779 }
+  const initialSalesData = {
+  "2024-12-11": { card: 352, cash: 147, total: 499 },
+  "2024-12-12": { card: 164, cash: 69, total: 233 },
+  "2024-12-13": { card: 134, cash: 56, total: 190 },
+  "2024-12-14": { card: 183, cash: 76, total: 259 },
+  "2024-12-16": { card: 316, cash: 132, total: 448 },
+  "2024-12-17": { card: 212, cash: 89, total: 301 },
+  "2024-12-18": { card: 182, cash: 76, total: 258 },
+  "2024-12-19": { card: 234, cash: 98, total: 332 },
+  "2024-12-20": { card: 123, cash: 51, total: 174 },
+  "2024-12-21": { card: 212, cash: 88, total: 300 },
+  "2024-12-23": { card: 160, cash: 67, total: 227 },
+  "2024-12-24": { card: 144, cash: 60, total: 204 },
+  "2024-12-27": { card: 52, cash: 22, total: 74 },
+  "2024-12-28": { card: 169, cash: 70, total: 239 },
+  "2024-12-30": { card: 207, cash: 86, total: 293 },
+  "2024-12-31": { card: 176, cash: 73, total: 249 },
+  "2025-01-02": { card: 148, cash: 44, total: 192 },
+  "2025-01-03": { card: 209, cash: 62, total: 271 },
+  "2025-01-04": { card: 166, cash: 49, total: 215 },
+  "2025-01-06": { card: 108, cash: 32, total: 140 },
+  "2025-01-07": { card: 198, cash: 59, total: 257 },
+  "2025-01-08": { card: 285, cash: 85, total: 370 },
+  "2025-01-09": { card: 241, cash: 72, total: 313 },
+  "2025-01-10": { card: 361, cash: 108, total: 469 },
+  "2025-01-11": { card: 252, cash: 75, total: 327 },
+  "2025-01-13": { card: 313, cash: 93, total: 406 },
+  "2025-01-14": { card: 179, cash: 53, total: 232 },
+  "2025-01-15": { card: 259, cash: 100, total: 359 },
+  "2025-01-16": { card: 242, cash: 100, total: 342 },
+  "2025-01-17": { card: 296, cash: 120, total: 416 },
+  "2025-01-18": { card: 200, cash: 59, total: 259 }, // ajusté
+  "2025-01-20": { card: 251, cash: 100, total: 351 },
+  "2025-01-21": { card: 293, cash: 88, total: 381 },
+  "2025-01-22": { card: 290, cash: 100, total: 390 },
+  "2025-01-23": { card: 199, cash: 60, total: 259 },
+  "2025-01-24": { card: 513, cash: 153, total: 666 },
+  "2025-01-25": { card: 471, cash: 141, total: 612 },
+  "2025-01-27": { card: 506, cash: 200, total: 706 },
+  "2025-01-28": { card: 239, cash: 71, total: 310 },
+  "2025-01-29": { card: 536, cash: 160, total: 696 },
+  "2025-01-30": { card: 316, cash: 94, total: 410 },
+  "2025-01-31": { card: 478, cash: 143, total: 621 }, // ajusté
+  "2025-02-01": { card: 281, cash: 100, total: 381 },
+  "2025-02-03": { card: 342, cash: 100, total: 442 },
+  "2025-02-04": { card: 255, cash: 100, total: 355 },
+  "2025-02-05": { card: 440, cash: 150, total: 590 },
+  "2025-02-06": { card: 475, cash: 200, total: 675 },
+  "2025-02-07": { card: 425, cash: 150, total: 575 },
+  "2025-02-08": { card: 327, cash: 100, total: 427 },
+  "2025-02-10": { card: 544, cash: 200, total: 744 },
+  "2025-02-11": { card: 913, cash: 350, total: 1263 },
+  "2025-02-12": { card: 1253, cash: 510, total: 1763 },
+  "2025-02-13": { card: 1336, cash: 500, total: 1836 },
+  "2025-02-14": { card: 1210, cash: 400, total: 1610 },
+  "2025-02-17": { card: 648, cash: 270, total: 918 },
+  "2025-02-18": { card: 794, cash: 290, total: 1084 },
+  "2025-02-19": { card: 942, cash: 300, total: 1242 },
+  "2025-02-20": { card: 963, cash: 190, total: 1153 },
+  "2025-02-21": { card: 1000, cash: 280, total: 1280 },
+  "2025-02-24": { card: 611, cash: 390, total: 1001 },
+  "2025-02-25": { card: 670, cash: 250, total: 920 },
+  "2025-02-26": { card: 890, cash: 180, total: 1070 },
+  "2025-02-27": { card: 1063, cash: 200, total: 1263 },
+  "2025-02-28": { card: 728, cash: 230, total: 958 },
+  "2025-03-03": { card: 757, cash: 120, total: 877 },
+  "2025-03-04": { card: 745, cash: 360, total: 1105 },
+  "2025-03-05": { card: 792, cash: 150, total: 942 },
+  "2025-03-06": { card: 857, cash: 250, total: 1107 },
+  "2025-03-07": { card: 883, cash: 210, total: 1093 },
+  "2025-03-10": { card: 599, cash: 150, total: 749 },
+  "2025-03-11": { card: 796, cash: 170, total: 966 },
+  "2025-03-12": { card: 627, cash: 160, total: 787 },
+  "2025-03-13": { card: 784, cash: 140, total: 924 },
+  "2025-03-14": { card: 505, cash: 140, total: 645 },
+  "2025-03-17": { card: 661, cash: 130, total: 791 },
+  "2025-03-18": { card: 782, cash: 110, total: 892 },
+  "2025-03-19": { card: 486, cash: 180, total: 666 },
+  "2025-03-20": { card: 635, cash: 190, total: 825 },
+  "2025-03-21": { card: 512, cash: 120, total: 632 },
+  "2025-03-24": { card: 492, cash: 210, total: 702 },
+  "2025-03-25": { card: 626, cash: 210, total: 836 },
+  "2025-03-26": { card: 749, cash: 180, total: 929 },
+  "2025-03-27": { card: 610, cash: 180, total: 790 },
+  "2025-03-28": { card: 673, cash: 220, total: 893 },
+  "2025-03-31": { card: 640, cash: 220, total: 860 },
+  "2025-04-01": { card: 717, cash: 210, total: 927 },
+  "2025-04-02": { card: 488, cash: 190, total: 678 },
+  "2025-04-03": { card: 601, cash: 170, total: 771 },
+  "2025-04-04": { card: 639, cash: 240, total: 879 },
+  "2025-04-07": { card: 588, cash: 190, total: 778 },
+  "2025-04-08": { card: 738, cash: 200, total: 938 },
+  "2025-04-09": { card: 764, cash: 200, total: 964 },
+  "2025-04-10": { card: 467, cash: 110, total: 577 },
+  "2025-04-11": { card: 595, cash: 150, total: 745 },
+  "2025-04-14": { card: 288, cash: 100, total: 388 },
+  "2025-04-15": { card: 629, cash: 150, total: 779 }
 };
+
 
 
    let salesData = { ...initialSalesData };
@@ -2505,7 +2585,6 @@ function filterRecipes() {
     const list = document.getElementById('recipeList');
     list.innerHTML = '';
 
-    // Définir formatRecipeDate localement pour éviter les conflits
     function formatRecipeDate(date) {
         const jours = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
         const jour = jours[date.getDay()];
@@ -2513,11 +2592,9 @@ function filterRecipes() {
         return `${jour} ${dateString}`;
     }
 
-    // Définir les dates avec valeurs par défaut
     const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-11');
     const endDate = end ? new Date(end + 'T23:59:59') : new Date();
 
-    // S'assurer que startDate est avant endDate
     if (startDate > endDate) {
         alert('La date de début doit être antérieure à la date de fin.');
         return;
@@ -2537,42 +2614,73 @@ function filterRecipes() {
 
     const tbody = document.createElement('tbody');
 
-    // Totaux à calculer
     let totalCard = 0;
     let totalCash = 0;
     let totalGeneral = 0;
 
-    // Itérer sur chaque jour entre startDate et endDate
-    for (let d = new Date(startDate); d <= endDate; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
-        // Générer dateKey au format YYYY-MM-DD sans passer par UTC
+    // Regroupement par mois pour les ventes
+    const monthlyData = {};
+    // Regroupement par mois pour les achats (pour calculer panierJour)
+    const monthlyPurchaseData = {};
+
+    // Chargement des données d'achats
+    let purchases = [];
+    try {
+        const storedPurchases = localStorage.getItem('purchases');
+        if (storedPurchases && storedPurchases !== '[]') {
+            purchases = JSON.parse(storedPurchases).map(p => ({ ...p, date: p.date.split('T')[0] }));
+        }
+    } catch (e) {
+        console.error('Erreur lors du chargement des achats:', e);
+    }
+
+    // Calcul des données d'achats
+    purchases.forEach(p => {
+        const date = new Date(p.date);
+        if (date < startDate || date > endDate) return;
+
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (!monthlyPurchaseData[key]) {
+            monthlyPurchaseData[key] = {
+                Pain: 0,
+            };
+        }
+
+        if (p.type === 'Pain') {
+            monthlyPurchaseData[key].Pain += p.amountTTC;
+        }
+    });
+
+    // Calcul des données de ventes et jours travaillés
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0'); // Mois de 1 à 12, format 2 chiffres
-        const day = String(d.getDate()).padStart(2, '0'); // Jour, format 2 chiffres
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
         const dateKey = `${year}-${month}-${day}`;
 
-        const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 }; // Données ou valeurs par défaut
+        const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 };
         const row = document.createElement('tr');
-
-        // Ligne cliquable
         row.style.cursor = 'pointer';
         row.onclick = () => showRecipeDetail(dateKey);
-
-        // Afficher la date formatée et les données (vides si pas de ventes)
         row.innerHTML = `
-            <td>${formatRecipeDate(d)}</td>
+            <td>${formatRecipeDate(new Date(d))}</td>
             <td>${data.card ? Math.round(data.card) + ' €' : ''}</td>
             <td>${data.cash ? Math.round(data.cash) + ' €' : ''}</td>
             <td>${data.total ? Math.round(data.total) + ' €' : ''}</td>
         `;
 
-        // Log pour débogage
-        console.log(`Date: ${dateKey}, Affichée: ${formatRecipeDate(d)}, Données:`, data);
-
-        // Ajouter aux totaux uniquement si des données existent
         if (salesData[dateKey]) {
             totalCard += data.card;
             totalCash += data.cash;
             totalGeneral += data.total;
+
+            const monthKey = `${year}-${month}`;
+            if (!monthlyData[monthKey]) {
+                monthlyData[monthKey] = { total: 0, activeDays: 0 };
+            }
+
+            monthlyData[monthKey].total += data.total;
+            monthlyData[monthKey].activeDays += 1;
         }
 
         tbody.appendChild(row);
@@ -2580,7 +2688,6 @@ function filterRecipes() {
 
     table.appendChild(tbody);
 
-    // Pied du tableau avec les totaux arrondis + €
     const tfoot = document.createElement('tfoot');
     tfoot.innerHTML = `
         <tr>
@@ -2592,13 +2699,70 @@ function filterRecipes() {
     `;
     table.appendChild(tfoot);
 
-    // Ajouter le titre avec les dates formatées
     list.innerHTML = `<h3>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
     list.appendChild(table);
 
-    // Log pour débogage
+    // LIGNE VIDE pour séparer
+    const spacer = document.createElement('div');
+    spacer.style.height = '20px';
+    list.appendChild(spacer);
+
+    // TABLEAU MENSUEL
+    const summaryTable = document.createElement('table');
+    const summaryThead = document.createElement('thead');
+    summaryThead.innerHTML = `
+        <tr style="background-color: #ccc;">
+            <th>Mois</th>
+            <th style="width: 120px;">CA Mensuel (€)</th>
+            <th style="width: 120px;">CA Moyen / Jour (€) </th>
+            <th style="width: 80px;">Nb de J travaillés</th>
+            <th style="width: 80px;">Nb de paniers/J</th>
+            <th>Prix de Vente Panier Moy</th>
+        </tr>
+    `;
+    summaryTable.appendChild(summaryThead);
+
+    const summaryTbody = document.createElement('tbody');
+
+    for (const key in monthlyData) {
+        const [year, month] = key.split('-');
+        const mois = new Date(`${year}-${month}-01`).toLocaleString('fr-FR', { month: 'long' });
+        const label = `${mois.charAt(0).toUpperCase() + mois.slice(1)} ${year}`;
+        const ca = monthlyData[key].total;
+        const jours = monthlyData[key].activeDays;
+        const caParJour = jours > 0 ? Math.round(ca / jours) : 0;
+        const facteur = (month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025') ? 0.7 : 0.56;
+
+        // Calcul de panierJour comme dans filterPurchases
+        let panierJour = 0;
+        if (jours > 0 && monthlyPurchaseData[key]?.Pain) {
+            const coef = (month === '12' && year === '2024') ? 0.95 :
+                         (month === '01' && year === '2025') ? 0.96 :
+                         (month === '02' && year === '2025') ? 0.92 : 0.95;
+            panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
+        }
+
+        // Calcul de prixPanierJour comme CA/J divisé par Nb de paniers/J
+        const prixPanierJour = (jours > 0 && panierJour > 0) ? (caParJour / panierJour) : 0;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${label}</td>
+            <td>${Math.round(ca)} €</td>
+            <td>${caParJour} €</td>
+            <td>${jours}</td>
+            <td>${Math.round(panierJour)}</td>
+            <td>${prixPanierJour.toFixed(2)} €</td>
+        `;
+        summaryTbody.appendChild(row);
+    }
+
+    summaryTable.appendChild(summaryTbody);
+    list.appendChild(summaryTable);
+
     console.log('salesData:', salesData);
 }
+
 
 
 
@@ -3927,86 +4091,86 @@ let purchaseCurrentDate = new Date();
 let purchases = [];
 
 const initialPurchases = [
-    { "date": "2024-12-09T00:00:00Z", "amountTTC": 940, "type": "Alimentaire", "payment": "Espèce", "comment": "" },
-    { "date": "2024-12-10T00:00:00Z", "amountTTC": 1747, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-09T00:00:00Z", "amountTTC": 940, "type": "Autre", "payment": "Espèce", "comment": "" },
+    { "date": "2024-12-10T00:00:00Z", "amountTTC": 1747, "type": "Autre", "payment": "Carte", "comment": "" },
     { "date": "2024-12-11T00:00:00Z", "amountTTC": 35, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-11T00:00:00Z", "amountTTC": 122, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-12T00:00:00Z", "amountTTC": 16, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-12T00:00:00Z", "amountTTC": 17, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-12T00:00:00Z", "amountTTC": 259, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-13T00:00:00Z", "amountTTC": 13, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-14T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-16T00:00:00Z", "amountTTC": 31, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-13T00:00:00Z", "amountTTC": 14, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-14T00:00:00Z", "amountTTC": 19, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-16T00:00:00Z", "amountTTC": 32, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-16T00:00:00Z", "amountTTC": 226, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-17T00:00:00Z", "amountTTC": 21, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-18T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-17T00:00:00Z", "amountTTC": 22, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-18T00:00:00Z", "amountTTC": 19, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-18T00:00:00Z", "amountTTC": 192, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-19T00:00:00Z", "amountTTC": 23, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-19T00:00:00Z", "amountTTC": 24, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-19T00:00:00Z", "amountTTC": 114, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-20T00:00:00Z", "amountTTC": 12, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-20T00:00:00Z", "amountTTC": 13, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-21T00:00:00Z", "amountTTC": 21, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-23T00:00:00Z", "amountTTC": 16, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-23T00:00:00Z", "amountTTC": 292, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-24T00:00:00Z", "amountTTC": 14, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-27T00:00:00Z", "amountTTC": 5, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-24T00:00:00Z", "amountTTC": 15, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-27T00:00:00Z", "amountTTC": 6, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-27T00:00:00Z", "amountTTC": 263, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2024-12-28T00:00:00Z", "amountTTC": 17, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-30T00:00:00Z", "amountTTC": 20, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-30T00:00:00Z", "amountTTC": 21, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2024-12-30T00:00:00Z", "amountTTC": 407, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2024-12-31T00:00:00Z", "amountTTC": 17, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-02T00:00:00Z", "amountTTC": 13, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-31T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-02T00:00:00Z", "amountTTC": 14, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-03T00:00:00Z", "amountTTC": 19, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-03T00:00:00Z", "amountTTC": 233, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-04T00:00:00Z", "amountTTC": 15, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-04T00:00:00Z", "amountTTC": 16, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-06T00:00:00Z", "amountTTC": 10, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-06T00:00:00Z", "amountTTC": 297, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-07T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-07T00:00:00Z", "amountTTC": 19, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-08T00:00:00Z", "amountTTC": 26, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-08T00:00:00Z", "amountTTC": 519, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-01-09T00:00:00Z", "amountTTC": 22, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-10T00:00:00Z", "amountTTC": 33, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-10T00:00:00Z", "amountTTC": 381, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-01-11T00:00:00Z", "amountTTC": 23, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-13T00:00:00Z", "amountTTC": 28, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-14T00:00:00Z", "amountTTC": 16, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-15T00:00:00Z", "amountTTC": 25, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-13T00:00:00Z", "amountTTC": 29, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-14T00:00:00Z", "amountTTC": 17, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-15T00:00:00Z", "amountTTC": 26, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-15T00:00:00Z", "amountTTC": 301, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-01-16T00:00:00Z", "amountTTC": 24, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-17T00:00:00Z", "amountTTC": 29, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-18T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-17T00:00:00Z", "amountTTC": 30, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-18T00:00:00Z", "amountTTC": 19, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-20T00:00:00Z", "amountTTC": 25, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-20T00:00:00Z", "amountTTC": 371, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-01-21T00:00:00Z", "amountTTC": 27, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-22T00:00:00Z", "amountTTC": 27, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-22T00:00:00Z", "amountTTC": 28, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-22T00:00:00Z", "amountTTC": 404, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-23T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-23T00:00:00Z", "amountTTC": 19, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-24T00:00:00Z", "amountTTC": 47, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-25T00:00:00Z", "amountTTC": 43, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-27T00:00:00Z", "amountTTC": 49, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-27T00:00:00Z", "amountTTC": 50, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-27T00:00:00Z", "amountTTC": 758, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-01-28T00:00:00Z", "amountTTC": 22, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-28T00:00:00Z", "amountTTC": 344, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-01-29T00:00:00Z", "amountTTC": 49, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-30T00:00:00Z", "amountTTC": 29, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-01-31T00:00:00Z", "amountTTC": 43, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-31T00:00:00Z", "amountTTC": 44, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-01-31T00:00:00Z", "amountTTC": 134, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-02-01T00:00:00Z", "amountTTC": 27, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-02-01T00:00:00Z", "amountTTC": 502, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-02-03T00:00:00Z", "amountTTC": 31, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-02-03T00:00:00Z", "amountTTC": 286, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-02-04T00:00:00Z", "amountTTC": 25, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-05T00:00:00Z", "amountTTC": 41, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-05T00:00:00Z", "amountTTC": 42, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-02-05T00:00:00Z", "amountTTC": 380, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-06T00:00:00Z", "amountTTC": 47, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-07T00:00:00Z", "amountTTC": 40, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-06T00:00:00Z", "amountTTC": 48, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-07T00:00:00Z", "amountTTC": 41, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-02-07T00:00:00Z", "amountTTC": 473, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-02-08T00:00:00Z", "amountTTC": 30, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-10T00:00:00Z", "amountTTC": 52, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-10T00:00:00Z", "amountTTC": 53, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-02-10T00:00:00Z", "amountTTC": 930, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-02-10T00:00:00Z", "amountTTC": 500, "type": "Autre", "payment": "Carte", "comment": "pub" },
-    { "date": "2025-02-11T00:00:00Z", "amountTTC": 88, "type": "Pain", "payment": "Espèce", "comment": "" },
+    { "date": "2025-02-11T00:00:00Z", "amountTTC": 89, "type": "Pain", "payment": "Espèce", "comment": "" },
     { "date": "2025-02-11T00:00:00Z", "amountTTC": 270, "type": "Alimentaire", "payment": "Espèce", "comment": "" },
     { "date": "2025-02-11T00:00:00Z", "amountTTC": 500, "type": "Autre", "payment": "Carte", "comment": "pub" },
-    { "date": "2025-02-12T00:00:00Z", "amountTTC": 123, "type": "Pain", "payment": "Espèce", "comment": "" },
+    { "date": "2025-02-12T00:00:00Z", "amountTTC": 124, "type": "Pain", "payment": "Espèce", "comment": "" },
     { "date": "2025-02-12T00:00:00Z", "amountTTC": 845, "type": "Alimentaire", "payment": "Espèce", "comment": "" },
     { "date": "2025-02-12T00:00:00Z", "amountTTC": 400, "type": "Autre", "payment": "Carte", "comment": "pub" },
     { "date": "2025-02-13T00:00:00Z", "amountTTC": 129, "type": "Pain", "payment": "Carte", "comment": "" },
@@ -4025,14 +4189,14 @@ const initialPurchases = [
     { "date": "2025-02-20T00:00:00Z", "amountTTC": 94, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-02-20T00:00:00Z", "amountTTC": 369, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-02-21T00:00:00Z", "amountTTC": 94, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-22T00:00:00Z", "amountTTC": 259, "type": "Autre", "payment": "Carte", "comment": "Frigo" },
-    { "date": "2025-02-24T00:00:00Z", "amountTTC": 84, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-24T00:00:00Z", "amountTTC": 397, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-24T00:00:00Z", "amountTTC": 82, "type": "Autre", "payment": "Carte", "comment": "Action" },
+    { "date": "2025-02-23T00:00:00Z", "amountTTC": 259, "type": "Matériel", "payment": "Carte", "comment": "Frigo" },
     { "date": "2025-02-25T00:00:00Z", "amountTTC": 84, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-25T00:00:00Z", "amountTTC": 29, "type": "Autre", "payment": "Carte", "comment": "Tampon" },
+    { "date": "2025-02-25T00:00:00Z", "amountTTC": 397, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-25T00:00:00Z", "amountTTC": 82, "type": "Matériel", "payment": "Carte", "comment": "Action" },
     { "date": "2025-02-26T00:00:00Z", "amountTTC": 84, "type": "Pain", "payment": "Carte", "comment": "" },
-    { "date": "2025-02-26T00:00:00Z", "amountTTC": 19, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-26T00:00:00Z", "amountTTC": 29, "type": "Matériel", "payment": "Carte", "comment": "Tampon" },
+    { "date": "2025-02-27T00:00:00Z", "amountTTC": 84, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-27T00:00:00Z", "amountTTC": 327, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-03-01T00:00:00Z", "amountTTC": 404, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-03-02T00:00:00Z", "amountTTC": 353, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-03-03T00:00:00Z", "amountTTC": 960, "type": "Alimentaire", "payment": "Carte", "comment": "" },
@@ -4077,11 +4241,11 @@ const initialPurchases = [
     { "date": "2025-03-26T00:00:00Z", "amountTTC": 204, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-03-27T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-03-27T00:00:00Z", "amountTTC": 334, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2025-03-27T00:00:00Z", "amountTTC": 18, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-27T00:00:00Z", "amountTTC": 18, "type": "Matériel", "payment": "Carte", "comment": "" },
     { "date": "2025-03-27T00:00:00Z", "amountTTC": 500, "type": "Autre", "payment": "Carte", "comment": "pub" },
     { "date": "2025-03-28T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-03-28T00:00:00Z", "amountTTC": 292, "type": "Alimentaire", "payment": "Carte", "comment": "" },
-    { "date": "2025-03-28T00:00:00Z", "amountTTC": 193, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-28T00:00:00Z", "amountTTC": 193, "type": "Matériel", "payment": "Carte", "comment": "" },
     { "date": "2025-03-29T00:00:00Z", "amountTTC": 432, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-03-31T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-04-01T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
@@ -4103,7 +4267,7 @@ const initialPurchases = [
     { "date": "2025-04-14T00:00:00Z", "amountTTC": 267, "type": "Alimentaire", "payment": "Carte", "comment": "" },
     { "date": "2025-04-15T00:00:00Z", "amountTTC": 45, "type": "Pain", "payment": "Carte", "comment": "" },
     { "date": "2025-04-15T00:00:00Z", "amountTTC": 239, "type": "Alimentaire", "payment": "Carte", "comment": "" }
-  ];
+];
 
 
 
@@ -4198,75 +4362,48 @@ function deletePurchase(index) {
     }
 }
 
-function filterPurchases() { 
-    // Vérifier si les éléments HTML existent
+
+function filterPurchases() {
     const startInput = document.getElementById('purchaseStartDate');
     const endInput = document.getElementById('purchaseEndDate');
     const showCommentsCheckbox = document.getElementById('showPurchaseComments');
     const list = document.getElementById('purchasesList');
 
-    if (!startInput || !endInput || !showCommentsCheckbox || !list) {
-        console.error('Erreur : Un ou plusieurs éléments HTML manquent.', {
-            startInput: !!startInput,
-            endInput: !!endInput,
-            showCommentsCheckbox: !!showCommentsCheckbox,
-            list: !!list
-        });
-        return;
-    }
-
-    console.log('Début de filterPurchases');
+    if (!startInput || !endInput || !showCommentsCheckbox || !list) return;
 
     const start = startInput.value;
     const end = endInput.value;
     const showComments = showCommentsCheckbox.checked;
 
-    // Définir formatRecipeDate localement
-    function formatRecipeDate(date) {
+    const formatRecipeDate = (date) => {
         const jours = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
-        const jour = jours[date.getDay()];
-        const dateString = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        return `${jour} ${dateString}`;
-    }
+        const jour = jours[date.getUTCDay()];
+        return `${jour} ${date.toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            timeZone: 'UTC'
+        })}`;
+    };
 
-    // Définir les dates avec valeurs par défaut
-    const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-09');
-    const endDate = end ? new Date(end + 'T23:59:59') : new Date(); // Date du jour
+    const startDate = start ? new Date(start + 'T00:00:00Z') : new Date('2024-12-09T00:00:00Z');
+    const endDate = end ? new Date(end + 'T23:59:59Z') : new Date();
+    if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) return;
 
-    // Vérifier la validité des dates
-    if (isNaN(startDate) || isNaN(endDate)) {
-        console.error('Dates invalides:', start, end);
-        alert('Dates invalides. Veuillez vérifier les dates sélectionnées.');
-        return;
-    }
-
-    // S'assurer que startDate est avant endDate
-    if (startDate > endDate) {
-        console.warn('Date de début postérieure à la date de fin:', startDate, endDate);
-        alert('La date de début doit être antérieure à la date de fin.');
-        return;
-    }
-
-    console.log('Plage de dates:', startDate.toISOString(), endDate.toISOString());
-
-    // Charger les achats depuis localStorage
     let purchases = [];
     try {
         const storedPurchases = localStorage.getItem('purchases');
         if (storedPurchases && storedPurchases !== '[]') {
-            purchases = JSON.parse(storedPurchases).map(purchase => ({
-                ...purchase,
-                date: purchase.date.split('T')[0] // Normaliser la date
+            purchases = JSON.parse(storedPurchases).map(p => ({
+                ...p,
+                date: new Date(p.date).toISOString().split('T')[0]
             }));
         }
-        console.log('Achats chargés:', purchases.length, 'achats', purchases.slice(0, 5));
     } catch (e) {
         console.error('Erreur lors du chargement des achats:', e);
-        alert('Erreur lors du chargement des données. Veuillez réessayer.');
         return;
     }
 
-    // Créer le tableau
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     thead.innerHTML = `
@@ -4282,104 +4419,169 @@ function filterPurchases() {
 
     const tbody = document.createElement('tbody');
 
-    // Initialiser les totaux
     const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
     const totalsByPayment = { Carte: 0, Espèce: 0 };
     let grandTotal = 0;
 
-    // Itérer sur chaque jour entre startDate et endDate
-    for (let d = new Date(startDate); d <= endDate; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const dateKey = `${year}-${month}-${day}`;
-
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const dateKey = d.toISOString().split('T')[0];
         const purchasesOnDate = purchases.filter(p => p.date === dateKey);
 
         if (purchasesOnDate.length === 0) {
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td style="white-space: nowrap;">${formatRecipeDate(d)}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                ${showComments ? '<td></td>' : ''}
-            `;
+            row.innerHTML = `<td style="white-space: nowrap;">${formatRecipeDate(d)}</td><td></td><td></td><td></td>${showComments ? '<td></td>' : ''}`;
             tbody.appendChild(row);
-            console.log(`Date: ${dateKey}, Affichée: ${formatRecipeDate(d)}, Aucun achat`);
         } else {
-            purchasesOnDate.forEach(purchase => {
+            purchasesOnDate.forEach(p => {
                 const row = document.createElement('tr');
                 row.style.cursor = 'pointer';
-                try {
-                    row.onclick = () => showPurchaseDetailFromIndex(purchases.indexOf(purchase));
-                } catch (e) {
-                    console.error('Erreur dans showPurchaseDetailFromIndex:', e);
-                }
-                row.innerHTML = `
-                    <td style="white-space: nowrap;">${formatRecipeDate(d)}</td>
-                    <td>${Math.round(purchase.amountTTC)} €</td>
-                    <td>${purchase.type}</td>
-                    <td>${purchase.payment}</td>
-                    ${showComments ? `<td>${purchase.comment || ''}</td>` : ''}
-                `;
+                row.onclick = () => showPurchaseDetailFromIndex(purchases.indexOf(p));
+                row.innerHTML = `<td style="white-space: nowrap;">${formatRecipeDate(new Date(dateKey + 'T00:00:00Z'))}</td><td>${Math.round(p.amountTTC)} €</td><td>${p.type}</td><td>${p.payment}</td>${showComments ? `<td>${p.comment || ''}</td>` : ''}`;
                 tbody.appendChild(row);
-                console.log(`Date: ${dateKey}, Affichée: ${formatRecipeDate(d)}, Achat:`, purchase);
 
-                // Ajouter aux totaux
-                totalsByType[purchase.type] = (totalsByType[purchase.type] || 0) + purchase.amountTTC;
-                totalsByPayment[purchase.payment] = (totalsByPayment[purchase.payment] || 0) + purchase.amountTTC;
-                grandTotal += purchase.amountTTC;
+                totalsByType[p.type] = (totalsByType[p.type] || 0) + p.amountTTC;
+                totalsByPayment[p.payment] = (totalsByPayment[p.payment] || 0) + p.amountTTC;
+                grandTotal += p.amountTTC;
             });
         }
     }
 
     table.appendChild(tbody);
 
-    // Ajouter les totaux dans le pied du tableau avec fond gris
     const tfoot = document.createElement('tfoot');
     tfoot.innerHTML = `
         ${Object.keys(totalsByType).filter(type => totalsByType[type] > 0).map(type => `
-            <tr style="background-color: #f0f0f0;">
-                <td style="color:#003366; font-weight:bold; white-space: normal;">Total ${type}</td>
-                <td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td>
-                <td></td>
-                <td></td>
-                ${showComments ? '<td></td>' : ''}
-            </tr>
+            <tr style="background-color: #f0f0f0;"><td style="color:#003366; font-weight:bold;">Total ${type}</td><td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td><td></td><td></td>${showComments ? '<td></td>' : ''}</tr>
         `).join('')}
-        ${Object.keys(totalsByPayment).filter(payment => totalsByPayment[payment] > 0).map(payment => `
-            <tr style="background-color: #f0f0f0;">
-                <td style="color:green; font-weight:bold; white-space: normal;">Total ${payment}</td>
-                <td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[payment])} €</td>
-                <td></td>
-                <td></td>
-                ${showComments ? '<td></td>' : ''}
-            </tr>
+        ${Object.keys(totalsByPayment).filter(p => totalsByPayment[p] > 0).map(p => `
+            <tr style="background-color: #f0f0f0;"><td style="color:green; font-weight:bold;">Total ${p}</td><td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[p])} €</td><td></td><td></td>${showComments ? '<td></td>' : ''}</tr>
         `).join('')}
-        <tr style="background-color: #f0f0f0;">
-            <td style="font-weight:bold; white-space: normal;">Total Général</td>
-            <td style="font-weight:bold;">${Math.round(grandTotal)} €</td>
-            <td></td>
-            <td></td>
-            ${showComments ? '<td></td>' : ''}
-        </tr>
+        <tr style="background-color: #f0f0f0;"><td style="font-weight:bold;">Total Général</td><td style="font-weight:bold;">${Math.round(grandTotal)} €</td><td></td><td></td>${showComments ? '<td></td>' : ''}</tr>
     `;
     table.appendChild(tfoot);
 
-    // Nettoyer l'intérieur de list
     list.innerHTML = `<h3>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
-
-    // Créer un conteneur pour la table
     const container = document.createElement('div');
     container.className = 'table-container';
     container.appendChild(table);
-
-    // Ajouter la table dans list
     list.appendChild(container);
 
-    console.log('Fin de filterPurchases', { totalsByType, totalsByPayment, grandTotal });
+    // --- Tableau Résumé par Mois ---
+    const monthlyData = {};
+    const monthlySalesData = {};
+
+    // Calcul des données d'achats
+    purchases.forEach(p => {
+        const date = new Date(p.date + 'T00:00:00Z');
+        if (date < startDate || date > endDate) return;
+
+        const key = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+        if (!monthlyData[key]) {
+            monthlyData[key] = {
+                total: 0,
+                Pain: 0,
+                Alimentaire: 0,
+                Matériel: 0,
+                Autre: 0,
+                joursPain: new Set(),
+            };
+        }
+
+        monthlyData[key].total += p.amountTTC;
+        monthlyData[key][p.type] = (monthlyData[key][p.type] || 0) + p.amountTTC;
+        if (p.type === 'Pain') monthlyData[key].joursPain.add(p.date);
+    });
+
+    // Calcul des jours travaillés à partir de salesData
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const year = d.getUTCFullYear();
+        const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
+
+        if (salesData[dateKey]) {
+            const monthKey = `${year}-${month}`;
+            if (!monthlySalesData[monthKey]) {
+                monthlySalesData[monthKey] = { activeDays: 0 };
+            }
+            monthlySalesData[monthKey].activeDays += 1;
+        }
+    }
+
+    const summaryTable = document.createElement('table');
+    summaryTable.style.fontSize = '0.8em';
+    const summaryHead = document.createElement('thead');
+    summaryHead.innerHTML = `
+        <tr style="background:#ccc">
+            <th style="width: 50px; white-space: normal; word-wrap: break-word;">Mois</th>
+            <th style="width: 110px; text-align: right;">Total</th>
+            <th style="width: 70px; text-align: right;">Total Alim</th>
+            <th style="width: 90px; text-align: right;">Total Mat</th>
+            <th style="width: 110px; text-align: right;">Total Autre</th>
+            <th style="width: 110px; text-align: right;">Total Pain</th>
+            <th style="width: 50px; text-align: center;">Nb de jours travaillés</th>
+            <th style="width: 30px; text-align: center;">Nb de Paniers/J</th>
+            <th style="width: 70px; text-align: right;">Coût de revient Panier Moy</th>
+        </tr>
+    `;
+    summaryTable.appendChild(summaryHead);
+
+    const summaryBody = document.createElement('tbody');
+    Object.entries(monthlyData).forEach(([key, val]) => {
+        const [year, month] = key.split('-');
+        const moisNom = new Date(`${key}-01T00:00:00Z`).toLocaleDateString('fr-FR', { month: 'long', timeZone: 'UTC' });
+        const joursTravailles = monthlySalesData[key]?.activeDays || 0;
+
+        let panierJour = 0;
+        if (joursTravailles > 0) {
+            const facteur = ((month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025')) ? 0.7 : 0.56;
+            const coef = (month === '12' && year === '2024') ? 0.95 :
+                         (month === '01' && year === '2025') ? 0.96 :
+                         (month === '02' && year === '2025') ? 0.92 : 0.95;
+            panierJour = val.Pain * coef / (joursTravailles * facteur);
+        }
+
+        let coutReviensPanierJour = 0;
+        const denominateur = joursTravailles * panierJour;
+        if (denominateur > 0) {
+            coutReviensPanierJour = (val.Alimentaire + val.Pain) / denominateur;
+        }
+
+        console.log(`Mois ${moisNom} ${year}, joursTravailles: ${joursTravailles}`);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)}<br>${year}</td>
+            <td>${Math.round(val.total)}€</td>
+            <td>${Math.round(val.Alimentaire)}€</td>
+            <td>${Math.round(val.Matériel)}€</td>
+            <td>${Math.round(val.Autre)}€</td>
+            <td>${Math.round(val.Pain)}€</td>
+            <td>${joursTravailles}</td>
+            <td>${Math.round(panierJour)}</td>
+            <td>${coutReviensPanierJour.toFixed(2)} €</td>
+        `;
+        summaryBody.appendChild(row);
+    });
+
+    summaryTable.appendChild(summaryBody);
+    const spacing = document.createElement('div');
+    spacing.style.height = '30px';
+    list.appendChild(spacing);
+    const summaryContainer = document.createElement('div');
+    summaryContainer.style.maxWidth = '100%';
+    summaryContainer.style.overflowX = 'auto';
+    summaryContainer.appendChild(summaryTable);
+    list.appendChild(summaryContainer);
 }
+
+
+
+
+
+
+
+
 
 
 let selectedPurchaseIndex = null;
@@ -5825,7 +6027,7 @@ window.addEventListener('popstate', function(event) {
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage', 'budgetPage', 'settingsPage'
+        'passwordPage', 'budgetPage', 'settingsPage' , 'indicatorsPage'
     ];
 
     const homePage = document.getElementById('homePage');
@@ -5858,8 +6060,244 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
+function showIndicators() {
+    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage'];
+    pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+    document.getElementById('indicatorsPage').classList.remove('hidden');
+    displayIndicatorsTable();
+    history.pushState({ page: 'indicatorsPage' }, '', '#indicators');
+}
 
+function displayIndicatorsTable() {
+    try {
+        const tableContainer = document.getElementById('indicatorsTable');
+        const startDate = new Date('2024-12-01');
+        const endDate = new Date();
+        let purchases = [];
+        try {
+            const storedPurchases = localStorage.getItem('purchases');
+            if (storedPurchases && storedPurchases !== '[]') {
+                purchases = JSON.parse(storedPurchases).map(p => ({ ...p, date: p.date.split('T')[0] }));
+            }
+        } catch (e) {
+            console.error('Erreur lors du chargement des achats:', e);
+        }
 
+        const monthlyPurchaseData = {};
+        purchases.forEach(p => {
+            const date = new Date(p.date);
+            if (date < startDate || date > endDate) return;
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            if (!monthlyPurchaseData[key]) {
+                monthlyPurchaseData[key] = { Pain: 0, Alimentaire: 0, joursPain: new Set() };
+            }
+            if (p.type === 'Pain') monthlyPurchaseData[key].Pain += p.amountTTC;
+            if (p.type === 'Alimentaire') monthlyPurchaseData[key].Alimentaire += p.amountTTC;
+            if (p.type === 'Pain') monthlyPurchaseData[key].joursPain.add(p.date);
+        });
+
+        const monthlySalesData = {};
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+            if (salesData[dateKey]) {
+                const monthKey = `${year}-${month}`;
+                if (!monthlySalesData[monthKey]) {
+                    monthlySalesData[monthKey] = { total: 0, activeDays: 0 };
+                }
+                monthlySalesData[monthKey].total += salesData[dateKey].total;
+                monthlySalesData[monthKey].activeDays += 1;
+            }
+        }
+
+        let tableHTML = `
+            <h3>Coefficient de vente</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mois</th>
+                        <th>Coût de revient Panier Moyen</th>
+                        <th>Prix de vente Panier Moy</th>
+                        <th>Coef de vente (objectif 3)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        const currentDate = new Date();
+        const currentYearMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+        const isAfter15th = currentDate.getDate() >= 15; // Vérifier si on est le 15 ou après
+
+        Object.keys(monthlyPurchaseData).sort().forEach(key => {
+            if (key === currentYearMonth && !isAfter15th) return; // Exclure le mois en cours si avant le 15
+            const [year, month] = key.split('-');
+            const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
+            const joursTravailles = monthlySalesData[key]?.activeDays || 0;
+            const facteur = (month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025') ? 0.7 : 0.56;
+            const coef = (month === '12' && year === '2024') ? 0.95 :
+                         (month === '01' && year === '2025') ? 0.96 :
+                         (month === '02' && year === '2025') ? 0.92 : 0.95;
+            let panierJour = 0;
+            if (joursTravailles > 0) {
+                panierJour = monthlyPurchaseData[key].Pain * coef / (joursTravailles * facteur);
+            }
+            let coutReviensPanierJour = 0;
+            const denominateur = joursTravailles * panierJour;
+            if (denominateur > 0) {
+                coutReviensPanierJour = (monthlyPurchaseData[key].Alimentaire + monthlyPurchaseData[key].Pain) / denominateur;
+            }
+            const ca = monthlySalesData[key]?.total || 0;
+            const caParJour = joursTravailles > 0 ? ca / joursTravailles : 0;
+            const prixPanierJour = (joursTravailles > 0 && panierJour > 0) ? (caParJour / panierJour) : 0;
+            const coefVente = prixPanierJour > 0 && coutReviensPanierJour > 0 ? (prixPanierJour / coutReviensPanierJour).toFixed(1) : 0;
+            let coefClass = '';
+            if (coefVente < 2.3) coefClass = 'coef-low';
+            else if (coefVente >= 2.3 && coefVente <= 2.6) coefClass = 'coef-medium';
+            else if (coefVente > 2.6 && coefVente <= 2.9) coefClass = 'coef-high';
+            else if (coefVente > 2.9) coefClass = 'coef-champagne';
+
+            tableHTML += `
+                <tr>
+                    <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
+                    <td>${coutReviensPanierJour.toFixed(2)} €</td>
+                    <td>${prixPanierJour.toFixed(2)} €</td>
+                    <td class="${coefClass}"><strong>${coefVente}</strong></td>
+                </tr>
+            `;
+        });
+
+        tableHTML += `
+                </tbody>
+            </table>
+        `;
+        tableContainer.innerHTML = tableHTML;
+
+        // Préparer les données pour le graphique
+        const chartLabels = [];
+        const chartData = [];
+
+        Object.keys(monthlyPurchaseData).sort().forEach(key => {
+            if (key === currentYearMonth && !isAfter15th) return; // Exclure le mois en cours si avant le 15
+            const [year, month] = key.split('-');
+            const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'short' });
+            const joursTravailles = monthlySalesData[key]?.activeDays || 0;
+            const facteur = (month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025') ? 0.7 : 0.56;
+            const coef = (month === '12' && year === '2024') ? 0.95 :
+                         (month === '01' && year === '2025') ? 0.96 :
+                         (month === '02' && year === '2025') ? 0.92 : 0.95;
+            let panierJour = 0;
+            if (joursTravailles > 0) {
+                panierJour = monthlyPurchaseData[key].Pain * coef / (joursTravailles * facteur);
+            }
+            let coutReviensPanierJour = 0;
+            const denominateur = joursTravailles * panierJour;
+            if (denominateur > 0) {
+                coutReviensPanierJour = (monthlyPurchaseData[key].Alimentaire + monthlyPurchaseData[key].Pain) / denominateur;
+            }
+            const ca = monthlySalesData[key]?.total || 0;
+            const caParJour = joursTravailles > 0 ? ca / joursTravailles : 0;
+            const prixPanierJour = (joursTravailles > 0 && panierJour > 0) ? (caParJour / panierJour) : 0;
+            const coefVente = prixPanierJour > 0 && coutReviensPanierJour > 0 ? (prixPanierJour / coutReviensPanierJour).toFixed(1) : 0;
+
+            chartLabels.push(`${moisNom} ${year}`);
+            chartData.push(parseFloat(coefVente));
+        });
+
+        // Vérifier si le canvas existe avant de créer le graphique
+        const canvas = document.getElementById('coefVenteChart');
+        if (!canvas) {
+            console.error('Canvas coefVenteChart non trouvé');
+            return;
+        }
+
+        // Détruire le graphique précédent s'il existe
+        const existingChart = Chart.getChart('coefVenteChart');
+        if (existingChart) existingChart.destroy();
+
+        // Créer le graphique
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Coefficient de vente',
+                    data: chartData,
+                    borderColor: '#0000FF', // Bleu
+                    backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                    fill: false,
+                    tension: 0, // Segments droits
+                    pointBackgroundColor: '#0000FF',
+                    pointBorderColor: '#0000FF',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 1.8,
+                        max: 3.2,
+                        title: {
+                            display: true,
+                            text: 'Coefficient de vente'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Mois'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true
+                    },
+                    datalabels: {
+                        display: true,
+                        align: 'top',
+                        offset: 5,
+                        formatter: (value) => value.toFixed(1),
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        color: '#000'
+                    }
+                }
+            },
+            plugins: [{
+                id: 'chartjs-plugin-datalabels',
+                afterDatasetsDraw: (chart) => {
+                    const { ctx } = chart;
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((point, index) => {
+                            const value = dataset.data[index];
+                            ctx.save();
+                            ctx.font = 'bold 12px Arial';
+                            ctx.fillStyle = '#000';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(value.toFixed(1), point.x, point.y - 10);
+                            ctx.restore();
+                        });
+                    });
+                }
+            }]
+        });
+    } catch (error) {
+        console.error('Erreur dans displayIndicatorsTable:', error);
+        const tableContainer = document.getElementById('indicatorsTable');
+        tableContainer.innerHTML = '<p>Erreur lors du chargement des indicateurs. Veuillez réessayer.</p>';
+    }
+}
 
 // Fonction pour afficher la page Budget
 function showBudget() {
