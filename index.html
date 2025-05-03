@@ -6483,12 +6483,12 @@ function displayFiscalTable() {
         const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
-        // Agréger les données par mois, aligné avec filterRecipes
+        // Agréger les données par mois
         const monthlyData = {};
         const startDate = new Date('2024-12-01');
         const endDate = new Date();
 
-        // Ventes (CA à déclarer ajusté : card + cash/2)
+        // Ventes
         Object.keys(salesData).forEach(dateKey => {
             const date = new Date(dateKey);
             if (date >= startDate && date <= endDate) {
@@ -6502,7 +6502,7 @@ function displayFiscalTable() {
             }
         });
 
-        // Achats (TVA déductible)
+        // Achats
         purchases.forEach(p => {
             const date = new Date(p.date);
             if (date >= startDate && date <= endDate) {
@@ -6516,12 +6516,12 @@ function displayFiscalTable() {
             }
         });
 
-        // TVA collectée basée sur CA ajusté
+        // TVA collectée
         Object.keys(monthlyData).forEach(key => {
             monthlyData[key].tvaCollectee = monthlyData[key].caAjuste * (tvaRate / (1 + tvaRate));
         });
 
-        // Calculer le CA cumulé pour vérifier l'exonération TVA
+        // TVA exonération
         let cumulativeCA = 0;
         const sortedKeys = Object.keys(monthlyData).sort();
         sortedKeys.forEach(key => {
@@ -6552,20 +6552,41 @@ function displayFiscalTable() {
                 .crossed::after {
                     transform: rotate(-45deg);
                 }
+                .table-scroll-container {
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    -webkit-overflow-scrolling: touch;
+                }
+                .table-scroll-container table {
+                    min-width: 600px; /* Réduction de la largeur minimale */
+                    border-collapse: collapse;
+                }
+                /* Réduction de la taille des colonnes */
+                th, td {
+                    padding: 4px 8px; /* Réduction de l'espace interne */
+                    font-size: 10px;   /* Taille de police réduite */
+                }
+                th {
+                    text-align: center;
+                }
+                td {
+                    text-align: right;
+                }
             </style>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mois</th>
-                        <th>CA à déclarer</th>
-                        <th style="background-color: #e0e0e0;">Impôt Urssaf à payer</th>
-                        <th>TVA collectée</th>
-                        <th>TVA déductible</th>
-                        <th style="background-color: #e0e0e0;">TVA à payer</th>
-                        <th>TVA exonérée</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="table-scroll-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mois</th>
+                            <th>CA à déclarer</th>
+                            <th style="background-color: #e0e0e0;">Impôt Urssaf à payer</th>
+                            <th>TVA collectée</th>
+                            <th>TVA déductible</th>
+                            <th style="background-color: #e0e0e0;">TVA à payer</th>
+                            <th>TVA exonérée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
 
         sortedKeys.forEach(key => {
@@ -6593,9 +6614,11 @@ function displayFiscalTable() {
         });
 
         tableHTML += `
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         `;
+
         tableContainer.innerHTML = tableHTML;
 
     } catch (error) {
@@ -6606,6 +6629,13 @@ function displayFiscalTable() {
         }
     }
 }
+
+
+
+
+
+
+
 
 // Mettre à jour l'écouteur popstate
 window.addEventListener('popstate', function(event) {
