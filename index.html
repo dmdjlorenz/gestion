@@ -180,12 +180,12 @@
     #homePage #recipeBookBtn:hover {
         background: #2AB82A;
     }
-    #homePage #purchasesBtn {
-        background: #FF0000;
-    }
-    #homePage #purchasesBtn:hover {
-        background: #CC0000;
-    }
+  #homePage #purchasesBtn {
+    background: #C71585;
+}
+#homePage #purchasesBtn:hover {
+    background: #B01378;
+}
     #homePage #personnelBtn {
         background: #6f42c1;
     }
@@ -350,29 +350,33 @@
         background: #2AB82A;
     }
     #recipeBookPage .buttons button[onclick="backToHome()"],
-    #recipeManagementPage .buttons button[onclick="backToRecipeBook()"],
-    #invoicePage .buttons button[onclick="backToHome()"],
-    #invoiceManagementPage .buttons button[onclick="backToInvoice()"],
-    #invoiceDetailPage .buttons button[onclick="backToInvoiceManagement()"],
-    #purchasesPage .buttons button[onclick="backToHome()"],
-    #purchasesManagementPage .buttons button[onclick="backToPurchases()"],
-    #personnelPage .buttons button[onclick="backToHome()"],
-    #budgetPage button[onclick="backToHome()"],
-    #personnelManagementPage .buttons button[onclick="backToPersonnel()"] {
-        background: #000000;
-    }
-    #recipeBookPage .buttons button[onclick="backToHome()"]:hover,
-    #recipeManagementPage .buttons button[onclick="backToRecipeBook()"]:hover,
-    #invoicePage .buttons button[onclick="backToHome()"]:hover,
-    #invoiceManagementPage .buttons button[onclick="backToInvoice()"]:hover,
-    #invoiceDetailPage .buttons button[onclick="backToInvoiceManagement()"]:hover,
-    #purchasesPage .buttons button[onclick="backToHome()"]:hover,
-    #purchasesManagementPage .buttons button[onclick="backToPurchases()"]:hover,
-    #personnelPage .buttons button[onclick="backToHome()"]:hover,
-    #budgetPage button[onclick="backToHome()"]:hover,
-    #personnelManagementPage .buttons button[onclick="backToPersonnel()"]:hover {
-        background: #333333;
-    }
+#recipeManagementPage .buttons button[onclick="backToRecipeBook()"],
+#invoicePage .buttons button[onclick="backToHome()"],
+#invoiceManagementPage .buttons button[onclick="backToInvoice()"],
+#invoiceDetailPage .buttons button[onclick="backToInvoiceManagement()"],
+#purchasesPage .buttons button[onclick="backToHome()"],
+#purchasesManagementPage .buttons button[onclick="backToPurchases()"],
+#personnelPage .buttons button[onclick="backToHome()"],
+#budgetPage button[onclick="backToHome()"],
+#personnelManagementPage .buttons button[onclick="backToPersonnel()"],
+#indicatorsPage button[onclick="backToHome()"],
+#fiscalPage button[onclick="backToHome()"] {
+    background: #808080;
+}
+#recipeBookPage .buttons button[onclick="backToHome()"]:hover,
+#recipeManagementPage .buttons button[onclick="backToRecipeBook()"]:hover,
+#invoicePage .buttons button[onclick="backToHome()"]:hover,
+#invoiceManagementPage .buttons button[onclick="backToInvoice()"]:hover,
+#invoiceDetailPage .buttons button[onclick="backToInvoiceManagement()"]:hover,
+#purchasesPage .buttons button[onclick="backToHome()"]:hover,
+#purchasesManagementPage .buttons button[onclick="backToPurchases()"]:hover,
+#personnelPage .buttons button[onclick="backToHome()"]:hover,
+#budgetPage button[onclick="backToHome()"]:hover,
+#personnelManagementPage .buttons button[onclick="backToPersonnel()"]:hover,
+#indicatorsPage button[onclick="backToHome()"]:hover,
+#fiscalPage button[onclick="backToHome()"]:hover {
+    background: #666666;
+}
     #recipeBookPage .input-group, #purchasesPage .input-group, #personnelPage .input-group {
         display: flex;
         flex-direction: column;
@@ -997,6 +1001,92 @@
         width: 100%;
         box-sizing: border-box;
     }
+
+#homePage #fiscalBtn {
+    background: #FF0000;
+}
+#homePage #fiscalBtn:hover {
+    background: #CC0000;
+}
+#homePage .wide-settings-btn {
+    width: 280px;
+    height: 60px;
+    margin: 15px auto 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: #808080;
+    border-radius: 16px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+#homePage .wide-settings-btn:hover {
+    background: #666666;
+    transform: scale(1.05);
+}
+#homePage .wide-settings-btn i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+@media (max-width: 480px) {
+    #homePage .wide-settings-btn {
+        width: 280px;
+        height: 60px;
+        font-size: 14px;
+    }
+}
+
+#fiscalPage {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+#fiscalPage h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+#fiscalPage table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+#fiscalPage th, #fiscalPage td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+#fiscalPage th {
+    background-color: #ccc;
+    color: #333;
+}
+@media (max-width: 480px) {
+    #fiscalPage {
+        padding: 12px;
+    }
+    #fiscalPage h2 {
+        font-size: 1.2em;
+    }
+    #fiscalPage th, #fiscalPage td {
+        font-size: 12px;
+        padding: 4px;
+    }
+}
+
+
+
+
+
     </style>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icone.png" type="image/png">
@@ -1013,43 +1103,61 @@
         <p id="errorMessage" style="color: red; display: none;">Mot de passe incorrect !</p>
     </div>
     <div id="homePage" class="hidden">
-        <h2>Mon Appli Gestion</h2>
-        <h2>CHEZ BARTH</h2>
-        <div class="button-grid">
-            <button id="recipeBookBtn" onclick="showRecipeBook()">
-                <i class="fas fa-cash-register"></i>
-                Ventes
-            </button>
-            <button id="purchasesBtn" onclick="showPurchases()">
-                <i class="fas fa-shopping-cart"></i>
-                Achats
-            </button>
-            <button id="personnelBtn" onclick="showPersonnel()">
-                <i class="fas fa-users"></i>
-                Personnel
-            </button>
-            <button id="invoiceBtn" onclick="showInvoice()">
-                <i class="fas fa-file-invoice"></i>
-                Commande Facture
-            </button>
-            <button id="budgetBtn" onclick="showBudget()">
-                <i class="fas fa-wallet"></i>
-                Budget
-            </button>
-            <button id="officialRecipeBookBtn" onclick="exportRecipeToPdfofficiel()">
-                <i class="fas fa-book"></i>
-                Livre des recettes officiel
-            </button>
-            <button id="indicatorsBtn" onclick="showIndicators()">
-                <i class="fas fa-chart-line"></i>
-                Indicateurs
-            </button>
-            <button id="settingsBtn" onclick="showSettings()">
-                <i class="fas fa-cog"></i>
-                Paramètres
-            </button>
-        </div>
+    <h2>Mon Appli Gestion</h2>
+    <h2>CHEZ BARTH</h2>
+    <div class="button-grid">
+       <button id="recipeBookBtn" onclick="showRecipeBook()">
+    <i class="fas fa-euro-sign"></i>
+    Ventes
+</button>
+
+        <button id="purchasesBtn" onclick="showPurchases()">
+            <i class="fas fa-shopping-cart"></i>
+            Achats
+        </button>
+        <button id="personnelBtn" onclick="showPersonnel()">
+            <i class="fas fa-users"></i>
+            Personnel
+        </button>
+        <button id="invoiceBtn" onclick="showInvoice()">
+            <i class="fas fa-file-invoice"></i>
+            Commande Facture
+        </button>
+        <button id="budgetBtn" onclick="showBudget()">
+            <i class="fas fa-wallet"></i>
+            Budget
+        </button>
+     <button id="officialRecipeBookBtn" onclick="exportRecipeToPdfofficiel()">
+    <i class="fas fa-book-open"></i>
+    Livre des recettes officiel
+</button>
+
+        <button id="indicatorsBtn" onclick="showIndicators()">
+            <i class="fas fa-chart-line"></i>
+            Indicateurs
+        </button>
+        <button id="fiscalBtn" onclick="showFiscal()" style="display: flex; flex-direction: column; align-items: center;">
+    <span style="font-size: 2em; margin-bottom: 5px;">😣</span>
+    Taxes
+</button>
     </div>
+    <button id="settingsBtn" onclick="showSettings()" class="wide-settings-btn">
+        <i class="fas fa-cog"></i>
+        Paramètres
+    </button>
+</div>
+    </div>
+
+<div id="fiscalPage" class="page hidden">
+    <h2>Taxes Impôts Urssaf</h2>
+    <div id="fiscalTable"></div>
+    <div class="buttons no-print" style="margin-top: 20px;">
+        <button onclick="backToHome()" style="background:#808080; color:white;">Retour</button>
+    </div>
+</div>
+
+
+
 
 
     <!-- Nouvelle page Paramètres -->
@@ -1573,7 +1681,7 @@ function navigateTo(pageId) {
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage'
+        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage' , 'fiscalPage'
     ];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
@@ -1587,6 +1695,7 @@ function navigateTo(pageId) {
     if (pageId === 'purchasesManagementPage') filterPurchases();
     if (pageId === 'personnelManagementPage') filterPersonnel();
     if (pageId === 'indicatorsPage') displayIndicatorsTable();
+    if (pageId === 'fiscalPage') displayFiscalTable();
 }
 
 
@@ -1600,7 +1709,7 @@ function checkPassword() {
             'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
             'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
             'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-            'passwordPage', 'budgetPage', 'settingsPage' , 'indicatorsPage'
+            'passwordPage', 'budgetPage', 'settingsPage' , 'indicatorsPage' , 'fiscalPage'
         ];
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById('homePage').classList.remove('hidden');
@@ -1928,7 +2037,7 @@ function showPurchases() {
         filterPersonnel();
     }
 
-    function backToHome() {
+   function backToHome() {
         document.getElementById('homePage').classList.remove('hidden');
         document.getElementById('recipeBookPage').classList.add('hidden');
         document.getElementById('recipeManagementPage').classList.add('hidden');
@@ -1941,7 +2050,10 @@ function showPurchases() {
         document.getElementById('personnelManagementPage').classList.add('hidden');
         document.getElementById('budgetPage').classList.add('hidden');
         document.getElementById('homePage').classList.remove('hidden');
+        document.getElementById('fiscalPage').classList.remove('hidden');
     }
+
+
 
     function backToRecipeBook() {
         showRecipeBook();
@@ -2597,10 +2709,12 @@ function filterRecipes() {
 
             const monthKey = `${year}-${month}`;
             if (!monthlyData[monthKey]) {
-                monthlyData[monthKey] = { total: 0, activeDays: 0 };
+                monthlyData[monthKey] = { total: 0, card: 0, cash: 0, activeDays: 0 };
             }
 
             monthlyData[monthKey].total += data.total;
+            monthlyData[monthKey].card += data.card;
+            monthlyData[monthKey].cash += data.cash;
             monthlyData[monthKey].activeDays += 1;
         }
 
@@ -2639,6 +2753,9 @@ function filterRecipes() {
             <th style="width: 80px;">Nb Jours travaillés</th>
             <th style="width: 80px;">Nb Paniers/J</th>
             <th>Prix Vente Panier Moy</th>
+            <th style="width: 120px; background-color: #e0e0e0;">CA/mois à déclarer</th>
+            <th style="width: 120px; background-color: #e0e0e0;">TVA collectée à déclarer</th>
+            <th style="width: 120px; background-color: #e0e0e0;">Impôt et Urssaf</th>
         </tr>
     `;
     summaryTable.appendChild(summaryThead);
@@ -2668,6 +2785,23 @@ function filterRecipes() {
         // Calcul de prixPanierJour avec caParJour (arrondi) et panierJourArrondi
         const prixPanierJour = (jours > 0 && panierJourArrondi > 0) ? (caParJour / panierJourArrondi) : 0;
 
+        // Calcul du CA mensuel à déclarer : Ventes par carte + Ventes en espèce / 2
+        const caAjuste = monthlyData[key].card + monthlyData[key].cash / 2;
+
+        // Calcul de la TVA collectée à déclarer : (CA mensuel à déclarer) * 0.1 / 1.1
+        const tvaCollecteeDeclarer = caAjuste * 0.1 / 1.1;
+
+        // Calcul de l'Impôt et Urssaf
+        let impotUrssaf = 0;
+        const yearNum = parseInt(year);
+        const monthNum = parseInt(month);
+        const isBeforeOct2025 = (yearNum < 2025) || (yearNum === 2025 && monthNum <= 9);
+        if (isBeforeOct2025) {
+            impotUrssaf = caAjuste * 0.075; // 7.5% de décembre 2024 à septembre 2025
+        } else {
+            impotUrssaf = caAjuste * 0.13715; // 13.715% à partir d'octobre 2025
+        }
+
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${label}</td>
@@ -2676,19 +2810,24 @@ function filterRecipes() {
             <td>${jours}</td>
             <td>${panierJourArrondi}</td>
             <td>${prixPanierJour.toFixed(2)}€</td>
+            <td style="background-color: #e0e0e0;">${Math.round(caAjuste)} €</td>
+            <td style="background-color: #e0e0e0;">${Math.round(tvaCollecteeDeclarer)} €</td>
+            <td style="background-color: #e0e0e0;">${Math.round(impotUrssaf)} €</td>
         `;
         summaryTbody.appendChild(row);
     }
 
     summaryTable.appendChild(summaryTbody);
-    list.appendChild(summaryTable);
+
+    // Ajout du conteneur pour permettre le défilement horizontal
+    const summaryContainer = document.createElement('div');
+    summaryContainer.style.maxWidth = '100%';
+    summaryContainer.style.overflowX = 'auto';
+    summaryContainer.appendChild(summaryTable);
+    list.appendChild(summaryContainer);
 
     console.log('salesData:', salesData);
 }
-
-
-
-
 
 
 
@@ -4463,6 +4602,9 @@ function filterPurchases() {
                 <th style="width: 50px; text-align: center;">Nb Jours travaillés</th>
                 <th style="width: 30px; text-align: center;">Nb Paniers/J</th>
                 <th style="width: 70px; text-align: right;">Coût Revient Panier Moy</th>
+                <th style="width: 70px; text-align: right;">TVA déductible à 5,5%</th>
+                <th style="width: 70px; text-align: right;">TVA déductible à 20%</th>
+                <th style="width: 70px; text-align: right;">TVA déductible Total</th>
             </tr>
         `;
         summaryTable.appendChild(summaryHead);
@@ -4494,7 +4636,16 @@ function filterPurchases() {
                 coutReviensPanierJour = (totalAlimentaireArrondi + totalPainArrondi) / denominateur;
             }
 
-            console.log(`Mois ${moisNom} ${year}, totalAlimentaireArrondi: ${totalAlimentaireArrondi}, totalPainArrondi: ${totalPainArrondi}, panierJourArrondi: ${panierJourArrondi}, coutReviensPanierJour: ${coutReviensPanierJour}`);
+            // Calcul de la TVA déductible à 5,5 % : (Total alimentaire mensuel + Total Pain mensuel) * 0.055 / 1.055
+            const tvaDeductible5_5 = (val.Alimentaire + val.Pain) * 0.055 / 1.055;
+
+            // Calcul de la TVA déductible à 20 % : (Total Autre + Total Matériel) * 0.2 / 1.2
+            const tvaDeductible20 = (val.Autre + val.Matériel) * 0.2 / 1.2;
+
+            // Calcul de la TVA déductible totale : somme des deux TVA déductibles
+            const tvaDeductibleTotal = tvaDeductible5_5 + tvaDeductible20;
+
+            console.log(`Mois ${moisNom} ${year}, totalAlimentaireArrondi: ${totalAlimentaireArrondi}, totalPainArrondi: ${totalPainArrondi}, panierJourArrondi: ${panierJourArrondi}, coutReviensPanierJour: ${coutReviensPanierJour}, tvaDeductible5_5: ${tvaDeductible5_5}, tvaDeductible20: ${tvaDeductible20}, tvaDeductibleTotal: ${tvaDeductibleTotal}`);
 
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -4507,6 +4658,9 @@ function filterPurchases() {
                 <td>${joursTravailles}</td>
                 <td>${panierJourArrondi}</td>
                 <td>${coutReviensPanierJour.toFixed(2)} €</td>
+                <td>${Math.round(tvaDeductible5_5)} €</td>
+                <td>${Math.round(tvaDeductible20)} €</td>
+                <td>${Math.round(tvaDeductibleTotal)} €</td>
             `;
             summaryBody.appendChild(row);
         });
@@ -5977,10 +6131,10 @@ function showInvoiceManagement() { navigateTo('invoiceManagementPage'); }
 // Gérer le bouton "Retour" (Android et iOS via popstate)
 window.addEventListener('popstate', function(event) {
     const pages = [
-        'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
-        'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
+        'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage',
+        'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage',
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage', 'budgetPage', 'settingsPage' , 'indicatorsPage'
+        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage'
     ];
 
     const homePage = document.getElementById('homePage');
@@ -5997,19 +6151,15 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'invoiceManagementPage') filterInvoices();
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
+        if (currentPage === 'fiscalPage') displayFiscalTable();
 
         if (currentPage === 'homePage') {
             history.replaceState(null, '', '#');
         }
     } else {
-        if (!homePage.classList.contains('hidden')) {
-            window.close();
-            history.replaceState(null, '', '#');
-        } else {
-            pages.forEach(id => document.getElementById(id).classList.add('hidden'));
-            homePage.classList.remove('hidden');
-            history.replaceState(null, '', '#');
-        }
+        pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+        homePage.classList.remove('hidden');
+        history.replaceState(null, '', '#');
     }
 });
 
@@ -6296,6 +6446,202 @@ function displayIndicatorsTable() {
         }
     }
 }
+
+
+
+function showFiscal() {
+    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage'];
+    pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+    document.getElementById('fiscalPage').classList.remove('hidden');
+    displayFiscalTable();
+    history.pushState({ page: 'fiscalPage' }, '', '#fiscal');
+}
+
+function displayFiscalTable() {
+    try {
+        const tableContainer = document.getElementById('fiscalTable');
+        if (!tableContainer) {
+            console.error('Élément fiscalTable non trouvé');
+            return;
+        }
+
+        // Charger les données
+        let salesData = {};
+        let purchases = [];
+        let invoices = [];
+        try {
+            salesData = JSON.parse(localStorage.getItem('salesData')) || {};
+            purchases = JSON.parse(localStorage.getItem('purchases')) || [];
+            invoices = JSON.parse(localStorage.getItem('savedInvoices')) || [];
+        } catch (e) {
+            console.error('Erreur lors du chargement des données:', e);
+            tableContainer.innerHTML = '<p>Erreur lors du chargement des données.</p>';
+            return;
+        }
+
+        // Paramètres fiscaux
+        const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
+        const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
+
+        // Agréger les données par mois, aligné avec filterRecipes
+        const monthlyData = {};
+        const startDate = new Date('2024-12-01');
+        const endDate = new Date();
+
+        // Ventes (CA à déclarer ajusté : card + cash/2)
+        Object.keys(salesData).forEach(dateKey => {
+            const date = new Date(dateKey);
+            if (date >= startDate && date <= endDate) {
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                if (!monthlyData[key]) {
+                    monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
+                }
+                monthlyData[key].ca += salesData[dateKey].total || 0;
+                monthlyData[key].caAjuste += (salesData[dateKey].card || 0) + (salesData[dateKey].cash || 0) / 2;
+                monthlyData[key].days += 1;
+            }
+        });
+
+        // Achats (TVA déductible)
+        purchases.forEach(p => {
+            const date = new Date(p.date);
+            if (date >= startDate && date <= endDate) {
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                if (!monthlyData[key]) {
+                    monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
+                }
+                monthlyData[key].purchases.push(p);
+                const tvaRatePurchase = (p.type === 'Pain' || p.type === 'Alimentaire') ? 0.055 : 0.2;
+                monthlyData[key].tvaDeductible += p.amountTTC * (tvaRatePurchase / (1 + tvaRatePurchase));
+            }
+        });
+
+        // TVA collectée basée sur CA ajusté
+        Object.keys(monthlyData).forEach(key => {
+            monthlyData[key].tvaCollectee = monthlyData[key].caAjuste * (tvaRate / (1 + tvaRate));
+        });
+
+        // Calculer le CA cumulé pour vérifier l'exonération TVA
+        let cumulativeCA = 0;
+        const sortedKeys = Object.keys(monthlyData).sort();
+        sortedKeys.forEach(key => {
+            cumulativeCA += monthlyData[key].caAjuste;
+            monthlyData[key].tvaExoneree = cumulativeCA <= 85000 ? 'Oui' : 'Non';
+        });
+
+        // Générer le tableau
+        let tableHTML = `
+            <style>
+                .crossed {
+                    position: relative;
+                    text-align: center;
+                }
+                .crossed::before,
+                .crossed::after {
+                    content: '';
+                    position: absolute;
+                    background-color: red;
+                    width: 80%;
+                    height: 1px;
+                    left: 10%;
+                    top: 50%;
+                }
+                .crossed::before {
+                    transform: rotate(45deg);
+                }
+                .crossed::after {
+                    transform: rotate(-45deg);
+                }
+            </style>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mois</th>
+                        <th>CA à déclarer</th>
+                        <th style="background-color: #e0e0e0;">Impôt Urssaf à payer</th>
+                        <th>TVA collectée</th>
+                        <th>TVA déductible</th>
+                        <th style="background-color: #e0e0e0;">TVA à payer</th>
+                        <th>TVA exonérée</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        sortedKeys.forEach(key => {
+            const [year, month] = key.split('-');
+            const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
+            const caAjuste = Math.round(monthlyData[key].caAjuste);
+            const urssaf = Math.round(caAjuste * urssafRate);
+            const tvaCollectee = Math.round(monthlyData[key].tvaCollectee);
+            const tvaDeductible = Math.round(monthlyData[key].tvaDeductible);
+            const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
+            const isExoneree = monthlyData[key].tvaExoneree === 'Oui';
+            const tvaCellClass = isExoneree ? 'crossed' : '';
+
+            tableHTML += `
+                <tr>
+                    <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
+                    <td>${caAjuste}€</td>
+                    <td style="background-color: #e0e0e0;">${urssaf}€</td>
+                    <td>${tvaCollectee}€</td>
+                    <td>${tvaDeductible}€</td>
+                    <td style="background-color: #e0e0e0;" class="${tvaCellClass}">${tvaAPayer}€</td>
+                    <td>${monthlyData[key].tvaExoneree}</td>
+                </tr>
+            `;
+        });
+
+        tableHTML += `
+                </tbody>
+            </table>
+        `;
+        tableContainer.innerHTML = tableHTML;
+
+    } catch (error) {
+        console.error('Erreur dans displayFiscalTable:', error);
+        const tableContainer = document.getElementById('fiscalTable');
+        if (tableContainer) {
+            tableContainer.innerHTML = '<p>Erreur lors du chargement des données fiscales. Vérifiez la console pour plus de détails.</p>';
+        }
+    }
+}
+
+// Mettre à jour l'écouteur popstate
+window.addEventListener('popstate', function(event) {
+    const pages = [
+        'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage',
+        'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage',
+        'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
+        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage'
+    ];
+
+    const homePage = document.getElementById('homePage');
+
+    if (event.state && event.state.page) {
+        const currentPage = event.state.page;
+        pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById(currentPage).classList.remove('hidden');
+
+        if (currentPage === 'recipeBookPage') updateRecipeDisplay();
+        if (currentPage === 'purchasesPage') updatePurchaseDisplay();
+        if (currentPage === 'personnelPage') updatePersonnelDisplay();
+        if (currentPage === 'recipeManagementPage') filterRecipes();
+        if (currentPage === 'invoiceManagementPage') filterInvoices();
+        if (currentPage === 'purchasesManagementPage') filterPurchases();
+        if (currentPage === 'personnelManagementPage') filterPersonnel();
+        if (currentPage === 'fiscalPage') displayFiscalTable();
+
+        if (currentPage === 'homePage') {
+            history.replaceState(null, '', '#');
+        }
+    } else {
+        pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+        homePage.classList.remove('hidden');
+        history.replaceState(null, '', '#');
+    }
+});
+
 
 // Fonction pour afficher la page Budget
 function showBudget() {
