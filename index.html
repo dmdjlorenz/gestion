@@ -6553,21 +6553,23 @@ function displayFiscalTable() {
                     transform: rotate(-45deg);
                 }
                 .table-scroll-container {
-                    overflow-x: auto;
-                    overflow-y: hidden;
+                    overflow-x: auto;  /* Scrolling horizontal uniquement */
+                    overflow-y: hidden; /* Aucun défilement vertical */
                     -webkit-overflow-scrolling: touch;
+                    margin: 0 auto;  /* Centrage */
                 }
                 .table-scroll-container table {
-                    min-width: 600px; /* Réduction de la largeur minimale */
+                    width: 100%; /* Table s'étend sur toute la largeur */
                     border-collapse: collapse;
                 }
-                /* Réduction de la taille des colonnes */
+                /* Colonnes de taille initiale */
                 th, td {
-                    padding: 4px 8px; /* Réduction de l'espace interne */
-                    font-size: 10px;   /* Taille de police réduite */
+                    padding: 8px; /* Taille de padding inchangée */
+                    font-size: 14px; /* Taille de la police inchangée */
+                    text-align: center; /* Alignement centré pour une meilleure lisibilité */
                 }
                 th {
-                    text-align: center;
+                    background-color: #f0f0f0;
                 }
                 td {
                     text-align: right;
@@ -6629,6 +6631,7 @@ function displayFiscalTable() {
         }
     }
 }
+
 
 
 
