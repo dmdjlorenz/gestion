@@ -6458,126 +6458,85 @@ function showFiscal() {
 }
 
 function displayFiscalTable() {
-try {
-const tableContainer = document.getElementById('fiscalTable');
-if (!tableContainer) {
-console.error('Élément fiscalTable non trouvé');
-return;
-}
+    try {
+        const tableContainer = document.getElementById('fiscalTable');
+        if (!tableContainer) {
+            console.error('Élément fiscalTable non trouvé');
+            return;
+        }
 
-// Charger les données
-let salesData = {};
-let purchases = [];
-let invoices = [];
-try {
-    salesData = JSON.parse(localStorage.getItem('salesData')) || {};
-    purchases = JSON.parse(localStorage.getItem('purchases')) || [];
-    invoices = JSON.parse(localStorage.getItem('savedInvoices')) || [];
-} catch (e) {
-    console.error('Erreur lors du chargement des données:', e);
-    tableContainer.innerHTML = '<p>Erreur lors du chargement des données.</p>';
-    return;
-}
+        // Charger les données
+        let salesData = {};
+        let purchases = [];
+        let invoices = [];
+        try {
+            salesData = JSON.parse(localStorage.getItem('salesData')) || {};
+            purchases = JSON.parse(localStorage.getItem('purchases')) || [];
+            invoices = JSON.parse(localStorage.getItem('savedInvoices')) || [];
+        } catch (e) {
+            console.error('Erreur lors du chargement des données:', e);
+            tableContainer.innerHTML = '<p>Erreur lors du chargement des données.</p>';
+            return;
+        }
 
-// Paramètres fiscaux
-const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
-const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
+        // Paramètres fiscaux
+        const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
+        const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
-// Agréger les données par mois, aligné avec filterRecipes
-const monthlyData = {};
-const startDate = new Date('2024-12-01');
-const endDate = new Date();
+        // Agréger les données par mois
+        const monthlyData = {};
+        const startDate = new Date('2024-12-01');
+        const endDate = new Date();
 
-// Ventes (CA à déclarer ajusté : card + cash/2)
-Object.keys(salesData).forEach(dateKey => {
-    const date = new Date(dateKey);
-    if (date >= startDate && date <= endDate) {
-        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        if (!monthlyData[key]) {
-            monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
-        }
-        monthlyData[key].ca += salesData[dateKey].total || 0;
-        monthlyData[key].caAjuste += (salesData[dateKey].card || 0) + (salesData[dateKey].cash || 0) / 2;
-        monthlyData[key].days += 1;
-    }
-});
+        // Ventes (CA à déclarer Ajusté : carte + espèces/2)
+        Object.keys(salesData).forEach(dateKey => {
+            const date = new Date(dateKey);
+            if (date >= startDate && date <= endDate) {
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                if (!monthlyData[key]) {
+                    monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
+                }
+                monthlyData[key].ca += salesData[dateKey].total || 0;
+                monthlyData[key].caAjuste += (salesData[dateKey].card || 0) + (salesData[dateKey].cash || 0) / 2;
+                monthlyData[key].days += 1;
+            }
+        });
 
-// Achats (TVA déductible)
-purchases.forEach(p => {
-    const date = new Date(p.date);
-    if (date >= startDate && date <= endDate) {
-        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        if (!monthlyData[key]) {
-            monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
-        }
-        monthlyData[key].purchases.push(p);
-        const tvaRatePurchase = (p.type === 'Pain' || p.type === 'Alimentaire') ? 0.055 : 0.2;
-        monthlyData[key].tvaDeductible += p.amountTTC * (tvaRatePurchase / (1 + tvaRatePurchase));
-    }
-});
+        // Achats (TVA déductible)
+        purchases.forEach(p => {
+            const date = new Date(p.date);
+            if (date >= startDate && date <= endDate) {
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                if (!monthlyData[key]) {
+                    monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
+                }
+                monthlyData[key].purchases.push(p);
+                const tvaRatePurchase = (p.type === 'Pain' || p.type === 'Alimentaire') ? 0.055 : 0.2;
+                monthlyData[key].tvaDeductible += p.amountTTC * (tvaRatePurchase / (1 + tvaRatePurchase));
+            }
+        });
 
-// TVA collectée basée sur CA ajusté
-Object.keys(monthlyData).forEach(key => {
-    monthlyData[key].tvaCollectee = monthlyData[key].caAjuste * (tvaRate / (1 + tvaRate));
-});
+        // TVA collectée basée sur CA ajusté
+        Object.keys(monthlyData).forEach(key => {
+            monthlyData[key].tvaCollectee = monthlyData[key].caAjuste * (tvaRate / (1 + tvaRate));
+        });
 
-// Calculer le CA cumulé pour vérifier l'exonération TVA
-let cumulativeCA = 0;
-const sortedKeys = Object.keys(monthlyData).sort();
-sortedKeys.forEach(key => {
-    cumulativeCA += monthlyData[key].caAjuste;
-    monthlyData[key].tvaExoneree = cumulativeCA <= 85000 ? 'Oui' : 'Non';
-});
+        // Calculer le CA cumulé pour vérifier l'exonération TVA
+        let cumulativeCA = 0;
+        const sortedKeys = Object.keys(monthlyData).sort();
+        sortedKeys.forEach(key => {
+            cumulativeCA += monthlyData[key].caAjuste;
+            monthlyData[key].tvaExoneree = cumulativeCA <= 85000 ? 'Oui' : 'Non';
+        });
 
-// Générer le tableau
-let tableHTML = `
-    <style>
-        .table-container {
-            width: 100%;
-            max-width: 100%; /* Prevent container from exceeding screen width */
-            overflow-x: auto; /* Enable horizontal scrolling */
-            overflow-y: hidden; /* Prevent vertical scrolling */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-            box-sizing: border-box; /* Include padding and borders in width */
-        }
-        table {
-            width: 100%;
-            min-width: 500px; /* Reduced min-width for better mobile fit */
-            border-collapse: collapse;
-            font-size: 12px; /* Smaller font for mobile readability */
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 6px; /* Reduced padding for compact display */
-            text-align: center;
-            min-width: 80px; /* Fixed column width to ensure all columns are visible */
-            box-sizing: border-box;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .crossed {
-            position: relative;
-            text-align: center;
-        }
-        .crossed::before,
-        .crossed::after {
-            content: '';
-            position: absolute;
-            background-color: red;
-            width: 80%;
-            height: 1px;
-            left: 10%;
-            top: 50%;
-        }
-        .crossed::before {
-            transform: rotate(45deg);
-        }
-        .crossed::after {
-            transform: rotate(-45deg);
-        }
-    </style>
-    <div class="table-container">
+        // Générer le tableau
+        let tableHTML = `
+        <style>
+            .crossed { position: relative; text-align: center; }
+            .crossed::before, .crossed::after { content: ''; position: absolute; background-color: red; width: 80%; height: 1px; left: 10%; top: 50%; }
+            .crossed::before { transform: rotate(45deg); }
+            .crossed::after { transform: rotate(-45deg); }
+        </style>
         <table>
             <thead>
                 <tr>
@@ -6587,50 +6546,46 @@ let tableHTML = `
                     <th>TVA collectée</th>
                     <th>TVA déductible</th>
                     <th style="background-color: #e0e0e0;">TVA à payer</th>
-                    <th>TVA exonérée</th>
                 </tr>
             </thead>
             <tbody>
-`;
+        `;
 
-sortedKeys.forEach(key => {
-    const [year, month] = key.split('-');
-    const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
-    const caAjuste = Math.round(monthlyData[key].caAjuste);
-    const urssaf = Math.round(caAjuste * urssafRate);
-    const tvaCollectee = Math.round(monthlyData[key].tvaCollectee);
-    const tvaDeductible = Math.round(monthlyData[key].tvaDeductible);
-    const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
-    const isExoneree = monthlyData[key].tvaExoneree === 'Oui';
-    const tvaCellClass = isExoneree ? 'crossed' : '';
+        sortedKeys.forEach(key => {
+            const [année, mois] = key.split('-');
+            const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
+            const caAjuste = Math.round(monthlyData[key].caAjuste);
+            const urssaf = Math.round(caAjuste * urssafRate);
+            const tvaCollectee = Math.round(monthlyData[key].tvaCollectee);
+            const tvaDeductible = Math.round(monthlyData[key].tvaDeductible);
+            const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
+            const isExoneree = monthlyData[key].tvaExoneree === 'Oui';
+            const tvaCellClass = isExoneree ? 'crossed' : '';
+            tableHTML += `
+                <tr>
+                    <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${année}</td>
+                    <td>${caAjuste}€</td>
+                    <td style="background-color: #e0e0e0;">${urssaf}€</td>
+                    <td>${tvaCollectee}€</td>
+                    <td>${tvaDeductible}€</td>
+                    <td style="background-color: #e0e0e0;" class="${tvaCellClass}">${tvaAPayer}€</td>
+                </tr>
+            `;
+        });
 
-    tableHTML += `
-        <tr>
-            <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
-            <td>${caAjuste}€</td>
-            <td style="background-color: #e0e0e0;">${urssaf}€</td>
-            <td>${tvaCollectee}€</td>
-            <td>${tvaDeductible}€</td>
-            <td style="background-color: #e0e0e0;" class="${tvaCellClass}">${tvaAPayer}€</td>
-            <td>${monthlyData[key].tvaExoneree}</td>
-        </tr>
-    `;
-});
-
-tableHTML += `
+        tableHTML += `
             </tbody>
         </table>
-    </div>
-`;
-tableContainer.innerHTML = tableHTML;
+        `;
 
-} catch (error) {
-    console.error('Erreur dans displayFiscalTable:', error);
-    const tableContainer = document.getElementById('fiscalTable');
-    if (tableContainer) {
-        tableContainer.innerHTML = '<p>Erreur lors du chargement des données fiscales. Vérifiez la console pour plus de détails.</p>';
+        tableContainer.innerHTML = tableHTML;
+    } catch (error) {
+        console.error('Erreur dans displayFiscalTable:', error);
+        const tableContainer = document.getElementById('fiscalTable');
+        if (tableContainer) {
+            tableContainer.innerHTML = '<p>Erreur lors du chargement des données fiscales. Vérifiez la console pour plus de détails.</p>';
+        }
     }
-}
 }
 
 
