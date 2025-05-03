@@ -1061,7 +1061,7 @@
         <button onclick="navigateTo('homePage')" style="background:#000000; color:white;">Retour</button>
     </div>
 <!-- ... Reste du HTML ... -->
-<div id="indicatorsPage" class="page hidden">
+    <div id="indicatorsPage" class="page hidden">
     <h2>Indicateurs</h2>
     <div id="indicatorsTable"></div>
     <canvas id="coefVenteChart" style="margin-top: 20px; max-width: 100%;"></canvas>
@@ -1077,7 +1077,7 @@
     <!-- Ventes -->
     <div id="recipeBookPage" class="hidden">
         <h1>GESTION DES VENTES</h1>
-<br>
+        <br>
         <div class="date-nav">
             <button id="prevDay">←</button>
             <span id="currentDate"></span>
@@ -2507,7 +2507,7 @@ function filterRecipes() {
     list.innerHTML = '';
 
     function formatRecipeDate(date) {
-        const jours = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+        const jours = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
         const jour = jours[date.getDay()];
         const dateString = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
         return `${jour} ${dateString}`;
@@ -2634,11 +2634,11 @@ function filterRecipes() {
     summaryThead.innerHTML = `
         <tr style="background-color: #ccc;">
             <th>Mois</th>
-            <th style="width: 120px;">CA Mensuel (€)</th>
-            <th style="width: 120px;">CA Moyen / Jour (€) </th>
-            <th style="width: 80px;">Nb de J travaillés</th>
-            <th style="width: 80px;">Nb de paniers/J</th>
-            <th>Prix de Vente Panier Moy</th>
+            <th style="width: 120px;">CA/Mois</th>
+            <th style="width: 120px;">CA/Jour</th>
+            <th style="width: 80px;">Nb Jours travaillés</th>
+            <th style="width: 80px;">Nb Paniers/J</th>
+            <th>Prix Vente Panier Moy</th>
         </tr>
     `;
     summaryTable.appendChild(summaryThead);
@@ -4304,7 +4304,7 @@ function filterPurchases() {
         const showComments = showCommentsCheckbox.checked;
 
         const formatRecipeDate = (date) => {
-            const jours = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+            const jours = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
             const jour = jours[date.getUTCDay()];
             return `${jour} ${date.toLocaleDateString('fr-FR', {
                 day: '2-digit',
@@ -4460,9 +4460,9 @@ function filterPurchases() {
                 <th style="width: 90px; text-align: right;">Total Mat</th>
                 <th style="width: 110px; text-align: right;">Total Autre</th>
                 <th style="width: 110px; text-align: right;">Total Pain</th>
-                <th style="width: 50px; text-align: center;">Nb de jours travaillés</th>
-                <th style="width: 30px; text-align: center;">Nb de Paniers/J</th>
-                <th style="width: 70px; text-align: right;">Coût de revient Panier Moy</th>
+                <th style="width: 50px; text-align: center;">Nb Jours travaillés</th>
+                <th style="width: 30px; text-align: center;">Nb Paniers/J</th>
+                <th style="width: 70px; text-align: right;">Coût Revient Panier Moy</th>
             </tr>
         `;
         summaryTable.appendChild(summaryHead);
@@ -5431,7 +5431,7 @@ function filterPersonnel() {
     const totalComments = Math.round(Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0) || 0);
 
     // Définir les abréviations des jours, avec M pour mercredi
-    const dayAbbreviations = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
 
     // Construire les lignes du tableau
     let tableRows = '';
@@ -6085,9 +6085,9 @@ function displayIndicatorsTable() {
                 <thead>
                     <tr>
                         <th>Mois</th>
-                        <th>Coût de revient Panier Moyen</th>
-                        <th>Prix de vente Panier Moy</th>
-                        <th>Coef de vente (pertes comprises) objectif 3</th>
+                        <th>Coût Revient Panier Moy</th>
+                        <th>Prix Vente Panier Moy</th>
+                        <th>Coef de vente (pertes comprises) objectif 2.8</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -6143,8 +6143,8 @@ function displayIndicatorsTable() {
             tableHTML += `
                 <tr>
                     <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
-                    <td>${coutReviensPanierJour.toFixed(2)} €</td>
-                    <td>${prixPanierJour.toFixed(2)} €</td>
+                    <td>${coutReviensPanierJour.toFixed(2)}€</td>
+                    <td>${prixPanierJour.toFixed(2)}€</td>
                     <td class="${coefClass}"><strong>${coefVente}</strong></td>
                 </tr>
             `;
