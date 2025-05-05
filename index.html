@@ -1232,10 +1232,24 @@
 <script>
 // Dès que la page est prête
 window.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
+    // Créer une date en heure de Paris
+    const parisDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+
+    // Formater la date en 'YYYY-MM-DD' directement
+    const today = parisDate.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).split('/').reverse().join('-'); // Change le format de 'DD/MM/YYYY' à 'YYYY-MM-DD'
+
+    // Mettre à jour le champ de date
     document.getElementById('recipeEndDate').value = today;
+
+    // Cacher l'indicateur de chargement
     document.getElementById('indicatorsPage').classList.add('hidden');
 });
+
+
 
 // Ici ta fonction filterRecipes() que tu as déjà
 function filterRecipes() {
@@ -1744,22 +1758,54 @@ document.addEventListener('DOMContentLoaded', () => {
     history.pushState({ page: 'homePage' }, '', '#homePage');
 });
 
+// Dès que la page est prête pour personnelEndDate
 window.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
+    // Créer une date en heure de Paris
+    const parisDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+
+    // Formater la date en 'YYYY-MM-DD'
+    const today = parisDate.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).split('/').reverse().join('-'); // Change le format de 'DD/MM/YYYY' à 'YYYY-MM-DD'
+
+    // Mettre à jour le champ de date
     document.getElementById('personnelEndDate').value = today;
 });
 
-
-// Dès que la page est prête
+// Dès que la page est prête pour purchaseEndDate
 window.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
+    // Créer une date en heure de Paris
+    const parisDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+
+    // Formater la date en 'YYYY-MM-DD'
+    const today = parisDate.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).split('/').reverse().join('-'); // Change le format de 'DD/MM/YYYY' à 'YYYY-MM-DD'
+
+    // Mettre à jour le champ de date
     document.getElementById('purchaseEndDate').value = today;
 });
 
+// Dès que la page est prête pour endDate
 window.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
+    // Créer une date en heure de Paris
+    const parisDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+
+    // Formater la date en 'YYYY-MM-DD'
+    const today = parisDate.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).split('/').reverse().join('-'); // Change le format de 'DD/MM/YYYY' à 'YYYY-MM-DD'
+
+    // Mettre à jour le champ de date
     document.getElementById('endDate').value = today;
 });
+
 
 
 
@@ -4371,7 +4417,14 @@ function formatRecipeDate(date) {
 }
 
 function getISODate(date) {
-    return date.toISOString();
+    // Convertir la date en heure de Paris
+    const parisDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+    // Formater en YYYY-MM-DD
+    return parisDate.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).split('/').reverse().join('-');
 }
 
 function updatePurchaseDisplay() {
@@ -4379,7 +4432,6 @@ function updatePurchaseDisplay() {
     document.getElementById('purchaseAmount').value = '';
     document.querySelectorAll('input[name="purchaseType"]').forEach(input => input.checked = false);
     document.getElementById('purchaseComment').value = '';
-
 }
 
 function addPurchase() {
@@ -4442,33 +4494,57 @@ function filterPurchases() {
         const end = endInput.value;
         const showComments = showCommentsCheckbox.checked;
 
+        // Fonction pour formater la date en heure de Paris
         const formatRecipeDate = (date) => {
             const jours = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
-            const jour = jours[date.getUTCDay()];
-            return `${jour} ${date.toLocaleDateString('fr-FR', {
+            const parisDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+            const jour = jours[parisDate.getDay()];
+            return `${jour} ${parisDate.toLocaleDateString('fr-FR', {
                 day: '2-digit',
                 month: '2-digit',
-                year: 'numeric',
-                timeZone: 'UTC'
+                year: 'numeric'
             })}`;
         };
 
-        const startDate = start ? new Date(start + 'T00:00:00Z') : new Date('2024-12-09T00:00:00Z');
-        const endDate = end ? new Date(end + 'T23:59:59Z') : new Date();
+        // Fonction pour formater une date en YYYY-MM-DD en heure de Paris
+        const getParisDateString = (date) => {
+            const parisDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+            return parisDate.toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).split('/').reverse().join('-');
+        };
+
+        // Construction des dates de début et de fin en heure de Paris
+        const startDate = start
+            ? new Date(new Date(`${start}T00:00:00`).toLocaleString('en-US', { timeZone: 'Europe/Paris' }))
+            : new Date(new Date('2024-12-09T00:00:00').toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+
+        const endDate = end
+            ? new Date(new Date(`${end}T23:59:59`).toLocaleString('en-US', { timeZone: 'Europe/Paris' }))
+            : new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+
+        // Log pour déboguer les dates
+        console.log('startDate:', getParisDateString(startDate), 'endDate:', getParisDateString(endDate));
+
+        // Vérification de validité des dates
         if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
             console.error('Dates invalides ou incohérentes');
             list.innerHTML = '<p>Erreur : Dates invalides.</p>';
             return;
         }
 
+        // Charger les achats depuis localStorage
         let purchases = [];
         try {
             const storedPurchases = localStorage.getItem('purchases');
             if (storedPurchases && storedPurchases !== '[]') {
                 purchases = JSON.parse(storedPurchases).map(p => ({
                     ...p,
-                    date: new Date(p.date).toISOString().split('T')[0]
+                    date: getParisDateString(new Date(p.date)) // Normaliser la date
                 }));
+                console.log('Achats chargés:', purchases);
             }
         } catch (e) {
             console.error('Erreur lors du chargement des achats:', e);
@@ -4483,7 +4559,7 @@ function filterPurchases() {
             return;
         }
 
-        // Tableau des achats quotidiens
+        // Créer le tableau des achats quotidiens
         const table = document.createElement('table');
         const thead = document.createElement('thead');
         thead.innerHTML = `
@@ -4503,9 +4579,12 @@ function filterPurchases() {
         const totalsByPayment = { Carte: 0, Espèce: 0 };
         let grandTotal = 0;
 
+        // Boucle sur les dates pour afficher les achats
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-            const dateKey = d.toISOString().split('T')[0];
+            const dateKey = getParisDateString(d);
             const purchasesOnDate = purchases.filter(p => p.date === dateKey);
+
+            console.log('Date traitée:', dateKey, 'Achats:', purchasesOnDate);
 
             if (purchasesOnDate.length === 0) {
                 const row = document.createElement('tr');
@@ -4516,7 +4595,7 @@ function filterPurchases() {
                     const row = document.createElement('tr');
                     row.style.cursor = 'pointer';
                     row.onclick = () => showPurchaseDetailFromIndex?.(purchases.indexOf(p));
-                    row.innerHTML = `<td style="white-space: nowrap;">${formatRecipeDate(new Date(dateKey + 'T00:00:00Z'))}</td><td>${Math.round(p.amountTTC)} €</td><td>${p.type}</td><td>${p.payment}</td>${showComments ? `<td>${p.comment || ''}</td>` : ''}`;
+                    row.innerHTML = `<td style="white-space: nowrap;">${formatRecipeDate(new Date(p.date))}</td><td>${Math.round(p.amountTTC)} €</td><td>${p.type}</td><td>${p.payment}</td>${showComments ? `<td>${p.comment || ''}</td>` : ''}`;
                     tbody.appendChild(row);
 
                     totalsByType[p.type] = (totalsByType[p.type] || 0) + p.amountTTC;
@@ -4528,6 +4607,7 @@ function filterPurchases() {
 
         table.appendChild(tbody);
 
+        // Ajouter le pied de tableau avec les totaux
         const tfoot = document.createElement('tfoot');
         tfoot.innerHTML = `
             ${Object.keys(totalsByType).filter(type => totalsByType[type] > 0).map(type => `
@@ -4546,16 +4626,19 @@ function filterPurchases() {
         container.appendChild(table);
         list.appendChild(container);
 
-        // --- Tableau Résumé par Mois ---
+        // Tableau Résumé par Mois
         const monthlyData = {};
         const monthlySalesData = {};
 
         // Calcul des données d'achats
         purchases.forEach(p => {
-            const date = new Date(p.date + 'T00:00:00Z');
-            if (date < startDate || date > endDate) return;
+            const parisDate = new Date(new Date(p.date + 'T00:00:00').toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+            if (parisDate < startDate || parisDate > endDate) return;
 
-            const key = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+            const year = parisDate.getFullYear();
+            const month = String(parisDate.getMonth() + 1).padStart(2, '0');
+            const key = `${year}-${month}`;
+
             if (!monthlyData[key]) {
                 monthlyData[key] = {
                     total: 0,
@@ -4569,14 +4652,18 @@ function filterPurchases() {
 
             monthlyData[key].total += p.amountTTC;
             monthlyData[key][p.type] = (monthlyData[key][p.type] || 0) + p.amountTTC;
-            if (p.type === 'Pain') monthlyData[key].joursPain.add(p.date);
+
+            if (p.type === 'Pain') {
+                monthlyData[key].joursPain.add(p.date);
+            }
         });
 
         // Calcul des jours travaillés à partir de salesData
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-            const year = d.getUTCFullYear();
-            const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-            const day = String(d.getUTCDate()).padStart(2, '0');
+            const parisDate = new Date(d.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+            const year = parisDate.getFullYear();
+            const month = String(parisDate.getMonth() + 1).padStart(2, '0');
+            const day = String(parisDate.getDate()).padStart(2, '0');
             const dateKey = `${year}-${month}-${day}`;
 
             if (salesData[dateKey]) {
@@ -4612,7 +4699,11 @@ function filterPurchases() {
         const summaryBody = document.createElement('tbody');
         Object.entries(monthlyData).forEach(([key, val]) => {
             const [year, month] = key.split('-');
-            const moisNom = new Date(`${key}-01T00:00:00Z`).toLocaleDateString('fr-FR', { month: 'long', timeZone: 'UTC' });
+            const moisNom = new Date(`${key}-01T00:00:00`).toLocaleDateString('fr-FR', {
+                month: 'long',
+                timeZone: 'Europe/Paris'
+            });
+
             const joursTravailles = monthlySalesData[key]?.activeDays || 0;
 
             let panierJour = 0;
@@ -4624,28 +4715,19 @@ function filterPurchases() {
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
 
-            // Utiliser les valeurs arrondies comme affichées dans le tableau
             const totalAlimentaireArrondi = Math.round(val.Alimentaire);
             const totalPainArrondi = Math.round(val.Pain);
             const panierJourArrondi = Math.round(panierJour);
 
-            // Calcul du coût de revient avec les valeurs arrondies
             let coutReviensPanierJour = 0;
             const denominateur = joursTravailles * panierJourArrondi;
             if (denominateur > 0) {
                 coutReviensPanierJour = (totalAlimentaireArrondi + totalPainArrondi) / denominateur;
             }
 
-            // Calcul de la TVA déductible à 5,5 % : (Total alimentaire mensuel + Total Pain mensuel) * 0.055 / 1.055
             const tvaDeductible5_5 = (val.Alimentaire + val.Pain) * 0.055 / 1.055;
-
-            // Calcul de la TVA déductible à 20 % : (Total Autre + Total Matériel) * 0.2 / 1.2
             const tvaDeductible20 = (val.Autre + val.Matériel) * 0.2 / 1.2;
-
-            // Calcul de la TVA déductible totale : somme des deux TVA déductibles
             const tvaDeductibleTotal = tvaDeductible5_5 + tvaDeductible20;
-
-            console.log(`Mois ${moisNom} ${year}, totalAlimentaireArrondi: ${totalAlimentaireArrondi}, totalPainArrondi: ${totalPainArrondi}, panierJourArrondi: ${panierJourArrondi}, coutReviensPanierJour: ${coutReviensPanierJour}, tvaDeductible5_5: ${tvaDeductible5_5}, tvaDeductible20: ${tvaDeductible20}, tvaDeductibleTotal: ${tvaDeductibleTotal}`);
 
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -4682,8 +4764,6 @@ function filterPurchases() {
         }
     }
 }
-
-
 
 
 
@@ -6483,12 +6563,12 @@ function displayFiscalTable() {
         const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
-        // Agréger les données par mois
+        // Agréger les données par mois, aligné avec filterRecipes
         const monthlyData = {};
         const startDate = new Date('2024-12-01');
         const endDate = new Date();
 
-        // Ventes (CA à déclarer Ajusté : carte + espèces/2)
+        // Ventes (CA à déclarer ajusté : card + cash/2)
         Object.keys(salesData).forEach(dateKey => {
             const date = new Date(dateKey);
             if (date >= startDate && date <= endDate) {
@@ -6531,28 +6611,45 @@ function displayFiscalTable() {
 
         // Générer le tableau
         let tableHTML = `
-        <style>
-            .crossed { position: relative; text-align: center; }
-            .crossed::before, .crossed::after { content: ''; position: absolute; background-color: red; width: 80%; height: 1px; left: 10%; top: 50%; }
-            .crossed::before { transform: rotate(45deg); }
-            .crossed::after { transform: rotate(-45deg); }
-        </style>
-        <table>
-            <thead>
-                <tr>
-                    <th>Mois</th>
-                    <th>CA à déclarer</th>
-                    <th style="background-color: #e0e0e0;">Impôt Urssaf à payer</th>
-                    <th>TVA collectée</th>
-                    <th>TVA déductible</th>
-                    <th style="background-color: #e0e0e0;">TVA à payer</th>
-                </tr>
-            </thead>
-            <tbody>
+            <style>
+                .crossed {
+                    position: relative;
+                    text-align: center;
+                }
+                .crossed::before,
+                .crossed::after {
+                    content: '';
+                    position: absolute;
+                    background-color: red;
+                    width: 80%;
+                    height: 1px;
+                    left: 10%;
+                    top: 50%;
+                }
+                .crossed::before {
+                    transform: rotate(45deg);
+                }
+                .crossed::after {
+                    transform: rotate(-45deg);
+                }
+            </style>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mois</th>
+                        <th>CA à déclarer</th>
+                        <th style="background-color: #e0e0e0;">Impôt Urssaf à payer</th>
+                        <th>TVA collectée</th>
+                        <th>TVA déductible</th>
+                        <th style="background-color: #e0e0e0;">TVA à payer</th>
+                        <th>TVA exonérée</th>
+                    </tr>
+                </thead>
+                <tbody>
         `;
 
         sortedKeys.forEach(key => {
-            const [année, mois] = key.split('-');
+            const [year, month] = key.split('-');
             const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
             const caAjuste = Math.round(monthlyData[key].caAjuste);
             const urssaf = Math.round(caAjuste * urssafRate);
@@ -6561,24 +6658,26 @@ function displayFiscalTable() {
             const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
             const isExoneree = monthlyData[key].tvaExoneree === 'Oui';
             const tvaCellClass = isExoneree ? 'crossed' : '';
+
             tableHTML += `
                 <tr>
-                    <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${année}</td>
+                    <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
                     <td>${caAjuste}€</td>
                     <td style="background-color: #e0e0e0;">${urssaf}€</td>
                     <td>${tvaCollectee}€</td>
                     <td>${tvaDeductible}€</td>
                     <td style="background-color: #e0e0e0;" class="${tvaCellClass}">${tvaAPayer}€</td>
+                    <td>${monthlyData[key].tvaExoneree}</td>
                 </tr>
             `;
         });
 
         tableHTML += `
-            </tbody>
-        </table>
+                </tbody>
+            </table>
         `;
-
         tableContainer.innerHTML = tableHTML;
+
     } catch (error) {
         console.error('Erreur dans displayFiscalTable:', error);
         const tableContainer = document.getElementById('fiscalTable');
@@ -6587,7 +6686,6 @@ function displayFiscalTable() {
         }
     }
 }
-
 
 // Mettre à jour l'écouteur popstate
 window.addEventListener('popstate', function(event) {
