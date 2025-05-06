@@ -6642,7 +6642,6 @@ function displayFiscalTable() {
                         <th>TVA collectée</th>
                         <th>TVA déductible</th>
                         <th style="background-color: #e0e0e0;">TVA à payer</th>
-                        <th>TVA exonérée</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -6667,7 +6666,6 @@ function displayFiscalTable() {
                     <td>${tvaCollectee}€</td>
                     <td>${tvaDeductible}€</td>
                     <td style="background-color: #e0e0e0;" class="${tvaCellClass}">${tvaAPayer}€</td>
-                    <td>${monthlyData[key].tvaExoneree}</td>
                 </tr>
             `;
         });
