@@ -701,7 +701,8 @@
     #recipeManagementPage .date-filter,
     #invoiceManagementPage .date-filter,
     #purchasesManagementPage .date-filter,
-    #personnelManagementPage .date-filter {
+    #personnelManagementPage .date-filter,
+    #indicatorsPage .date-filter {
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -710,14 +711,16 @@
     #recipeManagementPage .date-filter label,
     #invoiceManagementPage .date-filter label,
     #purchasesManagementPage .date-filter label,
-    #personnelManagementPage .date-filter label {
+    #personnelManagementPage .date-filter label,
+    #indicatorsPage .date-filter label {
         font-weight: bold;
         color: #333;
     }
     #recipeManagementPage .date-filter input,
     #invoiceManagementPage .date-filter input,
     #purchasesManagementPage .date-filter input,
-    #personnelManagementPage .date-filter input {
+    #personnelManagementPage .date-filter input,
+    #indicatorsPage .date-filter input {
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 4px;
@@ -1183,12 +1186,13 @@
 <!-- ... Reste du HTML ... -->
   <div id="indicatorsPage" class="page hidden">
     <h2>Indicateurs</h2>
-    <div style="margin-bottom: 20px;">
-        <label for="indicatorsStartDate">Date de début :</label>
-        <input type="date" id="indicatorsStartDate">
-        <label for="indicatorsEndDate" style="margin-left: 10px;">Date de fin :</label>
-        <input type="date" id="indicatorsEndDate">
+   <div class="date-filter">
+        <label>Date de début :</label>
+        <input type="date" id="indicatorsStartDate" onchange="displayIndicatorsTable()" value="2024-12-01">
+        <label>Date de fin :</label>
+        <input type="date" id="indicatorsEndDate" onchange="displayIndicatorsTable()">
     </div>
+
     <div id="indicatorsTable"></div>
     <h4>Coefficient de vente</h4>
     <canvas id="coefVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
@@ -6380,7 +6384,7 @@ function displayIndicatorsTable() {
                         <th>Mois</th>
                         <th>Coût de revient Panier Moyen</th>
                         <th>Prix de vente Panier Moy</th>
-                        <th>Coef de vente (objectif 2.8)</th>
+                        <th>Coef de vente (objectif 3)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -6577,7 +6581,6 @@ function displayIndicatorsTable() {
         }
     }
 }
-
 
 
 function showFiscal() {
