@@ -1202,7 +1202,7 @@
     <canvas id="prixVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
     <h4>Marge Brute Panier Moyen</h4>
     <canvas id="margeBruteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    <h4>Chiffre d'affaires mensuel</h4>
+    <h4>Chiffre d'affaire mensuel</h4>
     <canvas id="caMensuelChart" style="margin-top: 10px; max-width: 100%;"></canvas>
     <h4>Ventes par jour en moyenne</h4>
     <canvas id="caParJourChart" style="margin-top: 10px; max-width: 100%;"></canvas>
@@ -6478,7 +6478,7 @@ function displayIndicatorsTable() {
             if (existingChart) existingChart.destroy();
 
             const ctx = canvas.getContext('2d');
-            new Chart(ctx, {
+            const config = {
                 type: type,
                 data: {
                     labels: chartLabels,
@@ -6526,8 +6526,8 @@ function displayIndicatorsTable() {
                             offset: 5,
                             formatter: (value) => {
                                 if (canvasId === 'coefVenteChart') return `${value.toFixed(1)}`;
-                                if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart') return `${Math.round(value)} €`;
-                                return `${value.toFixed(2)} €`; // Deux décimales pour coutReviens, prixVente, margeBrute
+                                if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart') return `${Math.round(value)}€`;
+                                return `${value.toFixed(2)}€`; // Deux décimales pour coutReviens, prixVente, margeBrute
                             },
                             font: {
                                 size: 12,
@@ -6553,9 +6553,9 @@ function displayIndicatorsTable() {
                                 if (canvasId === 'coefVenteChart') {
                                     label = `${value.toFixed(1)}`;
                                 } else if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart') {
-                                    label = `${Math.round(value)} €`;
+                                    label = `${Math.round(value)}€`;
                                 } else {
-                                    label = `${value.toFixed(2)} €`; // Deux décimales pour coutReviens, prixVente, margeBrute
+                                    label = `${value.toFixed(2)}€`; // Deux décimales pour coutReviens, prixVente, margeBrute
                                 }
                                 ctx.fillText(label, point.x, point.y - 10);
                                 ctx.restore();
@@ -6563,15 +6563,41 @@ function displayIndicatorsTable() {
                         });
                     }
                 }]
-            });
+            };
+
+            // Ajouter les zones de couleur pour le graphique du coefficient de vente
+            if (canvasId === 'coefVenteChart') {
+                config.plugins.push({
+                    id: 'backgroundZones',
+                    beforeDraw: (chart) => {
+                        const { ctx, chartArea, scales } = chart;
+                        const { top, bottom } = chartArea;
+                        const { y } = scales;
+
+                        // Zone rouge (< 2.2)
+                        ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                        ctx.fillRect(chartArea.left, y.getPixelForValue(2.2), chartArea.right - chartArea.left, bottom - y.getPixelForValue(2.2));
+
+                        // Zone orange (2.2 - 2.5)
+                        ctx.fillStyle = 'rgba(255, 165, 0, 0.3)';
+                        ctx.fillRect(chartArea.left, y.getPixelForValue(2.5), chartArea.right - chartArea.left, y.getPixelForValue(2.2) - y.getPixelForValue(2.5));
+
+                        // Zone verte (> 2.5)
+                        ctx.fillStyle = 'rgba(0, 128, 0, 0.3)';
+                        ctx.fillRect(chartArea.left, top, chartArea.right - chartArea.left, y.getPixelForValue(2.5) - top);
+                    }
+                });
+            }
+
+            new Chart(ctx, config);
         };
 
-        createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 1.8, 3.2, '#0000FF', 'line');
+        createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 1.8, 3, '#0000FF', 'line');
         createChart('coutReviensChart', 'Coût de revient Panier Moyen', coutReviensData, 'Coût de revient (€)', 3, 6, '#FF0000', 'line');
         createChart('prixVenteChart', 'Prix de vente Panier Moyen', prixVenteData, 'Prix de vente (€)', 8, 13, '#008000', 'line');
         createChart('margeBruteChart', 'Marge Brute Panier Moyen', margeBruteData, 'Marge Brute (€)', 4, 8, '#FFA500', 'line');
-        createChart('caMensuelChart', 'Chiffre d\'affaires mensuel', caMensuelData, 'Chiffre d\'affaires (€)', 0, Math.max(...caMensuelData, 1000) * 1.2, '#000066', 'bar');
-        createChart('caParJourChart', 'Ventes par jour en moyenne', caParJourData, 'Ventes par jour (€)', 0, Math.max(...caParJourData, 500) * 1.2, '#006600', 'bar');
+        createChart('caMensuelChart', 'Chiffre d\'affaire mensuel', caMensuelData, 'Chiffre d\'affaire (€)', 0, 30000, '#000066', 'bar');
+        createChart('caParJourChart', 'Ventes par jour en moyenne', caParJourData, 'Ventes par jour (€)', 0, 1600, '#006600', 'bar');
 
     } catch (error) {
         console.error('Erreur dans displayIndicatorsTable:', error);
