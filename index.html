@@ -11,218 +11,218 @@
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #f5f5f5;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        touch-action: manipulation;
-        overscroll-behavior-y: none;
-        max-width: 100vw;
-        overflow-x: hidden;
-    }
-    html {
-        width: 100vw;
-        overflow-x: hidden;
-    }
-    .invoice-button-group.buttons.no-print {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-    }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+html {
+    width: 100vw;
+    overflow-x: hidden;
+}
+.invoice-button-group.buttons.no-print {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.invoice-button-group .button-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 9px;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+}
+.invoice-button-group .button-row button {
+    min-width: 110px;
+    text-align: center;
+    padding: 8px 8px;
+    font-size: 16px;
+    flex: 1;
+    max-width: 220px;
+}
+@media (max-width: 480px) {
     .invoice-button-group .button-row {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 9px;
-        width: 100%;
-        max-width: 100%;
-        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
     }
     .invoice-button-group .button-row button {
-        min-width: 110px;
-        text-align: center;
-        padding: 8px 8px;
-        font-size: 16px;
-        flex: 1;
-        max-width: 220px;
+        min-width: 80px;
+        font-size: 18px;
+        padding: 12px 6px;
     }
-    @media (max-width: 480px) {
-        .invoice-button-group .button-row {
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .invoice-button-group .button-row button {
-            min-width: 80px;
-            font-size: 18px;
-            padding: 12px 6px;
-        }
+}
+@media print {
+    .invoice-button-group.buttons.no-print {
+        display: none !important;
     }
-    @media print {
-        .invoice-button-group.buttons.no-print {
-            display: none !important;
-        }
-    }
+}
+.buttons.no-print button {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
+}
+.buttons.no-print {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+}
+@media (max-width: 480px) {
     .buttons.no-print button {
         padding: 8px 12px;
         font-size: 16px;
-        border-radius: 4px;
-        white-space: nowrap;
-        cursor: pointer;
-        border: none;
-        text-align: center;
-        box-sizing: border-box;
     }
-    .buttons.no-print {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        justify-content: center;
-    }
-    @media (max-width: 480px) {
-        .buttons.no-print button {
-            padding: 8px 12px;
-            font-size: 16px;
-        }
-    }
-    .button-container {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 8px;
-        justify-content: center;
-    }
-    #addProductBtn, #deleteProductBtn {
-        padding: 6px 10px;
-        font-size: 13px;
-        white-space: nowrap;
-    }
-    .hidden {
-        display: none !important;
-    }
+}
+.button-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    justify-content: center;
+}
+#addProductBtn, #deleteProductBtn {
+    padding: 6px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.hidden {
+    display: none !important;
+}
+#tableauBenefices {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    table-layout: auto;
+}
+#tableauBenefices th, #tableauBenefices td {
+    padding: 6px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+@media (max-width: 600px) {
     #tableauBenefices {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 16px;
-        table-layout: auto;
+        font-size: 12px;
     }
-    #tableauBenefices th, #tableauBenefices td {
-        padding: 6px;
-        border: 1px solid #ddd;
-        text-align: center;
-    }
-    @media (max-width: 600px) {
-        #tableauBenefices {
-            font-size: 12px;
-        }
-    }
-    .standard-popup {
-        position: fixed;
-        top: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: white;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        border-radius: 8px;
-        z-index: 999;
-        min-width: 250px;
-        max-width: 90%;
-    }
-    #homePage {
-        max-width: 600px;
-        margin: 0 auto;
-        text-align: center;
-    }
-    #homePage h1, #homePage h2 {
-        color: #333;
-        margin-bottom: 20px;
-    }
-    #homePage .button-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        max-width: 400px;
-        margin: 0 auto;
-    }
-    #homePage button {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 130px;
-        height: 130px;
-        padding: 10px;
-        color: white;
-        border: none;
-        border-radius: 16px;
-        font-size: 16px;
-        cursor: pointer;
-        text-align: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        transition: transform 0.2s;
-    }
-    #homePage button:hover {
-        transform: scale(1.05);
-    }
-    #homePage button i {
-        font-size: 32px;
-        margin-bottom: 10px;
-    }
-    #homePage #recipeBookBtn {
-        background: #32CD32;
-    }
-    #homePage #recipeBookBtn:hover {
-        background: #2AB82A;
-    }
-  #homePage #purchasesBtn {
+}
+.standard-popup {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 999;
+    min-width: 250px;
+    max-width: 90%;
+}
+#homePage {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+#homePage h1, #homePage h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+#homePage .button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+#homePage button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    height: 130px;
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+#homePage button:hover {
+    transform: scale(1.05);
+}
+#homePage button i {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+#homePage #recipeBookBtn {
+    background: #32CD32;
+}
+#homePage #recipeBookBtn:hover {
+    background: #2AB82A;
+}
+#homePage #purchasesBtn {
     background: #C71585;
 }
 #homePage #purchasesBtn:hover {
     background: #B01378;
 }
-    #homePage #personnelBtn {
-        background: #6f42c1;
-    }
-    #homePage #personnelBtn:hover {
-        background: #5a32a3;
-    }
-    #homePage #invoiceBtn {
-        background: #0000FF;
-    }
-    #homePage #invoiceBtn:hover {
-        background: #0000CC;
-    }
-    #homePage #budgetBtn {
-        background: #FFA500;
-    }
-    #homePage #budgetBtn:hover {
-        background: #E59400;
-    }
-    #homePage #officialRecipeBookBtn {
-        background: #32CD32;
-    }
-    #homePage #officialRecipeBookBtn:hover {
-        background: #2AB82A;
-    }
-    #homePage #indicatorsBtn {
-        background: #800000;
-    }
-    #homePage #indicatorsBtn:hover {
-        background: #660000;
-    }
-    #homePage #settingsBtn {
-        background: #808080;
-    }
-    #homePage #settingsBtn:hover {
-        background: #666666;
-    }
-    @media (max-width: 480px) {
+#homePage #personnelBtn {
+    background: #6f42c1;
+}
+#homePage #personnelBtn:hover {
+    background: #5a32a3;
+}
+#homePage #invoiceBtn {
+    background: #0000FF;
+}
+#homePage #invoiceBtn:hover {
+    background: #0000CC;
+}
+#homePage #budgetBtn {
+    background: #FFA500;
+}
+#homePage #budgetBtn:hover {
+    background: #E59400;
+}
+#homePage #officialRecipeBookBtn {
+    background: #32CD32;
+}
+#homePage #officialRecipeBookBtn:hover {
+    background: #2AB82A;
+}
+#homePage #indicatorsBtn {
+    background: #800000;
+}
+#homePage #indicatorsBtn:hover {
+    background: #660000;
+}
+#homePage #settingsBtn {
+    background: #808080;
+}
+#homePage #settingsBtn:hover {
+    background: #666666;
+}
+@media (max-width: 480px) {
     #homePage .button-grid {
         max-width: 300px;
     }
@@ -231,125 +231,125 @@
         height: 130px;
     }
 }
-    #passwordPage {
-        max-width: 600px;
-        margin: 0 auto;
-        text-align: center;
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-    #passwordPage h2 {
-        color: #333;
-        margin-bottom: 20px;
-    }
-    #passwordPage input {
-        padding: 10px;
-        width: 80%;
-        max-width: 300px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
-    #passwordPage button {
-        padding: 10px 20px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    #passwordPage button:hover {
-        background: #0056b3;
-    }
-    #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
-        max-width: 600px;
-        width: 100%;
-        box-sizing: border-box;
-        margin: 0 auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
-        text-align: center;
-        font-size: 1.5em;
-        margin-bottom: 10px;
-        color: #333;
-    }
-    button {
-        padding: 10px 20px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    button:hover {
-        background: #0056b3;
-    }
-    #recipeBookPage .date-nav, #purchasesPage .date-nav, #personnelPage .date-nav {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    #recipeBookPage .date-nav button, #purchasesPage .date-nav button, #personnelPage .date-nav button {
-        background: #ddd;
-        color: #333;
-        padding: 8px 12px;
-    }
-    #recipeBookPage .date-nav button:hover, #purchasesPage .date-nav button:hover, #personnelPage .date-nav button:hover {
-        background: #ccc;
-    }
-    #saveRecipeBtn, #addPurchaseBtn, #addPersonnelBtn, #addProductBtn {
-        background: #32CD32;
-    }
-    #saveRecipeBtn:hover, #addPurchaseBtn:hover, #addPersonnelBtn:hover, #addProductBtn:hover {
-        background: #2AB82A;
-    }
-    #deleteProductBtn, #deleteRecipeBtn, #deleteDetailBtn, #clearInvoiceBtn, .delete-btn {
-        background: #FF0000;
-    }
-    #deleteProductBtn:hover, #deleteRecipeBtn:hover, #deleteDetailBtn:hover, #clearInvoiceBtn:hover, .delete-btn:hover {
-        background: #CC0000;
-    }
-    #manageRecipesBtn, #manageInvoicesBtn, #managePurchasesBtn, #managePersonnelBtn {
-        background: #0000FF;
-    }
-    #manageRecipesBtn:hover, #manageInvoicesBtn:hover, #managePurchasesBtn:hover, #managePersonnelBtn:hover {
-        background: #0000CC;
-    }
-    #printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn, #printBluetoothSalesBtn {
-        background: #FFFF00;
-        color: #000;
-    }
-    #printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover, #printBluetoothSalesBtn:hover {
-        background: #CCCC00;
-    }
-    #sendSmsInvoiceBtn, #sendEmailInvoiceBtn {
-        background: #800080;
-    }
-    #sendSmsInvoiceBtn:hover, #sendEmailInvoiceBtn:hover {
-        background: #660066 귎
-    }
-    #saveInvoiceBtn {
-        background: #32CD32;
-    }
-    #saveInvoiceBtn:hover {
-        background: #2AB82A;
-    }
-    #recipeBookPage .buttons button[onclick="backToHome()"],
+#passwordPage {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#passwordPage h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+#passwordPage input {
+    padding: 10px;
+    width: 80%;
+    max-width: 300px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+#passwordPage button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+#passwordPage button:hover {
+    background: #0056b3;
+}
+#recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
+    max-width: 600px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+#recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:hover {
+    background: #0056b3;
+}
+#recipeBookPage .date-nav, #purchasesPage .date-nav, #personnelPage .date-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+#recipeBookPage .date-nav button, #purchasesPage .date-nav button, #personnelPage .date-nav button {
+    background: #ddd;
+    color: #333;
+    padding: 8px 12px;
+}
+#recipeBookPage .date-nav button:hover, #purchasesPage .date-nav button:hover, #personnelPage .date-nav button:hover {
+    background: #ccc;
+}
+#saveRecipeBtn, #addPurchaseBtn, #addPersonnelBtn, #addProductBtn {
+    background: #32CD32;
+}
+#saveRecipeBtn:hover, #addPurchaseBtn:hover, #addPersonnelBtn:hover, #addProductBtn:hover {
+    background: #2AB82A;
+}
+#deleteProductBtn, #deleteRecipeBtn, #deleteDetailBtn, #clearInvoiceBtn, .delete-btn {
+    background: #FF0000;
+}
+#deleteProductBtn:hover, #deleteRecipeBtn:hover, #deleteDetailBtn:hover, #clearInvoiceBtn:hover, .delete-btn:hover {
+    background: #CC0000;
+}
+#manageRecipesBtn, #manageInvoicesBtn, #managePurchasesBtn, #managePersonnelBtn {
+    background: #0000FF;
+}
+#manageRecipesBtn:hover, #manageInvoicesBtn:hover, #managePurchasesBtn:hover, #managePersonnelBtn:hover {
+    background: #0000CC;
+}
+#printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn, #printBluetoothSalesBtn {
+    background: #FFFF00;
+    color: #000;
+}
+#printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover, #printBluetoothSalesBtn:hover {
+    background: #CCCC00;
+}
+#sendSmsInvoiceBtn, #sendEmailInvoiceBtn {
+    background: #800080;
+}
+#sendSmsInvoiceBtn:hover, #sendEmailInvoiceBtn:hover {
+    background: #660066;
+}
+#saveInvoiceBtn {
+    background: #32CD32;
+}
+#saveInvoiceBtn:hover {
+    background: #2AB82A;
+}
+#recipeBookPage .buttons button[onclick="backToHome()"],
 #recipeManagementPage .buttons button[onclick="backToRecipeBook()"],
 #invoicePage .buttons button[onclick="backToHome()"],
 #invoiceManagementPage .buttons button[onclick="backToInvoice()"],
@@ -377,639 +377,642 @@
 #fiscalPage button[onclick="backToHome()"]:hover {
     background: #666666;
 }
-    #recipeBookPage .input-group, #purchasesPage .input-group, #personnelPage .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    #recipeBookPage .input-field, #purchasesPage .input-field, #personnelPage .input-field {
-        display: flex;
-        flex-direction: column;
-    }
-    #recipeBookPage label, #purchasesPage label, #personnelPage label {
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #333;
-    }
-    #recipeBookPage input, #purchasesPage input[type="number"], #personnelPage input {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1em;
-    }
-    #purchasesPage input[type="text"], #personnelPage input[type="text"] {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1em;
-    }
-    #purchasesPage .radio-group, #personnelPage .select-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    #invoicePage .checkbox-group {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        margin-bottom: 5px;
-    }
-    #invoicePage .checkbox-group label, #purchasesPage .radio-group label, #personnelPage .select-group label {
-        display: flex;
-        align-items: center;
-        font-size: 16px;
-        color: #333;
-        font-weight: normal;
-    }
-    #invoicePage .checkbox-group input[type="checkbox"], #purchasesPage .radio-group input[type="radio"] {
-        margin-right: 10px;
-    }
-    #invoicePage .checkbox-group {
-        flex-direction: row;
-        align-items: center;
-        gap: 0;
-        width: 100%;
-        text-align: left;
-    }
-    #invoicePage .checkbox-group label {
-        display: inline-flex;
-        white-space: nowrap;
-        margin: 0;
-        padding: 0;
-    }
-    #invoicePage .checkbox-group .first-label {
-        margin-right: 30px;
-    }
-    #invoicePage .checkbox-group input[type="checkbox"] {
-        margin: 0 0 0 5px;
-        padding: 0;
-        width: 16px;
-        height: 16px;
-        min-width: 0;
-        min-height: 0;
-    }
-    #invoicePage .dropdown {
-        position: relative;
-        display: block;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    #invoicePage .dropdown button[onclick="toggleDropdown('menuDropdown')"] {
-        width: 100%;
-        background: #999999;
-        color: white;
-    }
-    #invoicePage .dropdown button[onclick="toggleDropdown('menuDropdown')"]:hover {
-        background: #666666;
-    }
-    #invoicePage .dropdown button[onclick="toggleDropdown('commandeDropdown')"] {
-        width: 100%;
-        background: #008000;
-        color: white;
-    }
-    #invoicePage .dropdown button[onclick="toggleDropdown('commandeDropdown')"]:hover {
-        background: #006600;
-    }
-    #invoicePage .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #fff;
-        width: 100%;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        padding: 12px 16px;
-        z-index: 1;
-        max-height: 80vh;
-        overflow-y: auto;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    #invoicePage .show {
-        display: block;
-    }
-    #invoicePage input, #invoicePage select, #personnelPage select {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
-    #invoicePage #productList {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
-        overflow-x: auto;
-    }
-    #invoicePage #productList li {
-        padding: 3px 8px;
-        border-bottom: 1px solid #ddd;
-        display: flex;
-        align-items: center;
-    }
-    #invoicePage #productList input[type="checkbox"] {
-        margin-right: 10px;
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
-    #personnelPage #personnelSummary {
-        margin-top: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        width: 100%;
-        max-width: 210mm;
-        margin-left: auto;
-        margin-right: auto;
-        box-sizing: border-box;
-    }
-    #invoicePage #invoice {
-        margin-top: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        width: 100%;
-        max-width: 210mm;
-        margin-left: auto;
-        margin-right: auto;
-        box-sizing: border-box;
-    }
-    :root {
-        --border-color: #ddd;
-        --table-header-bg: #f2f2f2;
-        --orange: #FFA500;
-        --orange-hover: #E59400;
-        --green: #32CD32;
-        --green-hover: #2AB82A;
-        --red: #FF0000;
-        --red-hover: #CC0000;
-        --font-size-base: 14px;
-        --font-size-mobile: 12px;
-        --padding-base: 8px;
-        --padding-compact: 6px;
-        --padding-mobile: 4px;
-    }
-    * {
-        box-sizing: border-box;
+#recipeBookPage .input-group, #purchasesPage .input-group, #personnelPage .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+#recipeBookPage .input-field, #purchasesPage .input-field, #personnelPage .input-field {
+    display: flex;
+    flex-direction: column;
+}
+#recipeBookPage label, #purchasesPage label, #personnelPage label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+#recipeBookPage input, #purchasesPage input[type="number"], #personnelPage input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+#purchasesPage input[type="text"], #personnelPage input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+#purchasesPage .radio-group, #personnelPage .select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+#invoicePage .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+#invoicePage .checkbox-group label, #purchasesPage .radio-group label, #personnelPage .select-group label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #333;
+    font-weight: normal;
+}
+#invoicePage .checkbox-group input[type="checkbox"], #purchasesPage .radio-group input[type="radio"] {
+    margin-right: 10px;
+}
+#invoicePage .checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    text-align: left;
+}
+#invoicePage .checkbox-group label {
+    display: inline-flex;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+}
+#invoicePage .checkbox-group .first-label {
+    margin-right: 30px;
+}
+#invoicePage .checkbox-group input[type="checkbox"] {
+    margin: 0 0 0 5px;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    min-width: 0;
+    min-height: 0;
+}
+#invoicePage .dropdown {
+    position: relative;
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+#invoicePage .dropdown button[onclick="toggleDropdown('menuDropdown')"] {
+    width: 100%;
+    background: #999999;
+    color: white;
+}
+#invoicePage .dropdown button[onclick="toggleDropdown('menuDropdown')"]:hover {
+    background: #666666;
+}
+#invoicePage .dropdown button[onclick="toggleDropdown('commandeDropdown')"] {
+    width: 100%;
+    background: #008000;
+    color: white;
+}
+#invoicePage .dropdown button[onclick="toggleDropdown('commandeDropdown')"]:hover {
+    background: #006600;
+}
+#invoicePage .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    width: 100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+#invoicePage .show {
+    display: block;
+}
+#invoicePage input, #invoicePage select, #personnelPage select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+#invoicePage #productList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+#invoicePage #productList li {
+    padding: 3px 8px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+}
+#invoicePage #productList input[type="checkbox"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+#personnelPage #personnelSummary {
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 210mm;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+#invoicePage #invoice {
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 210mm;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+:root {
+    --border-color: #ddd;
+    --table-header-bg: #f2f2f2;
+    --orange: #FFA500;
+    --orange-hover: #E59400;
+    --green: #32CD32;
+    --green-hover: #2AB82A;
+    --red: #FF0000;
+    --red-hover: #CC0000;
+    --font-size-base: 14px;
+    --font-size-mobile: 12px;
+    --padding-base: 8px;
+    --padding-compact: 6px;
+    --padding-mobile: 4px;
+}
+* {
+    box-sizing: border-box;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+#invoicePage th, #invoicePage td,
+#recipeManagementPage th, #recipeManagementPage td,
+#invoiceManagementPage th, #invoiceManagementPage td,
+#purchasesManagementPage th, #purchasesManagementPage td,
+#personnelManagementPage th, #personnelManagementPage td {
+    border: 1px solid var(--border-color);
+    text-align: left;
+    font-size: var(--font-size-base);
+}
+#recipeManagementPage table,
+#invoiceManagementPage table,
+#invoicePage table {
+    margin-bottom: 20px;
+}
+#recipeManagementPage th, #recipeManagementPage td,
+#invoiceManagementPage th, #invoiceManagementPage td,
+#invoicePage th, #invoicePage td {
+    padding: var(--padding-base);
+}
+#purchasesManagementPage table,
+#personnelManagementPage table {
+    table-layout: auto;
+}
+#purchasesManagementPage tfoot td {
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+#purchasesManagementPage th, #purchasesManagementPage td,
+#personnelManagementPage th, #personnelManagementPage td {
+    padding: var(--padding-compact);
+    overflow-wrap: break-word;
+    max-width: 120px;
+    min-width: 50px;
+}
+#invoicePage th,
+#recipeManagementPage th,
+#invoiceManagementPage th,
+#purchasesManagementPage th,
+#personnelManagementPage th {
+    background-color: var(--table-header-bg);
+}
+#purchasesManagementPage th:nth-child(5),
+#purchasesManagementPage td:nth-child(5) {
+    max-width: 80px;
+    white-space: normal;
+}
+#personnelManagementPage th:nth-child(6),
+#personnelManagementPage td:nth-child(6) {
+    max-width: 80px;
+    white-space: normal;
+}
+.btn-orange {
+    background: var(--orange);
+}
+.btn-orange:hover {
+    background: var(--orange-hover);
+}
+.btn-green {
+    background: var(--green);
+}
+.btn-green:hover {
+    background: var(--green-hover);
+}
+.btn-red {
+    background: var(--red);
+}
+.btn-red:hover {
+    background: var(--red-hover);
+}
+#recipeManagementPage #exportRecipeBtn,
+#recipeManagementPage #exportPurchasesPdfBtn,
+#purchasesManagementPage #exportPurchasesPdfBtn,
+#invoicePage #exportInvoicePdfBtn,
+#personnelManagementPage #exportPersonnelPdfBtn {
+    background: var(--orange);
+}
+#recipeManagementPage #exportRecipeBtn:hover,
+#recipeManagementPage #exportPurchasesPdfBtn:hover,
+#purchasesManagementPage #exportPurchasesPdfBtn:hover,
+#invoicePage #exportInvoicePdfBtn:hover,
+#personnelManagementPage #exportPersonnelPdfBtn:hover {
+    background: var(--orange-hover);
+}
+#invoicePage #commandeDropdown button {
+    background: var(--green);
+}
+#invoicePage #commandeDropdown button:hover {
+    background: var(--green-hover);
+}
+#personnelPage .select-group button[onclick="addEmployee()"] {
+    background: var(--green);
+}
+#personnelPage .select-group button[onclick="addEmployee()"]:hover {
+    background: var(--green-hover);
+}
+#personnelPage .select-group button[onclick="deleteEmployee()"] {
+    background: var(--red);
+}
+#personnelPage .select-group button[onclick="deleteEmployee()"]:hover {
+    background: var(--red-hover);
+}
+#invoicePage #orderTotal,
+#personnelPage #personnelTotal {
+    width: 100%;
+    margin-top: 20px;
+}
+#invoicePage .total-table,
+#personnelPage .total-table {
+    width Alt 1;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: 0;
+}
+#invoicePage .total-table td:last-child,
+#personnelPage .total-table td:last-child {
+    text-align: right;
+}
+#invoicePage #invoiceContainer,
+#personnelPage #personnelContainer {
+    background-color: white;
+    width: 100%;
+    max-width: 210mm;
+    padding: 20px;
+    margin: auto;
+}
+#invoicePage #invoiceHeader {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+#invoicePage #invoiceHeader .invoice-number {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+#recipeManagementPage .date-filter,
+#invoiceManagementPage .date-filter,
+#purchasesManagementPage .date-filter,
+#personnelManagementPage .date-filter,
+#indicatorsPage .date-filter,
+#fiscalPage .date-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+#recipeManagementPage .date-filter label,
+#invoiceManagementPage .date-filter label,
+#purchasesManagementPage .date-filter labelme label,
+#personnelManagementPage .date-filter label,
+#indicatorsPage .date-filter label,
+#fiscalPage .date-filter label {
+    font-weight: bold;
+    color: #333;
+}
+#recipeManagementPage .date-filter input,
+#invoiceManagementPage .date-filter input,
+#purchasesManagementPage .date-filter input,
+#personnelManagementPage .date-filter input,
+#indicatorsPage .date-filter input,
+#fiscalPage .date-filter input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+#budgetPage .buttons,
+#recipeBookPage .buttons,
+#recipeManagementPage .buttons,
+#invoicePage .buttons,
+#invoiceManagementPage .buttons,
+#purchasesPage .buttons,
+#purchasesManagementPage .buttons,
+#personnelPage .buttons,
+#personnelManagementPage .buttons,
+#invoiceDetailPage .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+#invoiceDetailPage {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+#invoiceDetailPage h1 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+#recipeManagementPage th, #recipeManagementPage td,
+#invoiceManagementPage th, #invoiceManagementPage td,
+#personnelManagementPage th, #personnelManagementPage td {
+    cursor: pointer;
+}
+.no-print {
+    display: block;
+}
+@media print {
+    .no-print,
+    button,
+    .buttons {
+        display: none !important;
     }
     table {
         width: 100%;
-        border-collapse: collapse;
+        page-break-inside: auto;
     }
-    .table-container {
-        width: 100%;
-        overflow-x: auto;
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+    body {
+        margin: 10mm;
+    }
+}
+@media (max-width: 480px) {
+    #recipeBookPage,
+    #recipeManagementPage,
+    #invoicePage,
+    #invoiceManagementPage,
+    #invoiceDetailPage,
+    #purchasesPage,
+    #purchasesManagementPage,
+    #personnelPage,
+    #personnelManagementPage {
+        padding: 12px;
+    }
+    #recipeBookPage h1,
+    #recipeManagementPage h1,
+    #invoicePage h1,
+    #invoiceManagementPage h1,
+    #invoiceDetailPage h1,
+    #purchasesPage h1,
+    #purchasesManagementPage h1,
+    #personnelPage h1,
+    #personnelManagementPage h1 {
+        font-size: 1.2em;
+    }
+    #recipeBookPage input,
+    #recipeBookPage button,
+    #invoicePage input,
+    #invoicePage button,
+    #invoicePage select,
+    #purchasesPage input,
+    #purchasesPage button,
+    #purchasesManagementPage input,
+    #purchasesManagementPage button,
+    #personnelPage input,
+    #personnelPage button,
+    #personnelPage select,
+    #personnelManagementPage button {
+        font-size: 0.9em;
     }
     #invoicePage th, #invoicePage td,
     #recipeManagementPage th, #recipeManagementPage td,
     #invoiceManagementPage th, #invoiceManagementPage td,
     #purchasesManagementPage th, #purchasesManagementPage td,
     #personnelManagementPage th, #personnelManagementPage td {
-        border: 1px solid var(--border-color);
-        text-align: left;
-        font-size: var(--font-size-base);
-    }
-    #recipeManagementPage table,
-    #invoiceManagementPage table,
-    #invoicePage table {
-        margin-bottom: 20px;
-    }
-    #recipeManagementPage th, #recipeManagementPage td,
-    #invoiceManagementPage th, #invoiceManagementPage td,
-    #invoicePage th, #invoicePage td {
-        padding: var(--padding-base);
-    }
-    #purchasesManagementPage table,
-    #personnelManagementPage table {
-        table-layout: auto;
-    }
-    #purchasesManagementPage tfoot td {
-        white-space: normal;
-        overflow-wrap: break-word;
+        font-size: var(--font-size-mobile);
+        padding: var(--padding-mobile);
     }
     #purchasesManagementPage th, #purchasesManagementPage td,
     #personnelManagementPage th, #personnelManagementPage td {
-        padding: var(--padding-compact);
-        overflow-wrap: break-word;
-        max-width: 120px;
-        min-width: 50px;
+        max-width: 80px;
+        min-width: 40px;
     }
-    #invoicePage th,
-    #recipeManagementPage th,
-    #invoiceManagementPage th,
-    #purchasesManagementPage th,
-    #personnelManagementPage th {
-        background-color: var(--table-header-bg);
+    #purchasesManagementPage th:nth-child(1),
+    #purchasesManagementPage td:nth-child(1) {
+        max-width: 90px;
+        white-space: nowrap;
     }
     #purchasesManagementPage th:nth-child(5),
     #purchasesManagementPage td:nth-child(5) {
-        max-width: 80px;
-        white-space: normal;
+        max-width: 60px;
+    }
+    #personnelManagementPage th:nth-child(1),
+    #personnelManagementPage td:nth-child(1) {
+        max-width: 120px;
+        white-space: nowrap;
     }
     #personnelManagementPage th:nth-child(6),
     #personnelManagementPage td:nth-child(6) {
-        max-width: 80px;
-        white-space: normal;
-    }
-    .btn-orange {
-        background: var(--orange);
-    }
-    .btn-orange:hover {
-        background: var(--orange-hover);
-    }
-    .btn-green {
-        background: var(--green);
-    }
-    .btn-green:hover {
-        background: var(--green-hover);
-    }
-    .btn-red {
-        background: var(--red);
-    }
-    .btn-red:hover {
-        background: var(--red-hover);
-    }
-    #recipeManagementPage #exportRecipeBtn,
-    #recipeManagementPage #exportPurchasesPdfBtn,
-    #purchasesManagementPage #exportPurchasesPdfBtn,
-    #invoicePage #exportInvoicePdfBtn,
-    #personnelManagementPage #exportPersonnelPdfBtn {
-        background: var(--orange);
-    }
-    #recipeManagementPage #exportRecipeBtn:hover,
-    #recipeManagementPage #exportPurchasesPdfBtn:hover,
-    #purchasesManagementPage #exportPurchasesPdfBtn:hover,
-    #invoicePage #exportInvoicePdfBtn:hover,
-    #personnelManagementPage #exportPersonnelPdfBtn:hover {
-        background: var(--orange-hover);
-    }
-    #invoicePage #commandeDropdown button {
-        background: var(--green);
-    }
-    #invoicePage #commandeDropdown button:hover {
-        background: var(--green-hover);
-    }
-    #personnelPage .select-group button[onclick="addEmployee()"] {
-        background: var(--green);
-    }
-    #personnelPage .select-group button[onclick="addEmployee()"]:hover {
-        background: var(--green-hover);
-    }
-    #personnelPage .select-group button[onclick="deleteEmployee()"] {
-        background: var(--red);
-    }
-    #personnelPage .select-group button[onclick="deleteEmployee()"]:hover {
-        background: var(--red-hover);
-    }
-    #invoicePage #orderTotal,
-    #personnelPage #personnelTotal {
-        width: 100%;
-        margin-top: 20px;
-    }
-    #invoicePage .total-table,
-    #personnelPage .total-table {
-        width: 100%;
-        max-width: 300px;
-        margin-left: auto;
-        margin-right: 0;
-    }
-    #invoicePage .total-table td:last-child,
-    #personnelPage .total-table td:last-child {
-        text-align: right;
+        max-width: 60px;
     }
     #invoicePage #invoiceContainer,
     #personnelPage #personnelContainer {
-        background-color: white;
-        width: 100%;
-        max-width: 210mm;
-        padding: 20px;
-        margin: auto;
+        height: auto;
     }
-    #invoicePage #invoiceHeader {
-        text-align: center;
-        margin-bottom: 20px;
-        position: relative;
-    }
-    #invoicePage #invoiceHeader .invoice-number {
-        position: absolute;
-        top: 0;
-        right: 0;
-        font-size: 16px;
-        font-weight: bold;
-    }
-    #recipeManagementPage .date-filter,
-    #invoiceManagementPage .date-filter,
-    #purchasesManagementPage .date-filter,
-    #personnelManagementPage .date-filter,
-    #indicatorsPage .date-filter {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    #recipeManagementPage .date-filter label,
-    #invoiceManagementPage .date-filter label,
-    #purchasesManagementPage .date-filter label,
-    #personnelManagementPage .date-filter label,
-    #indicatorsPage .date-filter label {
-        font-weight: bold;
-        color: #333;
-    }
-    #recipeManagementPage .date-filter input,
-    #invoiceManagementPage .date-filter input,
-    #purchasesManagementPage .date-filter input,
-    #personnelManagementPage .date-filter input,
-    #indicatorsPage .date-filter input {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
-    #budgetPage .buttons,
-    #recipeBookPage .buttons,
-    #recipeManagementPage .buttons,
-    #invoicePage .buttons,
-    #invoiceManagementPage .buttons,
-    #purchasesPage .buttons,
-    #purchasesManagementPage .buttons,
-    #personnelPage .buttons,
-    #personnelManagementPage .buttons,
-    #invoiceDetailPage .buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-    }
-    #invoiceDetailPage {
-        max-width: 600px;
-        margin: 0 auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    #invoiceDetailPage h1 {
-        text-align: center;
-        font-size: 1.5em;
-        margin-bottom: 20px;
-        color: #333;
-    }
-    #recipeManagementPage th, #recipeManagementPage td,
-    #invoiceManagementPage th, #invoiceManagementPage td,
-    #personnelManagementPage th, #personnelManagementPage td {
-        cursor: pointer;
-    }
-    .no-print {
-        display: block;
-    }
-    @media print {
-        .no-print,
-        button,
-        .buttons {
-            display: none !important;
-        }
-        table {
-            width: 100%;
-            page-break-inside: auto;
-        }
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
-        body {
-            margin: 10mm;
-        }
-    }
-    @media (max-width: 480px) {
-        #recipeBookPage,
-        #recipeManagementPage,
-        #invoicePage,
-        #invoiceManagementPage,
-        #invoiceDetailPage,
-        #purchasesPage,
-        #purchasesManagementPage,
-        #personnelPage,
-        #personnelManagementPage {
-            padding: 12px;
-        }
-        #recipeBookPage h1,
-        #recipeManagementPage h1,
-        #invoicePage h1,
-        #invoiceManagementPage h1,
-        #invoiceDetailPage h1,
-        #purchasesPage h1,
-        #purchasesManagementPage h1,
-        #personnelPage h1,
-        #personnelManagementPage h1 {
-            font-size: 1.2em;
-        }
-        #recipeBookPage input,
-        #recipeBookPage button,
-        #invoicePage input,
-        #invoicePage button,
-        #invoicePage select,
-        #purchasesPage input,
-        #purchasesPage button,
-        #purchasesManagementPage input,
-        #purchasesManagementPage button,
-        #personnelPage input,
-        #personnelPage button,
-        #personnelPage select,
-        #personnelManagementPage button {
-            font-size: 0.9em;
-        }
-        #invoicePage th, #invoicePage td,
-        #recipeManagementPage th, #recipeManagementPage td,
-        #invoiceManagementPage th, #invoiceManagementPage td,
-        #purchasesManagementPage th, #purchasesManagementPage td,
-        #personnelManagementPage th, #personnelManagementPage td {
-            font-size: var(--font-size-mobile);
-            padding: var(--padding-mobile);
-        }
-        #purchasesManagementPage th, #purchasesManagementPage td,
-        #personnelManagementPage th, #personnelManagementPage td {
-            max-width: 80px;
-            min-width: 40px;
-        }
-        #purchasesManagementPage th:nth-child(1),
-        #purchasesManagementPage td:nth-child(1) {
-            max-width: 90px;
-            white-space: nowrap;
-        }
-        #purchasesManagementPage th:nth-child(5),
-        #purchasesManagementPage td:nth-child(5) {
-            max-width: 60px;
-        }
-        #personnelManagementPage th:nth-child(1),
-        #personnelManagementPage td:nth-child(1) {
-            max-width: 120px;
-            white-space: nowrap;
-        }
-        #personnelManagementPage th:nth-child(6),
-        #personnelManagementPage td:nth-child(6) {
-            max-width: 60px;
-        }
-        #invoicePage #invoiceContainer,
-        #personnelPage #personnelContainer {
-            height: auto;
-        }
-    }
-    .payment-section {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .payment-section label {
-        display: flex;
-        align-items: center;
-    }
-    .spacer {
-        width: 1cm;
-    }
-    #budgetPage.hidden {
-        display: none !important;
-        visibility: hidden !important;
-    }
+}
+.payment-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.payment-section label {
+    display: flex;
+    align-items: center;
+}
+.spacer {
+    width: 1cm;
+}
+#budgetPage.hidden {
+    display: none !important;
+    visibility: hidden !important;
+}
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.container input, .container label {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.container input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.result {
+    margin-top: 20px;
+}
+.negative {
+    color: red;
+}
+.container table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+.container table, .container th, .container td {
+    border: 1px solid #ddd;
+}
+.container th, .container td {
+    padding: 10px;
+    text-align: center;
+}
+.container th {
+    background-color: #f2f2f2;
+}
+.export-button {
+    background: #FFA500;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.export-button:hover {
+    background: #E59400;
+}
+@media print {
     .container {
-        max-width: 600px;
-        margin: auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        page-break-inside: avoid;
     }
-    .container input, .container label {
-        width: 100%;
-        margin: 10px 0;
-        padding: 10px;
-        box-sizing: border-box;
+    .container table, .container tr, .container td, .container th {
+        page-break-inside: avoid;
     }
-    .container input {
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    .result {
-        margin-top: 20px;
-    }
-    .negative {
-        color: red;
-    }
-    .container table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-    }
-    .container table, .container th, .container td {
-        border: 1px solid #ddd;
-    }
-    .container th, .container td {
-        padding: 10px;
-        text-align: center;
-    }
-    .container th {
-        background-color: #f2f2f2;
-    }
-    .export-button {
-        background: #FFA500;
-        color: white;
-        border: none;
-        padding: 10px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
-    .export-button:hover {
-        background: #E59400;
-    }
-    @media print {
-        .container {
-            page-break-inside: avoid;
-        }
-        .container table, .container tr, .container td, .container th {
-            page-break-inside: avoid;
-        }
-    }
-    #settingsPage {
-        text-align: center;
-        padding: 20px;
-    }
-    #settingsPage button {
-        display: block;
-        width: 80%;
-        max-width: 300px;
-        margin: 10px auto;
-        padding: 15px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    #indicatorsPage {
-        max-width: 600px;
-        margin: 0 auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-    #indicatorsPage h2 {
-        font-size: 1.5em;
-        margin-bottom: 20px;
-        color: #333;
-    }
-    #indicatorsPage table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-    #indicatorsPage th, #indicatorsPage td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-        font-size: 14px;
-    }
-    #indicatorsPage th {
-        background-color: #ccc;
-    }
-    #indicatorsPage .coef-low::after {
-        content: " 😢";
-        color: #FF0000;
-        font-size: 34px;
-    }
-    #indicatorsPage .coef-medium::after {
-        content: " 😐";
-        color: #FFA500;
-        font-size: 34px;
-    }
-    #indicatorsPage .coef-high::after {
-        content: " 😊";
-        color: #00FF00;
-        font-size: 34px;
-    }
-    #indicatorsPage .coef-champagne::after {
-        content: " 🥂";
-        font-size: 34px;
-    }
-    #indicatorsPage th:nth-child(2), #indicatorsPage td:nth-child(2),
-    #indicatorsPage th:nth-child(3), #indicatorsPage td:nth-child(3) {
-        width: 100px;
-    }
-    #indicatorsPage th:nth-child(4), #indicatorsPage td:nth-child(4) {
-        font-size: 18px;
-    }
-    #indicatorsPage canvas {
-        max-height: 300px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
+}
+#settingsPage {
+    text-align: center;
+    padding: 20px;
+}
+#settingsPage button {
+    display: block;
+    width: 80%;
+    max-width: 300px;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+#indicatorsPage {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+#indicatorsPage h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+#indicatorsPage table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+#indicatorsPage th, #indicatorsPage td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+#indicatorsPage th {
+    background-color: #ccc;
+}
+#indicatorsPage .coef-low::after {
+    content: " 😢";
+    color: #FF0000;
+    font-size: 34px;
+}
+#indicatorsPage .coef-medium::after {
+    content: " 😐";
+    color: #FFA500;
+    font-size: 34px;
+}
+#indicatorsPage .coef-high::after {
+    content: " 😊";
+    color: #00FF00;
+    font-size: 34px;
+}
+#indicatorsPage .coef-champagne::after {
+    content: " 🥂";
+    font-size: 34px;
+}
+#indicatorsPage th:nth-child(2), #indicatorsPage td:nth-child(2),
+#indicatorsPage th:nth-child(3), #indicatorsPage td:nth-child(3) {
+    width: 100px;
+}
+#indicatorsPage th:nth-child(4), #indicatorsPage td:nth-child(4) {
+    font-size: 18px;
+}
+#indicatorsPage canvas {
+    max-height: 300px;
+    width: 100%;
+    box-sizing: border-box;
+}
 #indicatorsPage input[type="date"] {
     margin-right: 10px;
     padding: 5px;
 }
-
 #indicatorsPage h4 {
     margin-top: 20px;
     margin-bottom: 10px;
@@ -1197,11 +1200,17 @@
     </div>
 
 <div id="fiscalPage" class="page hidden">
-    <h2>Taxes Impôts Urssaf</h2>
-    <div id="fiscalTable"></div>
-    <div class="buttons no-print" style="margin-top: 20px;">
-        <button onclick="backToHome()" style="background:#808080; color:white;">Retour</button>
+    <h2>Taxes, Impôts et Urssaf</h2>
+    <div class="date-filter" style="text-align: left;">
+        <label style="display: block; margin-bottom: 5px;">Date de début :</label>
+        <input type="date" id="fiscalStartDate" onchange="displayFiscalTable()" value="2024-12-09">
+        <label style="display: block; margin-top: 10px; margin-bottom: 5px;">Date de fin :</label>
+        <input type="date" id="fiscalEndDate" onchange="displayFiscalTable()" value="2025-05-07">
     </div>
+     <div id="fiscalTable"></div>
+       <div class="buttons no-print" style="margin-top: 20px;">
+         <button onclick="backToHome()" style="background:#666666; color:white;">Retour</button>
+       </div>
 </div>
 
 
@@ -1214,7 +1223,7 @@
         <button onclick="backupData()" style="background:#32CD32; color:white;">Sauvegarder et exporter les données actuelles dans un fichier "chez_barth_backup ().json"</button>
         <button onclick="resetData()" style="background:#FF0000; color:white;"> ! Réinitialiser et supprimer toutes les données saisies </button>
         <button onclick="importData()" style="background:#0000FF; color:white;">Importer des données sauvegardées sur fichier "chez_Barth_backup ().json"</button>
-        <button onclick="navigateTo('homePage')" style="background:#000000; color:white;">Retour</button>
+        <button onclick="navigateTo('homePage')" style="background:#666666; color:white;">Retour</button>
     </div>
 <!-- ... Reste du HTML ... -->
  <div id="indicatorsPage" class="page hidden">
@@ -1242,7 +1251,7 @@
     <h4>CA moyen des jours de semaine</h4>
     <canvas id="weekdayCaChart" style="margin-top: 10px; max-width: 100%;"></canvas>
     <div class="buttons no-print" style="margin-top: 20px;">
-        <button onclick="backToHome()" style="background:#000000; color:white;">Retour</button>
+        <button onclick="backToHome()" style="background:#666666; color:white;">Retour</button>
     </div>
 </div>
 
@@ -1358,7 +1367,7 @@ function filterRecipes() {
     <p id="recipeDetailTotal"></p>
     <div class="buttons">
         <button onclick="deleteSelectedRecipe()" style="background:#FF0000; color:white;">Supprimer</button>
-        <button onclick="closeRecipeDetail()" style="background:#000000; color:white;">Fermer</button>
+        <button onclick="closeRecipeDetail()" style="background:#666666; color:white;">Fermer</button>
     </div>
 </div>
 </div>
@@ -1372,7 +1381,7 @@ function filterRecipes() {
         <label>CA sup à 85000€ <input type="checkbox" id="caAbove85000" onchange="toggleCA(this)" checked></label>
     </div>
     <div class="dropdown">
-    <button onclick="toggleDropdown('menuDropdown')">Le MENU Chez BARTH</button>
+    <button onclick="toggleDropdown('menuDropdown')">LA CARTE Chez BARTH</button>
     <div id="menuDropdown" class="dropdown-content" onclick="event.stopPropagation()">
         <select id="productSelect"></select>
         <div class="button-container">
@@ -6365,7 +6374,7 @@ window.addEventListener('popstate', function(event) {
 });
 
 function showIndicators() {
-    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage'];
+    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage' , 'fiscalPage'];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById('indicatorsPage').classList.remove('hidden');
     displayIndicatorsTable();
@@ -6730,8 +6739,11 @@ function showFiscal() {
 function displayFiscalTable() {
     try {
         const tableContainer = document.getElementById('fiscalTable');
-        if (!tableContainer) {
-            console.error('Élément fiscalTable non trouvé');
+        const startInput = document.getElementById('fiscalStartDate');
+        const endInput = document.getElementById('fiscalEndDate');
+        if (!tableContainer || !startInput || !endInput) {
+            console.error('Éléments fiscalTable, fiscalStartDate ou fiscalEndDate non trouvés');
+            tableContainer.innerHTML = '<p>Erreur : Éléments de la page introuvables.</p>';
             return;
         }
 
@@ -6753,12 +6765,20 @@ function displayFiscalTable() {
         const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
+        // Dates de filtrage
+        const start = startInput.value;
+        const end = endInput.value;
+        const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-09');
+        const endDate = end ? new Date(end + 'T23:59:59') : new Date();
+
+        if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
+            tableContainer.innerHTML = '<p>Erreur : Dates invalides.</p>';
+            alert('La date de début doit être antérieure à la date de fin.');
+            return;
+        }
+
         // Agréger les données par mois, aligné avec filterRecipes
         const monthlyData = {};
-        const startDate = new Date('2024-12-01');
-        const endDate = new Date();
-
-        // Ventes (CA à déclarer ajusté : card + cash/2)
         Object.keys(salesData).forEach(dateKey => {
             const date = new Date(dateKey);
             if (date >= startDate && date <= endDate) {
@@ -6810,10 +6830,10 @@ function displayFiscalTable() {
                 .crossed::after {
                     content: '';
                     position: absolute;
-                    background-color: red;
-                    width: 80%;
+                    background-color: black;
+                    width: 50%;
                     height: 1px;
-                    left: 10%;
+                    left: 20%;
                     top: 50%;
                 }
                 .crossed::before {
@@ -6823,18 +6843,19 @@ function displayFiscalTable() {
                     transform: rotate(-45deg);
                 }
             </style>
+            <h3>Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Mois</th>
                         <th>CA à déclarer</th>
-                        <th style="background-color: #e0e0e0;">Impôt Urssaf à payer</th>
+                        <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
                         <th>TVA collectée</th>
                         <th>TVA déductible</th>
-                        <th style="background-color: #e0e0e0;">TVA à payer</th>
+                        <th style="background-color: #FF6666;">TVA à payer</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody1>
         `;
 
         sortedKeys.forEach(key => {
@@ -6852,10 +6873,10 @@ function displayFiscalTable() {
                 <tr>
                     <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
                     <td>${caAjuste}€</td>
-                    <td style="background-color: #e0e0e0;">${urssaf}€</td>
+                    <td style="background-color: #FF6666; font-weight: bold;">${urssaf}€</td>
                     <td>${tvaCollectee}€</td>
                     <td>${tvaDeductible}€</td>
-                    <td style="background-color: #e0e0e0;" class="${tvaCellClass}">${tvaAPayer}€</td>
+                    <td style="background-color: #FF6666; font-weight: bold;" class="${tvaCellClass}">${tvaAPayer}€</td>
                 </tr>
             `;
         });
