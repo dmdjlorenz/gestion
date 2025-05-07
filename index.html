@@ -1098,8 +1098,41 @@
     }
 }
 
+.weekday-table {
+    width: 100%;
+    max-width: 400px;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-family: Arial, sans-serif;
+}
 
+.weekday-table th,
+.weekday-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
 
+.weekday-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.weekday-table td {
+    background-color: #fff;
+}
+
+.weekday-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.weekday-table tr:hover {
+    background-color: #f5f5f5;
+}
+#weekdayCaChart {
+    margin-top: 10px;
+    max-width: 100%;
+}
 
 
     </style>
@@ -1184,9 +1217,9 @@
         <button onclick="navigateTo('homePage')" style="background:#000000; color:white;">Retour</button>
     </div>
 <!-- ... Reste du HTML ... -->
-  <div id="indicatorsPage" class="page hidden">
+ <div id="indicatorsPage" class="page hidden">
     <h2>Indicateurs</h2>
-   <div class="date-filter">
+    <div class="date-filter">
         <label>Date de début :</label>
         <input type="date" id="indicatorsStartDate" onchange="displayIndicatorsTable()" value="2024-12-01">
         <label>Date de fin :</label>
@@ -1206,6 +1239,8 @@
     <canvas id="caMensuelChart" style="margin-top: 10px; max-width: 100%;"></canvas>
     <h4>Ventes par jour en moyenne</h4>
     <canvas id="caParJourChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <h4>CA moyen des jours de semaine</h4>
+    <canvas id="weekdayCaChart" style="margin-top: 10px; max-width: 100%;"></canvas>
     <div class="buttons no-print" style="margin-top: 20px;">
         <button onclick="backToHome()" style="background:#000000; color:white;">Retour</button>
     </div>
@@ -2691,220 +2726,274 @@ function deleteSelectedRecipe() {
 
 
 function filterRecipes() {
-    const start = document.getElementById('recipeStartDate').value;
-    const end = document.getElementById('recipeEndDate').value;
-    const list = document.getElementById('recipeList');
-    list.innerHTML = '';
-
-    function formatRecipeDate(date) {
-        const jours = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
-        const jour = jours[date.getDay()];
-        const dateString = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        return `${jour} ${dateString}`;
-    }
-
-    const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-11');
-    const endDate = end ? new Date(end + 'T23:59:59') : new Date();
-
-    if (startDate > endDate) {
-        alert('La date de début doit être antérieure à la date de fin.');
-        return;
-    }
-
-    const table = document.createElement('table');
-    const thead = document.createElement('thead');
-    thead.innerHTML = `
-        <tr>
-            <th>Date</th>
-            <th>Carte (€)</th>
-            <th>Espèces (€)</th>
-            <th>Total (€)</th>
-        </tr>
-    `;
-    table.appendChild(thead);
-
-    const tbody = document.createElement('tbody');
-
-    let totalCard = 0;
-    let totalCash = 0;
-    let totalGeneral = 0;
-
-    // Regroupement par mois pour les ventes
-    const monthlyData = {};
-    // Regroupement par mois pour les achats (pour calculer panierJour)
-    const monthlyPurchaseData = {};
-
-    // Chargement des données d'achats
-    let purchases = [];
     try {
-        const storedPurchases = localStorage.getItem('purchases');
-        if (storedPurchases && storedPurchases !== '[]') {
-            purchases = JSON.parse(storedPurchases).map(p => ({ ...p, date: p.date.split('T')[0] }));
-        }
-    } catch (e) {
-        console.error('Erreur lors du chargement des achats:', e);
-    }
+        const startInput = document.getElementById('recipeStartDate');
+        const endInput = document.getElementById('recipeEndDate');
+        const list = document.getElementById('recipeList');
 
-    // Calcul des données d'achats
-    purchases.forEach(p => {
-        const date = new Date(p.date);
-        if (date < startDate || date > endDate) return;
-
-        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        if (!monthlyPurchaseData[key]) {
-            monthlyPurchaseData[key] = {
-                Pain: 0,
-            };
+        if (!startInput || !endInput || !list) {
+            console.error('Éléments HTML manquants pour filterRecipes');
+            list.innerHTML = '<p>Erreur : Éléments de la page introuvables.</p>';
+            return;
         }
 
-        if (p.type === 'Pain') {
-            monthlyPurchaseData[key].Pain += p.amountTTC;
+        if (!salesData) {
+            console.error('salesData non défini');
+            list.innerHTML = '<p>Erreur : Données de ventes non disponibles.</p>';
+            return;
         }
-    });
 
-    // Calcul des données de ventes et jours travaillés
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const dateKey = `${year}-${month}-${day}`;
+        const start = startInput.value;
+        const end = endInput.value;
+        const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-11');
+        const endDate = end ? new Date(end + 'T23:59:59') : new Date();
 
-        const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 };
-        const row = document.createElement('tr');
-        row.style.cursor = 'pointer';
-        row.onclick = () => showRecipeDetail(dateKey);
-        row.innerHTML = `
-            <td>${formatRecipeDate(new Date(d))}</td>
-            <td>${data.card ? Math.round(data.card) + ' €' : ''}</td>
-            <td>${data.cash ? Math.round(data.cash) + ' €' : ''}</td>
-            <td>${data.total ? Math.round(data.total) + ' €' : ''}</td>
+        if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
+            list.innerHTML = '<p>Erreur : Dates invalides.</p>';
+            alert('La date de début doit être antérieure à la date de fin.');
+            return;
+        }
+
+        function formatRecipeDate(date) {
+            const jours = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
+            const jour = jours[date.getDay()];
+            const dateString = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            return `${jour} ${dateString}`;
+        }
+
+        list.innerHTML = `<h3>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
+
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+            <tr>
+                <th>Date</th>
+                <th>Carte (€)</th>
+                <th>Espèces (€)</th>
+                <th>Total (€)</th>
+            </tr>
         `;
+        table.appendChild(thead);
 
-        if (salesData[dateKey]) {
-            totalCard += data.card;
-            totalCash += data.cash;
-            totalGeneral += data.total;
+        const tbody = document.createElement('tbody');
 
-            const monthKey = `${year}-${month}`;
-            if (!monthlyData[monthKey]) {
-                monthlyData[monthKey] = { total: 0, card: 0, cash: 0, activeDays: 0 };
+        let totalCard = 0;
+        let totalCash = 0;
+        let totalGeneral = 0;
+
+        const monthlyData = {};
+        const monthlyPurchaseData = {};
+
+        let purchases = [];
+        try {
+            const storedPurchases = localStorage.getItem('purchases');
+            if (storedPurchases && storedPurchases !== '[]') {
+                purchases = JSON.parse(storedPurchases).map(p => ({ ...p, date: p.date.split('T')[0] }));
+            }
+        } catch (e) {
+            console.error('Erreur lors du chargement des achats:', e);
+            list.innerHTML = '<p>Erreur lors du chargement des achats.</p>';
+            return;
+        }
+
+        purchases.forEach(p => {
+            const date = new Date(p.date);
+            if (date < startDate || date > endDate) return;
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            if (!monthlyPurchaseData[key]) {
+                monthlyPurchaseData[key] = { Pain: 0 };
+            }
+            if (p.type === 'Pain') {
+                monthlyPurchaseData[key].Pain += p.amountTTC;
+            }
+        });
+
+        const rows = [];
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+            const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 };
+
+            const row = document.createElement('tr');
+            row.style.cursor = 'pointer';
+            row.onclick = () => showRecipeDetail(dateKey);
+            row.innerHTML = `
+                <td>${formatRecipeDate(new Date(d))}</td>
+                <td>${data.card ? Math.round(data.card) + ' €' : ''}</td>
+                <td>${data.cash ? Math.round(data.cash) + ' €' : ''}</td>
+                <td>${data.total ? Math.round(data.total) + ' €' : ''}</td>
+            `;
+            rows.push({ date: new Date(d), row });
+
+            if (salesData[dateKey]) {
+                totalCard += data.card;
+                totalCash += data.cash;
+                totalGeneral += data.total;
+
+                const monthKey = `${year}-${month}`;
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = { total: 0, card: 0, cash: 0, activeDays: 0 };
+                }
+                monthlyData[monthKey].total += data.total;
+                monthlyData[monthKey].card += data.card;
+                monthlyData[monthKey].cash += data.cash;
+                monthlyData[monthKey].activeDays += 1;
+            }
+        }
+
+        rows.sort((a, b) => a.date - b.date);
+        rows.forEach(({ row }) => tbody.appendChild(row));
+
+        table.appendChild(tbody);
+
+        const tfoot = document.createElement('tfoot');
+        tfoot.innerHTML = `
+            <tr>
+                <th>Total</th>
+                <th>${Math.round(totalCard)} €</th>
+                <th>${Math.round(totalCash)} €</th>
+                <th>${Math.round(totalGeneral)} €</th>
+            </tr>
+        `;
+        table.appendChild(tfoot);
+
+        list.appendChild(table);
+
+        let spacer = document.createElement('div');
+        spacer.style.height = '20px';
+        list.appendChild(spacer);
+
+        const summaryTable = document.createElement('table');
+        const summaryThead = document.createElement('thead');
+        summaryThead.innerHTML = `
+            <tr style="background-color: #ccc;">
+                <th>Mois</th>
+                <th style="width: 120px;">CA/Mois</th>
+                <th style="width: 120px;">CA/Jour</th>
+                <th style="width: 80px;">Nb Jours travaillés</th>
+                <th style="width: 80px;">Nb Paniers/J</th>
+                <th>Prix Vente Panier Moy</th>
+                <th style="width: 120px; background-color: #e0e0e0;">CA/mois à déclarer</th>
+                <th style="width: 120px; background-color: #e0e0e0;">TVA collectée à déclarer</th>
+                <th style="width: 120px; background-color: #e0e0e0;">Impôt et Urssaf</th>
+            </tr>
+        `;
+        summaryTable.appendChild(summaryThead);
+
+        const summaryTbody = document.createElement('tbody');
+
+        for (const key in monthlyData) {
+            const [year, month] = key.split('-');
+            const mois = new Date(`${year}-${month}-01`).toLocaleString('fr-FR', { month: 'long' });
+            const label = `${mois.charAt(0).toUpperCase() + mois.slice(1)} ${year}`;
+            const ca = monthlyData[key].total;
+            const jours = monthlyData[key].activeDays;
+            const caParJour = jours > 0 ? Math.round(ca / jours) : 0;
+            const facteur = (month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025') ? 0.7 : 0.56;
+
+            let panierJour = 0;
+            if (jours > 0 && monthlyPurchaseData[key]?.Pain) {
+                const coef = (month === '12' && year === '2024') ? 0.95 :
+                             (month === '01' && year === '2025') ? 0.96 :
+                             (month === '02' && year === '2025') ? 0.90 : 0.85;
+                panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
 
-            monthlyData[monthKey].total += data.total;
-            monthlyData[monthKey].card += data.card;
-            monthlyData[monthKey].cash += data.cash;
-            monthlyData[monthKey].activeDays += 1;
+            const panierJourArrondi = Math.round(panierJour);
+            const prixPanierJour = (jours > 0 && panierJourArrondi > 0) ? (caParJour / panierJourArrondi) : 0;
+
+            const caAjuste = monthlyData[key].card + monthlyData[key].cash / 2;
+            const tvaCollecteeDeclarer = caAjuste * 0.1 / 1.1;
+
+            let impotUrssaf = 0;
+            const yearNum = parseInt(year);
+            const monthNum = parseInt(month);
+            const isBeforeOct2025 = (yearNum < 2025) || (yearNum === 2025 && monthNum <= 9);
+            if (isBeforeOct2025) {
+                impotUrssaf = caAjuste * 0.075;
+            } else {
+                impotUrssaf = caAjuste * 0.13715;
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${label}</td>
+                <td>${Math.round(ca)} €</td>
+                <td>${caParJour} €</td>
+                <td>${jours}</td>
+                <td>${panierJourArrondi}</td>
+                <td>${prixPanierJour.toFixed(2)}€</td>
+                <td style="background-color: #e0e0e0;">${Math.round(caAjuste)} €</td>
+                <td style="background-color: #e0e0e0;">${Math.round(tvaCollecteeDeclarer)} €</td>
+                <td style="background-color: #e0e0e0;">${Math.round(impotUrssaf)} €</td>
+            `;
+            summaryTbody.appendChild(row);
         }
 
-        tbody.appendChild(row);
-    }
+        summaryTable.appendChild(summaryTbody);
 
-    table.appendChild(tbody);
+        const summaryContainer = document.createElement('div');
+        summaryContainer.style.maxWidth = '100%';
+        summaryContainer.style.overflowX = 'auto';
+        summaryContainer.appendChild(summaryTable);
+        list.appendChild(summaryContainer);
 
-    const tfoot = document.createElement('tfoot');
-    tfoot.innerHTML = `
-        <tr>
-            <th>Total</th>
-            <th>${Math.round(totalCard)} €</th>
-            <th>${Math.round(totalCash)} €</th>
-            <th>${Math.round(totalGeneral)} €</th>
-        </tr>
-    `;
-    table.appendChild(tfoot);
-
-    list.innerHTML = `<h3>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
-    list.appendChild(table);
-
-    // LIGNE VIDE pour séparer
-    const spacer = document.createElement('div');
-    spacer.style.height = '20px';
-    list.appendChild(spacer);
-
-    // TABLEAU MENSUEL
-    const summaryTable = document.createElement('table');
-    const summaryThead = document.createElement('thead');
-    summaryThead.innerHTML = `
-        <tr style="background-color: #ccc;">
-            <th>Mois</th>
-            <th style="width: 120px;">CA/Mois</th>
-            <th style="width: 120px;">CA/Jour</th>
-            <th style="width: 80px;">Nb Jours travaillés</th>
-            <th style="width: 80px;">Nb Paniers/J</th>
-            <th>Prix Vente Panier Moy</th>
-            <th style="width: 120px; background-color: #e0e0e0;">CA/mois à déclarer</th>
-            <th style="width: 120px; background-color: #e0e0e0;">TVA collectée à déclarer</th>
-            <th style="width: 120px; background-color: #e0e0e0;">Impôt et Urssaf</th>
-        </tr>
-    `;
-    summaryTable.appendChild(summaryThead);
-
-    const summaryTbody = document.createElement('tbody');
-
-    for (const key in monthlyData) {
-        const [year, month] = key.split('-');
-        const mois = new Date(`${year}-${month}-01`).toLocaleString('fr-FR', { month: 'long' });
-        const label = `${mois.charAt(0).toUpperCase() + mois.slice(1)} ${year}`;
-        const ca = monthlyData[key].total;
-        const jours = monthlyData[key].activeDays;
-        const caParJour = jours > 0 ? Math.round(ca / jours) : 0;
-        const facteur = (month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025') ? 0.7 : 0.56;
-
-        // Calcul de panierJour comme dans filterPurchases
-        let panierJour = 0;
-        if (jours > 0 && monthlyPurchaseData[key]?.Pain) {
-            const coef = (month === '12' && year === '2024') ? 0.95 :
-                         (month === '01' && year === '2025') ? 0.96 :
-                         (month === '02' && year === '2025') ? 0.90 : 0.85;
-            panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
+        // Calcul des moyennes du CA par jour de la semaine
+        const joursSemaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+        const caParJourSemaine = Array(7).fill(0).map(() => ({ total: 0, count: 0 }));
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+            const dayIndex = d.getDay() === 0 ? 6 : d.getDay() - 1; // Dimanche (0) -> 6, Lundi (1) -> 0, etc.
+            if (salesData[dateKey]) {
+                caParJourSemaine[dayIndex].total += salesData[dateKey].total;
+                caParJourSemaine[dayIndex].count += 1;
+            }
         }
 
-        // Utiliser la valeur arrondie de panierJour comme affichée dans le tableau
-        const panierJourArrondi = Math.round(panierJour);
-        // Calcul de prixPanierJour avec caParJour (arrondi) et panierJourArrondi
-        const prixPanierJour = (jours > 0 && panierJourArrondi > 0) ? (caParJour / panierJourArrondi) : 0;
+        // Création du tableau des moyennes par jour de la semaine
+        spacer = document.createElement('div');
+        spacer.style.height = '20px';
+        list.appendChild(spacer);
 
-        // Calcul du CA mensuel à déclarer : Ventes par carte + Ventes en espèce / 2
-        const caAjuste = monthlyData[key].card + monthlyData[key].cash / 2;
-
-        // Calcul de la TVA collectée à déclarer : (CA mensuel à déclarer) * 0.1 / 1.1
-        const tvaCollecteeDeclarer = caAjuste * 0.1 / 1.1;
-
-        // Calcul de l'Impôt et Urssaf
-        let impotUrssaf = 0;
-        const yearNum = parseInt(year);
-        const monthNum = parseInt(month);
-        const isBeforeOct2025 = (yearNum < 2025) || (yearNum === 2025 && monthNum <= 9);
-        if (isBeforeOct2025) {
-            impotUrssaf = caAjuste * 0.075; // 7.5% de décembre 2024 à septembre 2025
-        } else {
-            impotUrssaf = caAjuste * 0.13715; // 13.715% à partir d'octobre 2025
-        }
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${label}</td>
-            <td>${Math.round(ca)} €</td>
-            <td>${caParJour} €</td>
-            <td>${jours}</td>
-            <td>${panierJourArrondi}</td>
-            <td>${prixPanierJour.toFixed(2)}€</td>
-            <td style="background-color: #e0e0e0;">${Math.round(caAjuste)} €</td>
-            <td style="background-color: #e0e0e0;">${Math.round(tvaCollecteeDeclarer)} €</td>
-            <td style="background-color: #e0e0e0;">${Math.round(impotUrssaf)} €</td>
+        const weekdayTable = document.createElement('table');
+        weekdayTable.className = 'weekday-table';
+        const weekdayThead = document.createElement('thead');
+        weekdayThead.innerHTML = `
+            <tr>
+                <th>Jour</th>
+                <th>CA Moyen (€)</th>
+            </tr>
         `;
-        summaryTbody.appendChild(row);
+        weekdayTable.appendChild(weekdayThead);
+
+        const weekdayTbody = document.createElement('tbody');
+        joursSemaine.forEach((jour, index) => {
+            const moyenne = caParJourSemaine[index].count > 0
+                ? Math.round(caParJourSemaine[index].total / caParJourSemaine[index].count)
+                : 0;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${jour}</td>
+                <td>${moyenne} €</td>
+            `;
+            weekdayTbody.appendChild(row);
+        });
+        weekdayTable.appendChild(weekdayTbody);
+
+        list.appendChild(weekdayTable);
+
+    } catch (error) {
+        console.error('Erreur dans filterRecipes:', error);
+        const list = document.getElementById('recipeList');
+        if (list) {
+            list.innerHTML = '<p>Erreur lors du chargement des données. Vérifiez la console pour plus de détails.</p>';
+        }
     }
-
-    summaryTable.appendChild(summaryTbody);
-
-    // Ajout du conteneur pour permettre le défilement horizontal
-    const summaryContainer = document.createElement('div');
-    summaryContainer.style.maxWidth = '100%';
-    summaryContainer.style.overflowX = 'auto';
-    summaryContainer.appendChild(summaryTable);
-    list.appendChild(summaryContainer);
-
-    console.log('salesData:', salesData);
 }
 
 
@@ -6299,18 +6388,18 @@ function displayIndicatorsTable() {
         // Initialiser les valeurs par défaut des champs de date si vide
         if (!startInput.value) {
             const defaultStartDate = new Date('2024-12-01');
-            startInput.value = defaultStartDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            startInput.value = defaultStartDate.toISOString().split('T')[0];
         }
         if (!endInput.value) {
             const defaultEndDate = new Date();
-            endInput.value = defaultEndDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            endInput.value = defaultEndDate.toISOString().split('T')[0];
         }
 
         // Ajouter des écouteurs d'événements pour mise à jour instantanée
         const updateTable = () => {
-            displayIndicatorsTable(); // Appeler la fonction pour recalculer et afficher
+            displayIndicatorsTable();
         };
-        startInput.removeEventListener('input', updateTable); // Éviter les doublons
+        startInput.removeEventListener('input', updateTable);
         endInput.removeEventListener('input', updateTable);
         startInput.addEventListener('input', updateTable);
         endInput.addEventListener('input', updateTable);
@@ -6454,11 +6543,11 @@ function displayIndicatorsTable() {
 
             chartLabels.push(`${moisNomCourt} ${year}`);
             coefVenteData.push(parseFloat(coefVente));
-            coutReviensData.push(parseFloat(coutReviensPanierJour.toFixed(2)));
-            prixVenteData.push(parseFloat(prixPanierJour.toFixed(2)));
-            margeBruteData.push(parseFloat(margeBrute.toFixed(2)));
-            caMensuelData.push(Math.round(ca)); // CA mensuel arrondi
-            caParJourData.push(caParJour); // CA par jour arrondi
+            coutReviensData.push(Number(coutReviensPanierJour.toFixed(2)));
+            prixVenteData.push(Number(prixPanierJour.toFixed(2)));
+            margeBruteData.push(Number(margeBrute.toFixed(2)));
+            caMensuelData.push(Math.round(ca));
+            caParJourData.push(caParJour);
         });
 
         tableHTML += `
@@ -6467,7 +6556,24 @@ function displayIndicatorsTable() {
         `;
         tableContainer.innerHTML = tableHTML;
 
-        const createChart = (canvasId, label, data, yAxisTitle, yMin, yMax, color, type = 'line') => {
+        // Calcul des moyennes du CA par jour de la semaine
+        const joursSemaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+        const caParJourSemaine = Array(7).fill(0).map(() => ({ total: 0, count: 0 }));
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+            const dayIndex = d.getDay() === 0 ? 6 : d.getDay() - 1; // Dimanche (0) -> 6, Lundi (1) -> 0, etc.
+            if (salesData[dateKey]) {
+                caParJourSemaine[dayIndex].total += salesData[dateKey].total;
+                caParJourSemaine[dayIndex].count += 1;
+            }
+        }
+
+        const weekdayCaData = caParJourSemaine.map(day => day.count > 0 ? Math.round(day.total / day.count) : 0);
+
+        const createChart = (canvasId, label, data, yAxisTitle, yMin, yMax, color, type = 'line', labels = chartLabels) => {
             const canvas = document.getElementById(canvasId);
             if (!canvas) {
                 console.warn(`Canvas ${canvasId} non trouvé, graphique non affiché`);
@@ -6481,7 +6587,7 @@ function displayIndicatorsTable() {
             const config = {
                 type: type,
                 data: {
-                    labels: chartLabels,
+                    labels: labels,
                     datasets: [{
                         label: label,
                         data: data,
@@ -6496,11 +6602,19 @@ function displayIndicatorsTable() {
                 },
                 options: {
                     responsive: true,
+                    layout: {
+                        padding: {
+                            left: 5
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: type === 'bar' ? true : false,
                             min: yMin,
                             max: yMax,
+                            ticks: {
+                                stepSize: canvasId === 'coefVenteChart' ? 0.5 : undefined
+                            },
                             title: {
                                 display: true,
                                 text: yAxisTitle
@@ -6509,7 +6623,7 @@ function displayIndicatorsTable() {
                         x: {
                             title: {
                                 display: true,
-                                text: 'Mois'
+                                text: canvasId === 'weekdayCaChart' ? 'Jour de la semaine' : 'Mois'
                             }
                         }
                     },
@@ -6526,8 +6640,8 @@ function displayIndicatorsTable() {
                             offset: 5,
                             formatter: (value) => {
                                 if (canvasId === 'coefVenteChart') return `${value.toFixed(1)}`;
-                                if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart') return `${Math.round(value)}€`;
-                                return `${value.toFixed(2)}€`; // Deux décimales pour coutReviens, prixVente, margeBrute
+                                if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart' || canvasId === 'weekdayCaChart') return `${Math.round(value)}€`;
+                                return `${value.toFixed(2)}€`;
                             },
                             font: {
                                 size: 12,
@@ -6552,10 +6666,10 @@ function displayIndicatorsTable() {
                                 let label;
                                 if (canvasId === 'coefVenteChart') {
                                     label = `${value.toFixed(1)}`;
-                                } else if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart') {
+                                } else if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart' || canvasId === 'weekdayCaChart') {
                                     label = `${Math.round(value)}€`;
                                 } else {
-                                    label = `${value.toFixed(2)}€`; // Deux décimales pour coutReviens, prixVente, margeBrute
+                                    label = `${value.toFixed(2)}€`;
                                 }
                                 ctx.fillText(label, point.x, point.y - 10);
                                 ctx.restore();
@@ -6565,7 +6679,6 @@ function displayIndicatorsTable() {
                 }]
             };
 
-            // Ajouter les zones de couleur pour le graphique du coefficient de vente
             if (canvasId === 'coefVenteChart') {
                 config.plugins.push({
                     id: 'backgroundZones',
@@ -6574,15 +6687,12 @@ function displayIndicatorsTable() {
                         const { top, bottom } = chartArea;
                         const { y } = scales;
 
-                        // Zone rouge (< 2.2)
                         ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
                         ctx.fillRect(chartArea.left, y.getPixelForValue(2.2), chartArea.right - chartArea.left, bottom - y.getPixelForValue(2.2));
 
-                        // Zone orange (2.2 - 2.5)
                         ctx.fillStyle = 'rgba(255, 165, 0, 0.3)';
                         ctx.fillRect(chartArea.left, y.getPixelForValue(2.5), chartArea.right - chartArea.left, y.getPixelForValue(2.2) - y.getPixelForValue(2.5));
 
-                        // Zone verte (> 2.5)
                         ctx.fillStyle = 'rgba(0, 128, 0, 0.3)';
                         ctx.fillRect(chartArea.left, top, chartArea.right - chartArea.left, y.getPixelForValue(2.5) - top);
                     }
@@ -6592,12 +6702,13 @@ function displayIndicatorsTable() {
             new Chart(ctx, config);
         };
 
-        createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 1.8, 3, '#0000FF', 'line');
-        createChart('coutReviensChart', 'Coût de revient Panier Moyen', coutReviensData, 'Coût de revient (€)', 3, 6, '#FF0000', 'line');
-        createChart('prixVenteChart', 'Prix de vente Panier Moyen', prixVenteData, 'Prix de vente (€)', 8, 13, '#008000', 'line');
-        createChart('margeBruteChart', 'Marge Brute Panier Moyen', margeBruteData, 'Marge Brute (€)', 4, 8, '#FFA500', 'line');
+        createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 1.5, 3, '#0000FF', 'line');
+        createChart('coutReviensChart', 'Coût de revient Panier Moyen', coutReviensData, 'Coût de revient (€)', 3, 6, '#000000', 'line');
+        createChart('prixVenteChart', 'Prix de vente Panier Moyen', prixVenteData, 'Prix de vente (€)', 8, 13, '#800080', 'line');
+        createChart('margeBruteChart', 'Marge Brute Panier Moyen', margeBruteData, 'Marge Brute (€)', 4, 8, '#8B4513', 'line');
         createChart('caMensuelChart', 'Chiffre d\'affaire mensuel', caMensuelData, 'Chiffre d\'affaire (€)', 0, 30000, '#000066', 'bar');
         createChart('caParJourChart', 'Ventes par jour en moyenne', caParJourData, 'Ventes par jour (€)', 0, 1600, '#006600', 'bar');
+        createChart('weekdayCaChart', 'CA moyen des jours de semaine', weekdayCaData, 'CA Moyen (€)', 0, 1200, '#C71585', 'bar', joursSemaine);
 
     } catch (error) {
         console.error('Erreur dans displayIndicatorsTable:', error);
@@ -6607,7 +6718,6 @@ function displayIndicatorsTable() {
         }
     }
 }
-
 
 function showFiscal() {
     const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage'];
