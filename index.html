@@ -2906,7 +2906,9 @@ function filterRecipes() {
             if (jours > 0 && monthlyPurchaseData[key]?.Pain) {
                 const coef = (month === '12' && year === '2024') ? 0.95 :
                              (month === '01' && year === '2025') ? 0.96 :
-                             (month === '02' && year === '2025') ? 0.90 : 0.85;
+                             (month === '02' && year === '2025') ? 0.90 :
+                             (month === '03' && year === '2025') ? 0.85 :
+                             (month === '04' && year === '2025') ? 0.85 : 0.9;
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
 
@@ -2934,9 +2936,9 @@ function filterRecipes() {
                 <td>${jours}</td>
                 <td>${panierJourArrondi}</td>
                 <td>${prixPanierJour.toFixed(2)}€</td>
-                <td style="background-color: #e0e0e0;">${Math.round(caAjuste)} €</td>
+                <td style="background-color: #e0e0e0;">${Math.round(caAjuste)}€</td>
                 <td style="background-color: #e0e0e0;">${Math.round(tvaCollecteeDeclarer)} €</td>
-                <td style="background-color: #e0e0e0;">${Math.round(impotUrssaf)} €</td>
+                <td style="background-color: #e0e0e0;">${Math.round(impotUrssaf)}€</td>
             `;
             summaryTbody.appendChild(row);
         }
@@ -4841,7 +4843,9 @@ function filterPurchases() {
                 const facteur = ((month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025')) ? 0.7 : 0.56;
                 const coef = (month === '12' && year === '2024') ? 0.95 :
                              (month === '01' && year === '2025') ? 0.96 :
-                             (month === '02' && year === '2025') ? 0.9 : 0.85;
+                             (month === '02' && year === '2025') ? 0.90 :
+                             (month === '03' && year === '2025') ? 0.85 :
+                             (month === '04' && year === '2025') ? 0.85 : 0.9;
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
 
@@ -6508,8 +6512,10 @@ function displayIndicatorsTable() {
             const joursTravailles = monthlySalesData[key]?.activeDays || 0;
             const facteur = (month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025') ? 0.7 : 0.56;
             const coef = (month === '12' && year === '2024') ? 0.95 :
-                         (month === '01' && year === '2025') ? 0.96 :
-                         (month === '02' && year === '2025') ? 0.9 : 0.85;
+                             (month === '01' && year === '2025') ? 0.96 :
+                             (month === '02' && year === '2025') ? 0.90 :
+                             (month === '03' && year === '2025') ? 0.85 :
+                             (month === '04' && year === '2025') ? 0.85 : 0.9;
 
             let panierJour = 0;
             if (joursTravailles > 0) {
@@ -7177,7 +7183,7 @@ document.getElementById('exportWord').addEventListener('click', function () {
         </style>
         </head><body>
         <h1 style="text-align: center;">BUDGET PREVISIONNEL</h1>
-        <h2 style="text-align: center;">Sandwicherie CHEZ BARTH</h2>
+        <h2 style="text-align: center;">Restaurant CHEZ BARTH</h2>
         <p>Entrepreneur :  Mathis MOUHOU</p>
         <p>Enseigne / nom commercial :  CHEZ BARTH</p>
         <p>Statut Juridique : Entreprise Individuelle</p>
