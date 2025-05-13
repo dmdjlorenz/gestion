@@ -1202,11 +1202,11 @@ table {
 <div id="fiscalPage" class="page hidden">
     <h2>Taxes, Impôts et Urssaf</h2>
     <div class="date-filter" style="text-align: left;">
-        <label style="display: block; margin-bottom: 5px;">Date de début :</label>
-        <input type="date" id="fiscalStartDate" onchange="displayFiscalTable()" value="2024-12-09">
-        <label style="display: block; margin-top: 10px; margin-bottom: 5px;">Date de fin :</label>
-        <input type="date" id="fiscalEndDate" onchange="displayFiscalTable()" value="2025-05-07">
-    </div>
+    <label style="display: block; margin-bottom: 5px;">Date de début :</label>
+    <input type="text" id="fiscalStartDate" onchange="displayFiscalTable()" value="09/12/2024">
+    <label style="display: block; margin-top: 10px; margin-bottom: 5px;">Date de fin :</label>
+    <input type="text" id="fiscalEndDate" onchange="displayFiscalTable()">
+</div>
      <div id="fiscalTable"></div>
        <div class="buttons no-print" style="margin-top: 20px;">
          <button onclick="backToHome()" style="background:#666666; color:white;">Retour</button>
@@ -6771,11 +6771,24 @@ function displayFiscalTable() {
         const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
+        // Set end date to today in DD/MM/YYYY format
+        const today = new Date();
+        const todayFormatted = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+        endInput.value = endInput.value || todayFormatted; // Set to today if empty
+
         // Dates de filtrage
         const start = startInput.value;
         const end = endInput.value;
-        const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-12-09');
-        const endDate = end ? new Date(end + 'T23:59:59') : new Date();
+
+        // Parse DD/MM/YYYY format
+        const parseDate = (dateStr) => {
+            if (!dateStr) return null;
+            const [day, month, year] = dateStr.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        };
+
+        const startDate = start ? parseDate(start) : parseDate('09/12/2024');
+        const endDate = end ? parseDate(end) : today;
 
         if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
             tableContainer.innerHTML = '<p>Erreur : Dates invalides.</p>';
@@ -6861,7 +6874,7 @@ function displayFiscalTable() {
                         <th style="background-color: #FF6666;">TVA à payer</th>
                     </tr>
                 </thead>
-                <tbody1>
+                <tbody>
         `;
 
         sortedKeys.forEach(key => {
