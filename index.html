@@ -2774,15 +2774,23 @@ function filterRecipes() {
 
         list.innerHTML = `<h3>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
 
+        // Création du conteneur pour le tableau principal
+        const tableContainer = document.createElement('div');
+        tableContainer.style.maxWidth = '100%';
+        tableContainer.style.overflowX = 'auto';
+
         const table = document.createElement('table');
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+
         const thead = document.createElement('thead');
         thead.innerHTML = `
             <tr>
-                <th>Date</th>
-                <th>Carte (€)</th>
-                <th>Espèces (€)</th>
-                <th>Total (€)</th>
-                <th>Taux de cash (%)</th>
+                <th style="min-width: 100px;">Date</th>
+                <th style="min-width: 80px;">Carte (€)</th>
+                <th style="min-width: 80px;">Espèces (€)</th>
+                <th style="min-width: 80px;">Total (€)</th>
+                <th style="width: 60px;">Taux de cash (%)</th>
             </tr>
         `;
         table.appendChild(thead);
@@ -2876,8 +2884,10 @@ function filterRecipes() {
         `;
         table.appendChild(tfoot);
 
-        list.appendChild(table);
+        tableContainer.appendChild(table);
+        list.appendChild(tableContainer);
 
+        // Le reste du code (tableau récapitulatif mensuel et tableau des moyennes par jour) reste inchangé
         let spacer = document.createElement('div');
         spacer.style.height = '20px';
         list.appendChild(spacer);
@@ -2970,7 +2980,7 @@ function filterRecipes() {
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             const dateKey = `${year}-${month}-${day}`;
-            const dayIndex = d.getDay() === 0 ? 6 : d.getDay() - 1; // Dimanche (0) -> 6, Lundi (1) -> 0, etc.
+            const dayIndex = d.getDay() === 0 ? 6 : d.getDay() - 1;
             if (salesData[dateKey]) {
                 caParJourSemaine[dayIndex].total += salesData[dateKey].total;
                 caParJourSemaine[dayIndex].count += 1;
@@ -3017,8 +3027,6 @@ function filterRecipes() {
         }
     }
 }
-
-
 
 
 function saveSalesData() {
