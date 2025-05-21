@@ -1367,6 +1367,7 @@ function filterRecipes() {
     <p id="recipeDetailCard"></p>
     <p id="recipeDetailCash"></p>
     <p id="recipeDetailTotal"></p>
+    <p id="recipeDetailCashRate"></p>
     <div class="buttons">
         <button onclick="deleteSelectedRecipe()" style="background:#FF0000; color:white;">Supprimer</button>
         <button onclick="closeRecipeDetail()" style="background:#666666; color:white;">Fermer</button>
@@ -2710,10 +2711,13 @@ function showRecipeDetail(date) {
 
     if (!data) return;
 
+    const cashRate = data.total > 0 ? Math.round(data.cash / data.total * 100) : '';
+
     document.getElementById('recipeDetailDate').textContent = `Date : ${formatRecipeDate(new Date(date))}`;
     document.getElementById('recipeDetailCard').textContent = `Carte : ${data.card} €`;
     document.getElementById('recipeDetailCash').textContent = `Espèces : ${data.cash} €`;
     document.getElementById('recipeDetailTotal').textContent = `Total : ${data.total} €`;
+    document.getElementById('recipeDetailCashRate').textContent = `Taux de cash : ${cashRate ? cashRate + ' %' : ''}`;
 
     document.getElementById('recipeDetailPopup').classList.remove('hidden');
 }
