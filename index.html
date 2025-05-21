@@ -24,6 +24,20 @@
     max-width: 100vw;
     overflow-x: hidden;
 }
+
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+
+
+
 html {
     width: 100vw;
     overflow-x: hidden;
@@ -5735,215 +5749,342 @@ function deletePersonnelRecord(index) {
 }
 
 
+        function filterPersonnel() {
+            const startDateInput = document.getElementById('personnelStartDate').value;
+            const endDateInput = document.getElementById('personnelEndDate').value;
+            const showComments = document.getElementById('showComments').checked;
 
-function filterPersonnel() {
-    const startDateInput = document.getElementById('personnelStartDate').value;
-    const endDateInput = document.getElementById('personnelEndDate').value;
-    const showComments = document.getElementById('showComments').checked;
+            let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-12-11');
+            let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-12-11');
-    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
-
-    // Vérifier si les dates sont valides
-    if (isNaN(startDate) || isNaN(endDate)) {
-        document.getElementById('personnelList').innerHTML = '<p>Erreur : Dates invalides.</p>';
-        return;
-    }
-
-    // Générer toutes les dates entre startDate et endDate
-    const allDates = [];
-    let currentDate = new Date(startDate);
-    while (currentDate <= endDate) {
-        allDates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    filteredPersonnelRecords = personnelRecords.filter(record => {
-        const recordDate = new Date(record.date);
-        return recordDate >= startDate && recordDate <= endDate;
-    }).sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    const personnelList = document.getElementById('personnelList');
-
-    // Vérifier si personnelList existe
-    if (!personnelList) {
-        console.error("Erreur : L'élément 'personnelList' n'existe pas.");
-        return;
-    }
-
-    if (allDates.length === 0) {
-        personnelList.innerHTML = '<p>Aucune donnée à afficher pour cette période.</p>';
-        return;
-    }
-
-    const totals = {};
-    const commentTotals = {};
-
-    filteredPersonnelRecords.forEach(record => {
-        if (record.employee && record.employee.trim() !== '') {
-            if (!totals[record.employee]) {
-                totals[record.employee] = { hours: 0, minutes: 0 };
-                commentTotals[record.employee] = 0;
+            if (isNaN(startDate) || isNaN(endDate)) {
+                document.getElementById('personnelList').innerHTML = '<p>Erreur : Dates invalides.</p>';
+                return;
             }
-            // Convertir les heures en heures et minutes pour ignorer les secondes
-            const hours = Math.floor(record.hours || 0);
-            const minutes = Math.round((record.hours - hours) * 60);
-            totals[record.employee].hours += hours;
-            totals[record.employee].minutes += minutes;
-            // Normaliser les minutes si elles dépassent 60
-            if (totals[record.employee].minutes >= 60) {
-                totals[record.employee].hours += Math.floor(totals[record.employee].minutes / 60);
-                totals[record.employee].minutes = totals[record.employee].minutes % 60;
+
+            const allDates = [];
+            let currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                allDates.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
             }
-            if (showComments && record.comment && !isNaN(parseFloat(record.comment))) {
-                commentTotals[record.employee] += parseFloat(record.comment);
+
+            filteredPersonnelRecords = personnelRecords.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate >= startDate && recordDate <= endDate;
+            }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const personnelList = document.getElementById('personnelList');
+            if (!personnelList) {
+                console.error("Erreur : L'élément 'personnelList' n'existe pas.");
+                return;
             }
-        }
-    });
 
-    // Calculer le total général
-    let totalHours = 0;
-    let totalMinutes = 0;
-    Object.keys(totals).forEach(employee => {
-        totalHours += totals[employee].hours;
-        totalMinutes += totals[employee].minutes;
-    });
-    // Normaliser le total général
-    totalHours += Math.floor(totalMinutes / 60);
-    totalMinutes = totalMinutes % 60;
+            if (allDates.length === 0) {
+                personnelList.innerHTML = '<p>Aucune donnée à afficher pour cette période.</p>';
+                return;
+            }
 
-    const totalComments = Math.round(Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0) || 0);
+            const totals = {};
+            const commentTotals = {};
+            const monthlyTotals = {};
+            window.hourlyRatesHistory = JSON.parse(localStorage.getItem('hourlyRatesHistory')) || {};
 
-    // Définir les abréviations des jours, avec M pour mercredi
-    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
+            filteredPersonnelRecords.forEach(record => {
+                if (!record.employee || record.employee.trim() === '') return;
 
-    // Construire les lignes du tableau
-    let tableRows = '';
-    allDates.forEach(date => {
-        const dateRecords = filteredPersonnelRecords.filter(record => 
-            new Date(record.date).toDateString() === date.toDateString()
-        );
-        
-        if (dateRecords.length === 0) {
-            // Afficher une ligne vide pour les dates sans enregistrement
-            const dayAbbr = dayAbbreviations[date.getDay()];
-            tableRows += `
-                <tr>
-                    <td style="white-space: nowrap;">${dayAbbr} ${date.toLocaleDateString('fr-FR')}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    ${showComments ? '<td></td>' : ''}
-                </tr>`;
-        } else {
-            // Afficher les enregistrements existants
-            tableRows += dateRecords.map((record, index) => {
-                let hourLabel = '';
-                if (record.employee && record.employee.trim() !== '') {
-                    hourLabel = convertToHoursMinutes(record.hours || 0);
+                const employee = record.employee;
+                if (!totals[employee]) {
+                    totals[employee] = { hours: 0, minutes: 0 };
+                    commentTotals[employee] = 0;
                 }
-                const dayAbbr = dayAbbreviations[new Date(record.date).getDay()];
+
+                const rawHours = parseFloat(record.hours);
+                const hours = Math.floor(rawHours || 0);
+                const minutes = Math.round(((rawHours || 0) - hours) * 60);
+                if (!isNaN(rawHours)) {
+                    totals[employee].hours += hours;
+                    totals[employee].minutes += minutes;
+                    if (totals[employee].minutes >= 60) {
+                        totals[employee].hours += Math.floor(totals[employee].minutes / 60);
+                        totals[employee].minutes %= 60;
+                    }
+                }
+
+                const commentValue = parseFloat(record.comment);
+                if (!isNaN(commentValue)) {
+                    commentTotals[employee] += commentValue;
+                }
+
+                const recordDate = new Date(record.date);
+                const monthKey = `${recordDate.getFullYear()}-${(recordDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                if (!monthlyTotals[monthKey]) monthlyTotals[monthKey] = {};
+                if (!monthlyTotals[monthKey][employee]) {
+                    monthlyTotals[monthKey][employee] = { hours: 0, minutes: 0, comments: 0 };
+                }
+
+                if (!isNaN(rawHours)) {
+                    monthlyTotals[monthKey][employee].hours += hours;
+                    monthlyTotals[monthKey][employee].minutes += minutes;
+                    if (monthlyTotals[monthKey][employee].minutes >= 60) {
+                        monthlyTotals[monthKey][employee].hours += Math.floor(monthlyTotals[monthKey][employee].minutes / 60);
+                        monthlyTotals[monthKey][employee].minutes %= 60;
+                    }
+                }
+
+                if (!isNaN(commentValue)) {
+                    monthlyTotals[monthKey][employee].comments += commentValue;
+                }
+            });
+
+            function getEffectiveHourlyRate(employee, monthKey) {
+                if (!window.hourlyRatesHistory[employee]) return 11.88;
+                const months = Object.keys(window.hourlyRatesHistory[employee]).sort();
+                let rate = 11.88;
+                for (let m of months) {
+                    if (m <= monthKey) {
+                        rate = window.hourlyRatesHistory[employee][m];
+                    } else {
+                        break;
+                    }
+                }
+                return rate;
+            }
+
+            function convertToHoursMinutes(decimal) {
+                const h = Math.floor(decimal);
+                const m = Math.round((decimal - h) * 60);
+                return (h === 0 && m === 0) ? '' : `${h}${m ? ' h ' + m.toString().padStart(2, '0') : ' h'}`;
+            }
+
+            let tableRows = '';
+            const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
+
+            allDates.forEach(date => {
+                const dateRecords = filteredPersonnelRecords.filter(record =>
+                    new Date(record.date).toDateString() === date.toDateString()
+                );
+
+                if (dateRecords.length === 0) {
+                    const dayAbbr = dayAbbreviations[date.getDay()];
+                    tableRows += `
+                        <tr>
+                            <td style="white-space: nowrap;">${dayAbbr} ${date.toLocaleDateString('fr-FR')}</td>
+                            <td></td><td></td><td></td><td></td>
+                            ${showComments ? '<td></td>' : ''}
+                        </tr>`;
+                } else {
+                    tableRows += dateRecords.map(record => {
+                        const dayAbbr = dayAbbreviations[new Date(record.date).getDay()];
+                        const index = filteredPersonnelRecords.indexOf(record);
+                        return `
+                            <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${index})">
+                                <td>${dayAbbr} ${new Date(record.date).toLocaleDateString('fr-FR')}</td>
+                                <td>${record.employee || ''}</td>
+                                <td>${record.startTime || ''}</td>
+                                <td>${record.endTime || ''}</td>
+                                <td>${convertToHoursMinutes(record.hours || 0)}</td>
+                                ${showComments ? `<td>${record.comment || ''}</td>` : ''}
+                            </tr>`;
+                    }).join('');
+                }
+            });
+
+            tableRows += Object.keys(totals).map(employee => {
+                const t = totals[employee];
+                const timeDisplay = convertToHoursMinutes(t.hours + t.minutes / 60);
                 return `
-                    <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${filteredPersonnelRecords.indexOf(record)})">
-                        <td>${dayAbbr} ${date.toLocaleDateString('fr-FR')}</td>
-                        <td>${record.employee || ''}</td>
-                        <td>${record.startTime || ''}</td>
-                        <td>${record.endTime || ''}</td>
-                        <td>${hourLabel}</td>
-                        ${showComments ? `<td>${record.comment || ''}</td>` : ''}
+                    <tr style="font-weight: bold; background-color: #f0f0f0;">
+                        <td>Total ${employee}</td><td></td><td></td><td></td>
+                        <td>${timeDisplay}</td>
+                        ${showComments ? `<td>${commentTotals[employee] ? Math.round(commentTotals[employee]) : ''}</td>` : ''}
                     </tr>`;
             }).join('');
-        }
-    });
 
-    // Ajouter les totaux par employé avec fond gris
-    tableRows += Object.keys(totals).map(employee => {
-        const hours = totals[employee].hours;
-        const minutes = totals[employee].minutes;
-        let hourLabel = `${hours} h`;
-        if (minutes !== 0) {
-            hourLabel += ` ${minutes.toString().padStart(2, '0')}`;
-        }
-        return `
-            <tr style="font-weight: bold; color: black; background-color: #f0f0f0;">
-                <td>Total ${employee}</td>
-                <td></td><td></td><td></td>
-                <td>${hourLabel}</td>
-                ${showComments ? `<td>${Math.round(commentTotals[employee])}</td>` : ''}
-            </tr>`;
-    }).join('');
+            const totalHours = Object.values(totals).reduce((sum, t) => sum + t.hours, 0);
+            const totalMinutes = Object.values(totals).reduce((sum, t) => sum + t.minutes, 0);
+            const totalComments = Math.round(Object.values(commentTotals).reduce((sum, c) => sum + c, 0));
 
-    // Afficher le total général avec fond gris
-    let totalHourLabel = `${totalHours} h`;
-    if (totalMinutes !== 0) {
-        totalHourLabel += ` ${totalMinutes.toString().padStart(2, '0')}`;
+            tableRows += `
+                <tr style="font-weight: bold; font-size: 16px; background-color: #f0f0f0;">
+                    <td>Total Général</td><td></td><td></td><td></td>
+                    <td>${convertToHoursMinutes(totalHours + totalMinutes / 60)}</td>
+                    ${showComments ? `<td>${totalComments || ''}</td>` : ''}
+                </tr>`;
+
+            function updateMonthlyTable() {
+                let monthlyTableRows = '';
+                let grandTotalHours = 0, grandTotalMinutes = 0, grandTotalComments = 0, grandTotalEstimated = 0;
+
+                const months = Object.keys(monthlyTotals).sort();
+                months.forEach(month => {
+                    let monthHours = 0, monthMinutes = 0, monthComments = 0, monthEstimated = 0;
+
+                    Object.keys(monthlyTotals[month]).forEach(employee => {
+                        const { hours, minutes, comments } = monthlyTotals[month][employee];
+                        const totalHoursDecimal = hours + minutes / 60;
+                        const rate = getEffectiveHourlyRate(employee, month);
+                        const estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
+
+                        monthlyTableRows += `
+                            <tr>
+                                <td>${month}</td>
+                                <td>${employee}</td>
+                                <td><input type="number" step="0.01" inputmode="decimal"
+                                    value="${rate.toFixed(2)}"
+                                    onchange="updateHourlyRate('${employee}', '${month}', this.value)"
+                                    style="width: 80px; padding: 4px;"></td>
+                                <td>${convertToHoursMinutes(totalHoursDecimal)}</td>
+                                ${showComments ? `<td>${comments ? Math.round(comments) : ''}</td>` : ''}
+                                <td>${estimated} €</td>
+                            </tr>`;
+
+                        monthHours += hours;
+                        monthMinutes += minutes;
+                        monthComments += comments;
+                        monthEstimated += estimated;
+                    });
+
+                    monthHours += Math.floor(monthMinutes / 60);
+                    monthMinutes %= 60;
+
+                    monthlyTableRows += `
+                        <tr style="font-weight: bold; background-color: #f0f0f0;">
+                            <td>Total ${month}</td><td></td><td></td>
+                            <td>${convertToHoursMinutes(monthHours + monthMinutes / 60)}</td>
+                            ${showComments ? `<td>${monthComments ? Math.round(monthComments) : ''}</td>` : ''}
+                            <td>${Math.round(monthEstimated)} €</td>
+                        </tr>`;
+
+                    grandTotalHours += monthHours;
+                    grandTotalMinutes += monthMinutes;
+                    grandTotalComments += monthComments;
+                    grandTotalEstimated += monthEstimated;
+                });
+
+                grandTotalHours += Math.floor(grandTotalMinutes / 60);
+                grandTotalMinutes %= 60;
+
+                monthlyTableRows += `
+                    <tr style="font-weight: bold; font-size: 16px; background-color: #f0f0f0;">
+                        <td>TOTAL</td><td></td><td></td>
+                        <td>${convertToHoursMinutes(grandTotalHours + grandTotalMinutes / 60)}</td>
+                        ${showComments ? `<td>${grandTotalComments ? Math.round(grandTotalComments) : ''}</td>` : ''}
+                        <td>${Math.round(grandTotalEstimated)} €</td>
+                    </tr>`;
+
+                const monthlyTable = `
+                    <div style="margin-top: 20px;">
+                        <h3>Récapitulatif Mensuel</h3>
+                        <div class="table-container">
+                            <table>
+                                <tr>
+                                    <th>Mois</th>
+                                    <th>Employé</th>
+                                    <th>Taux horaire</th>
+                                    <th>Total Heures</th>
+                                    ${showComments ? '<th>Total Commentaires</th>' : ''}
+                                    <th>Total Estimé (€)</th>
+                                </tr>
+                                ${monthlyTableRows}
+                            </table>
+                        </div>
+                    </div>`;
+
+                const monthlyTableDiv = document.getElementById('monthlyTable');
+                if (monthlyTableDiv) {
+                    monthlyTableDiv.innerHTML = monthlyTable;
+                }
+            }
+
+            window.updateHourlyRate = function(employee, month, value) {
+    const rate = parseFloat(value);
+    if (!window.hourlyRatesHistory[employee]) {
+        window.hourlyRatesHistory[employee] = {};
     }
-    tableRows += `
-        <tr style="font-weight: bold; color: black; font-size: 16px; background-color: #f0f0f0;">
-            <td>Total Général</td>
-            <td></td><td></td><td></td>
-            <td>${totalHourLabel}</td>
-            ${showComments ? `<td>${totalComments}</td>` : ''}
-        </tr>`;
+    window.hourlyRatesHistory[employee][month] = !isNaN(rate) && rate >= 0 ? rate : 11.88;
 
-    personnelList.innerHTML = `
-        <h3>Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
-        <div class="table-container">
-            <table>
-                <tr>
-                    <th>Date</th>
-                    <th>Employé</th>
-                    <th>Début</th>
-                    <th>Fin</th>
-                    <th>Heures</th>
-                    ${showComments ? '<th>Commentaire</th>' : ''}
-                </tr>
-                ${tableRows}
-            </table>
-        </div>
-    `;
-}
+    // 🔽 Sauvegarder dans le localStorage
+    localStorage.setItem('hourlyRatesHistory', JSON.stringify(window.hourlyRatesHistory));
+
+    updateMonthlyTable();
+};
 
 
+            const mainTable = `
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>Date</th><th>Employé</th><th>Début</th><th>Fin</th><th>Heures</th>
+                            ${showComments ? '<th>Commentaire</th>' : ''}
+                        </tr>
+                        ${tableRows}
+                    </table>
+                </div>`;
 
-function showPersonnelDetailFromIndex(index) {
-    const record = filteredPersonnelRecords[index];
-    selectedPersonnelRecord = record;
+            personnelList.innerHTML = `
+                <h3>Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
+                ${mainTable}
+                <div id="monthlyTable"></div>`;
 
-    document.getElementById('personnelDetailDate').textContent = `Date : ${formatPersonnelDate(new Date(record.date))}`;
-    document.getElementById('personnelDetailEmployee').textContent = `Employé : ${record.employee}`;
-    document.getElementById("personnelDetailStartTime").textContent = "Début : " + record.startTime;
-    document.getElementById("personnelDetailEndTime").textContent = "Fin : " + record.endTime;
-    document.getElementById('personnelDetailHours').textContent = `Heures : ${formatHours(record.hours)}`;
-    document.getElementById("personnelDetailComment").textContent = "Commentaire : " + record.comment;
+            updateMonthlyTable();
+        }
 
-    document.getElementById('personnelDetailPopup').classList.remove('hidden');
-}
-function closePersonnelDetail() {
-    document.getElementById('personnelDetailPopup').classList.add('hidden');
-    selectedPersonnelRecord = null;
-}
+        function showPersonnelDetailFromIndex(index) {
+            const record = filteredPersonnelRecords[index];
+            if (!record) {
+                console.error("Erreur : Enregistrement non trouvé pour l'index", index);
+                return;
+            }
+            selectedPersonnelRecord = record;
 
-function deleteSelectedPersonnel() {
-    if (selectedPersonnelRecord) {
-        if (confirm("Supprimer cet enregistrement ?")) {
-            const idx = personnelRecords.findIndex(p =>
-                p.date === selectedPersonnelRecord.date &&
-                p.employee === selectedPersonnelRecord.employee &&
-                p.hours === selectedPersonnelRecord.hours
-            );
+            document.getElementById('personnelDetailDate').textContent = `Date : ${formatPersonnelDate(new Date(record.date))}`;
+            document.getElementById('personnelDetailEmployee').textContent = `Employé : ${record.employee}`;
+            document.getElementById('personnelDetailStartTime').textContent = `Début : ${record.startTime || ''}`;
+            document.getElementById('personnelDetailEndTime').textContent = `Fin : ${record.endTime || ''}`;
+            document.getElementById('personnelDetailHours').textContent = `Heures : ${formatHours(record.hours)}`;
+            document.getElementById('personnelDetailComment').textContent = `Commentaire : ${record.comment || ''}`;
 
-            if (idx !== -1) {
-                personnelRecords.splice(idx, 1);
-                localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
-                closePersonnelDetail();
-                filterPersonnel();
-                alert("Enregistrement supprimé !");
+            const popup = document.getElementById('personnelDetailPopup');
+            if (popup) {
+                popup.classList.remove('hidden');
+            } else {
+                console.error("Erreur : L'élément 'personnelDetailPopup' n'existe pas.");
             }
         }
-    }
-}
+
+        function closePersonnelDetail() {
+            const popup = document.getElementById('personnelDetailPopup');
+            if (popup) {
+                popup.classList.add('hidden');
+            }
+            selectedPersonnelRecord = null;
+        }
+
+        function deleteSelectedPersonnel() {
+            if (selectedPersonnelRecord) {
+                if (confirm("Supprimer cet enregistrement ?")) {
+                    const idx = personnelRecords.findIndex(p =>
+                        p.date === selectedPersonnelRecord.date &&
+                        p.employee === selectedPersonnelRecord.employee &&
+                        p.hours === selectedPersonnelRecord.hours
+                    );
+
+                    if (idx !== -1) {
+                        personnelRecords.splice(idx, 1);
+                        localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
+                        closePersonnelDetail();
+                        filterPersonnel();
+                        alert("Enregistrement supprimé !");
+                    }
+                }
+            }
+        }
+
+        // Initialize the table on page load
+        window.onload = filterPersonnel;
+    
 
 
 // Fonction utilitaire pour formater les heures
