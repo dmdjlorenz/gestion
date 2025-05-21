@@ -2774,11 +2774,6 @@ function filterRecipes() {
 
         list.innerHTML = `<h3>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
 
-        // Création du conteneur pour le tableau principal
-        const tableContainer = document.createElement('div');
-        tableContainer.style.maxWidth = '100%';
-        tableContainer.style.overflowX = 'auto';
-
         const table = document.createElement('table');
         table.style.width = '100%';
         table.style.borderCollapse = 'collapse';
@@ -2787,10 +2782,10 @@ function filterRecipes() {
         thead.innerHTML = `
             <tr>
                 <th style="min-width: 100px;">Date</th>
-                <th style="min-width: 70px;">Carte (€)</th>
-                <th style="min-width: 80px;">Espèces (€)</th>
-                <th style="min-width: 70px;">Total (€)</th>
-                <th style="width: 60px;">Taux de cash (%)</th>
+                <th style="width: 70px;">Carte(€)</th>
+                <th style="width: 70px;">Cash(€)</th>
+                <th style="width: 70px;">Total(€)</th>
+                <th style="width: 60px;">Taux de cash(%)</th>
             </tr>
         `;
         table.appendChild(thead);
@@ -2884,10 +2879,8 @@ function filterRecipes() {
         `;
         table.appendChild(tfoot);
 
-        tableContainer.appendChild(table);
-        list.appendChild(tableContainer);
+        list.appendChild(table);
 
-        // Le reste du code (tableau récapitulatif mensuel et tableau des moyennes par jour) reste inchangé
         let spacer = document.createElement('div');
         spacer.style.height = '20px';
         list.appendChild(spacer);
