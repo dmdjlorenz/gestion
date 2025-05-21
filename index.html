@@ -5934,7 +5934,7 @@ function deletePersonnelRecord(index) {
                                 <td><input type="number" step="0.01" inputmode="decimal"
                                     value="${rate.toFixed(2)}"
                                     onchange="updateHourlyRate('${employee}', '${month}', this.value)"
-                                    style="width: 80px; padding: 4px;"></td>
+                                    style="width:70px; padding: 4px;"></td>
                                 <td>${convertToHoursMinutes(totalHoursDecimal)}</td>
                                 ${showComments ? `<td>${comments ? Math.round(comments) : ''}</td>` : ''}
                                 <td>${estimated} €</td>
@@ -5971,7 +5971,7 @@ function deletePersonnelRecord(index) {
                         <td>TOTAL</td><td></td><td></td>
                         <td>${convertToHoursMinutes(grandTotalHours + grandTotalMinutes / 60)}</td>
                         ${showComments ? `<td>${grandTotalComments ? Math.round(grandTotalComments) : ''}</td>` : ''}
-                        <td>${Math.round(grandTotalEstimated)} €</td>
+                        <td>${Math.round(grandTotalEstimated)}€</td>
                     </tr>`;
 
                 const monthlyTable = `
@@ -5985,7 +5985,7 @@ function deletePersonnelRecord(index) {
                                     <th>Taux horaire</th>
                                     <th>Total Heures</th>
                                     ${showComments ? '<th>Total Commentaires</th>' : ''}
-                                    <th>Total Estimé (€)</th>
+                                    <th>Total Estimé(€)</th>
                                 </tr>
                                 ${monthlyTableRows}
                             </table>
