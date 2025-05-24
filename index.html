@@ -5913,90 +5913,109 @@ function deletePersonnelRecord(index) {
                     ${showComments ? `<td>${totalComments || ''}</td>` : ''}
                 </tr>`;
 
-            function updateMonthlyTable() {
-                let monthlyTableRows = '';
-                let grandTotalHours = 0, grandTotalMinutes = 0, grandTotalComments = 0, grandTotalEstimated = 0;
+function updateMonthlyTable() {
+    let monthlyTableRows = '';
+    let grandTotalHours = 0, grandTotalMinutes = 0, grandTotalComments = 0, grandTotalEstimated = 0;
 
-                const months = Object.keys(monthlyTotals).sort();
-                months.forEach(month => {
-                    let monthHours = 0, monthMinutes = 0, monthComments = 0, monthEstimated = 0;
+    const startConditionalDate = new Date('2024-12-11');
+    const endConditionalDate = new Date('2025-04-11');
 
-                    Object.keys(monthlyTotals[month]).forEach(employee => {
-                        const { hours, minutes, comments } = monthlyTotals[month][employee];
-                        const totalHoursDecimal = hours + minutes / 60;
-                        const rate = getEffectiveHourlyRate(employee, month);
-                        const estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
+    const months = Object.keys(monthlyTotals).sort();
+    months.forEach(month => {
+        let monthHours = 0, monthMinutes = 0, monthComments = 0, monthEstimated = 0;
 
-                        monthlyTableRows += `
-                            <tr>
-                                <td>${month}</td>
-                                <td>${employee}</td>
-                                <td><input type="number" step="0.01" inputmode="decimal"
-                                    value="${rate.toFixed(2)}"
-                                    onchange="updateHourlyRate('${employee}', '${month}', this.value)"
-                                    style="width:70px; padding: 4px;"></td>
-                                <td>${convertToHoursMinutes(totalHoursDecimal)}</td>
-                                ${showComments ? `<td>${comments ? Math.round(comments) : ''}</td>` : ''}
-                                <td>${estimated} €</td>
-                            </tr>`;
+        Object.keys(monthlyTotals[month]).forEach(employee => {
+            const { hours, minutes, comments } = monthlyTotals[month][employee];
+            const totalHoursDecimal = hours + minutes / 60;
+            const rate = getEffectiveHourlyRate(employee, month);
 
-                        monthHours += hours;
-                        monthMinutes += minutes;
-                        monthComments += comments;
-                        monthEstimated += estimated;
-                    });
+            // Parse the month string (YYYY-MM) to a Date object for comparison
+            const [year, monthNum] = month.split('-').map(Number);
+            const monthDate = new Date(year, monthNum - 1, 1);
 
-                    monthHours += Math.floor(monthMinutes / 60);
-                    monthMinutes %= 60;
-
-                    monthlyTableRows += `
-                        <tr style="font-weight: bold; background-color: #f0f0f0;">
-                            <td>Total ${month}</td><td></td><td></td>
-                            <td>${convertToHoursMinutes(monthHours + monthMinutes / 60)}</td>
-                            ${showComments ? `<td>${monthComments ? Math.round(monthComments) : ''}</td>` : ''}
-                            <td>${Math.round(monthEstimated)} €</td>
-                        </tr>`;
-
-                    grandTotalHours += monthHours;
-                    grandTotalMinutes += monthMinutes;
-                    grandTotalComments += monthComments;
-                    grandTotalEstimated += monthEstimated;
-                });
-
-                grandTotalHours += Math.floor(grandTotalMinutes / 60);
-                grandTotalMinutes %= 60;
-
-                monthlyTableRows += `
-                    <tr style="font-weight: bold; font-size: 16px; background-color: #f0f0f0;">
-                        <td>TOTAL</td><td></td><td></td>
-                        <td>${convertToHoursMinutes(grandTotalHours + grandTotalMinutes / 60)}</td>
-                        ${showComments ? `<td>${grandTotalComments ? Math.round(grandTotalComments) : ''}</td>` : ''}
-                        <td>${Math.round(grandTotalEstimated)}€</td>
-                    </tr>`;
-
-                const monthlyTable = `
-                    <div style="margin-top: 20px;">
-                        <h3>Récapitulatif Mensuel</h3>
-                        <div class="table-container">
-                            <table>
-                                <tr>
-                                    <th>Mois</th>
-                                    <th>Employé</th>
-                                    <th>Taux horaire</th>
-                                    <th>Total Heures</th>
-                                    ${showComments ? '<th>Total Commentaires</th>' : ''}
-                                    <th>Total Estimé(€)</th>
-                                </tr>
-                                ${monthlyTableRows}
-                            </table>
-                        </div>
-                    </div>`;
-
-                const monthlyTableDiv = document.getElementById('monthlyTable');
-                if (monthlyTableDiv) {
-                    monthlyTableDiv.innerHTML = monthlyTable;
-                }
+            // Apply conditional calculation based on date range
+            let estimated;
+            if (monthDate >= startConditionalDate && monthDate <= endConditionalDate) {
+                // Use taux horaire * nb d'heures + commentaire for Dec 11, 2024 - Apr 11, 2025
+                estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
+            } else if (monthDate > endConditionalDate) {
+                // Use Math.round(totalHoursDecimal * rate * 1.1) after Apr 11, 2025
+                estimated = Math.round(totalHoursDecimal * rate * 1.1);
+            } else {
+                // Default to original calculation for dates before Dec 11, 2024
+                estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
             }
+
+            monthlyTableRows += `
+                <tr>
+                    <td>${month}</td>
+                    <td>${employee}</td>
+                    <td><input type="number" step="0.01" inputmode="decimal"
+                        value="${rate.toFixed(2)}"
+                        onchange="updateHourlyRate('${employee}', '${month}', this.value)"
+                        style="width:70px; padding: 4px;"></td>
+                    <td>${convertToHoursMinutes(totalHoursDecimal)}</td>
+                    ${showComments ? `<td>${comments ? Math.round(comments) : ''}</td>` : ''}
+                    <td>${estimated} €</td>
+                </tr>`;
+
+            monthHours += hours;
+            monthMinutes += minutes;
+            monthComments += comments;
+            monthEstimated += estimated;
+        });
+
+        monthHours += Math.floor(monthMinutes / 60);
+        monthMinutes %= 60;
+
+        monthlyTableRows += `
+            <tr style="font-weight: bold; background-color: #f0f0f0;">
+                <td>Total ${month}</td><td></td><td></td>
+                <td>${convertToHoursMinutes(monthHours + monthMinutes / 60)}</td>
+                ${showComments ? `<td>${monthComments ? Math.round(monthComments) : ''}</td>` : ''}
+                <td>${Math.round(monthEstimated)} €</td>
+            </tr>`;
+
+        grandTotalHours += monthHours;
+        grandTotalMinutes += monthMinutes;
+        grandTotalComments += monthComments;
+        grandTotalEstimated += monthEstimated;
+    });
+
+    grandTotalHours += Math.floor(grandTotalMinutes / 60);
+    grandTotalMinutes %= 60;
+
+    monthlyTableRows += `
+        <tr style="font-weight: bold; font-size: 16px; background-color: #f0f0f0;">
+            <td>TOTAL</td><td></td><td></td>
+            <td>${convertToHoursMinutes(grandTotalHours + grandTotalMinutes / 60)}</td>
+            ${showComments ? `<td>${grandTotalComments ? Math.round(grandTotalComments) : ''}</td>` : ''}
+            <td>${Math.round(grandTotalEstimated)}€</td>
+        </tr>`;
+
+    const monthlyTable = `
+        <div style="margin-top: 20px;">
+            <h3>Récapitulatif Mensuel</h3>
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>Mois</th>
+                        <th>Employé</th>
+                        <th>Taux horaire</th>
+                        <th>Total Heures</th>
+                        ${showComments ? '<th>Total Commentaires</th>' : ''}
+                        <th>Total Estimé(€)</th>
+                    </tr>
+                    ${monthlyTableRows}
+                </table>
+            </div>
+        </div>`;
+
+    const monthlyTableDiv = document.getElementById('monthlyTable');
+    if (monthlyTableDiv) {
+        monthlyTableDiv.innerHTML = monthlyTable;
+    }
+}
 
             window.updateHourlyRate = function(employee, month, value) {
     const rate = parseFloat(value);
