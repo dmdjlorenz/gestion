@@ -718,7 +718,6 @@ table {
 #purchasesManagementPage .date-filter,
 #personnelManagementPage .date-filter,
 #indicatorsPage .date-filter,
-#bilanPage .date-filter,
 #fiscalPage .date-filter {
     display: flex;
     flex-direction: column;
@@ -731,7 +730,6 @@ table {
 #purchasesManagementPage .date-filter labelme label,
 #personnelManagementPage .date-filter label,
 #indicatorsPage .date-filter label,
-#bilanPagePage .date-filter label,
 #fiscalPage .date-filter label {
     font-weight: bold;
     color: #333;
@@ -741,7 +739,6 @@ table {
 #purchasesManagementPage .date-filter input,
 #personnelManagementPage .date-filter input,
 #indicatorsPage .date-filter input,
-#bilanPage .date-filter input,
 #fiscalPage .date-filter input {
     padding: 8px;
     border: 1px solid #ccc;
@@ -967,7 +964,7 @@ table {
     border-radius: 15px;
     cursor: pointer;
 }
-#indicatorsPage , #bilanPage {
+#indicatorsPage {
     max-width: 600px;
     margin: 0 auto;
     background: white;
@@ -976,7 +973,7 @@ table {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     text-align: center;
 }
-#indicatorsPage h2 , #bilanPage h2 {
+#indicatorsPage h2 {
     font-size: 1.5em;
     margin-bottom: 20px;
     color: #333;
@@ -1161,131 +1158,202 @@ table {
     background: #00A5E0;
 }
 
+#bilanPage {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#bilanPage h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
 #bilanTable {
     overflow-x: auto;
     max-width: 100%;
+    -webkit-overflow-scrolling: touch;
 }
-.bilan-table th:first-child,
-.bilan-table td:first-child {
+
+#bilanTable table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+}
+
+#bilanTable th, #bilanTable td {
+    border: 1px solid #ddd !important;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+#bilanTable th {
+    background-color: #ccc;
+    color: #333;
+}
+
+#bilanTable th:first-child, #bilanTable td:first-child {
     position: sticky;
     left: 0;
     background: white;
-    z-index: 1;
-}
-
-/*=========================================
-  Global (PC & Mobile)
-=========================================*/
-
-/* Autoriser le scroll horizontal au niveau de la page */
-html, body {
-  overflow-x: auto !important;
-}
-
-/* Conteneur de la page bilan */
-#bilanPage {
-  overflow-x: visible;
-  padding: 0 10px; /* petit padding pour respirer sur mobile */
-}
-
-/* Wrapper scrollable du tableau */
-#bilanTable {
-  display: block;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* inertie iOS */
-  margin-top: 10px;
-}
-
-/* Tableau : largeur intrinsèque, bordures collapser */
-#bilanTable table {
-  width: auto;
-  min-width: max-content;
-  border-collapse: collapse;
-}
-
-/* En-têtes et cellules : bordure et padding par défaut */
-#bilanTable th,
-#bilanTable td {
-  border: 1px solid #000;
-  padding: 8px 12px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Première colonne fixe */
-#bilanTable th:first-child,
-#bilanTable td:first-child {
-  position: sticky;
-  left: 0;
-  background: #fff;
-  z-index: 2;
-}
-
-/* Style de la scrollbar horizontale */
-#bilanTable::-webkit-scrollbar {
-  height: 8px;
-}
-#bilanTable::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.3);
-  border-radius: 4px;
-}
-
-/*=========================================
-  Responsive pour tablettes (≤ 600px)
-=========================================*/
-@media (max-width: 600px) {
-  #bilanTable table {
-    min-width: 100%;  /* permet un rétrécissement modéré */
-  }
-  #bilanTable th,
-  #bilanTable td {
-    padding: 6px 8px;
-    font-size: 13px;
-  }
-  #bilanTable td:first-child,
-  #bilanTable th:first-child {
+    z-index: 5; /* Augmenté pour éviter le masquage de la bordure droite */
     min-width: 100px;
-    font-size: 13px;
-  }
-  #bilanTable input[type="number"] {
-    width: 60px;
-    font-size: 12px;
-    padding: 4px;
-  }
+    border-left: 1px solid #ddd !important;
+    border-right: 2px solid #ddd !important; /* Bordure droite renforcée */
+    box-shadow: inset 0 0 0 1px #ddd, 2px 0 2px rgba(0, 0, 0, 0.1); /* Bordures internes et ombre externe */
 }
 
-/*=========================================
-  Responsive pour smartphones (≤ 480px)
-=========================================*/
-@media (max-width: 480px) {
-  /* Empiler les filtres de date */
-  #bilanPage .date-filter {
+#bilanTable input[type="number"] {
+    width: 50px;
+    font-size: 14px;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#bilanPage .date-filter {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-  }
-  #bilanPage .date-filter label,
-  #bilanPage .date-filter input {
+    gap: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#bilanPage .date-filter label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#bilanPage .date-filter input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
     width: 100%;
     box-sizing: border-box;
-    font-size: 14px;
-  }
-  #bilanTable th,
-  #bilanTable td {
-    padding: 4px 6px;
-    font-size: 12px;
-  }
-  #bilanTable input[type="number"] {
-    width: 50px;
-    font-size: 11px;
-    padding: 2px;
-  }
-  #bilanTable td:first-child,
-  #bilanTable th:first-child {
-    min-width: 80px;
-    font-size: 12px;
-  }
 }
+
+#bilanPage .buttons.no-print {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+#bilanPage button[onclick="backToHome()"] {
+    background: #808080;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#bilanPage button[onclick="backToHome()"]:hover {
+    background: #666666;
+}
+
+#bilanPage .export-button {
+    background: #FFA500;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#bilanPage .export-button:hover {
+    background: #E59400;
+}
+
+#bilanTable::-webkit-scrollbar {
+    height: 8px;
+}
+
+#bilanTable::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+#bilanTable::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 480px) {
+    #bilanPage {
+        padding: 12px;
+    }
+    #bilanPage h2 {
+        font-size: 1.2em;
+    }
+    #bilanTable table {
+        min-width: 0;
+    }
+    #bilanTable th, #bilanTable td {
+        font-size: 12px;
+        padding: 4px;
+    }
+    #bilanTable th:first-child, #bilanTable td:first-child {
+        min-width: 60px;
+        font-size: 12px;
+        border-left: 1px solid #ddd !important;
+        border-right: 2px solid #ddd !important;
+        box-shadow: inset 0 0 0 1px #ddd, 2px 0 2px rgba(0, 0, 0, 0.1);
+    }
+    #bilanTable input[type="number"] {
+        width: 40px;
+        font-size: 12px;
+        padding: 2px;
+    }
+    #bilanPage .date-filter {
+        flex-direction: column;
+    }
+    #bilanPage .date-filter label,
+    #bilanPage .date-filter input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    #bilanPage .date-filter label {
+        margin-top: 8px;
+        margin-bottom: 5px;
+    }
+    #bilanPage button {
+        font-size: 0.9em;
+    }
+}
+
+@media print {
+    #bilanPage .no-print,
+    #bilanPage button,
+    #bilanPage .buttons {
+        display: none !important;
+    }
+    #bilanTable {
+        width: 100%;
+        page-break-inside: auto;
+    }
+    #bilanTable tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+}
+
 
 
     </style>
