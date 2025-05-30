@@ -1180,25 +1180,25 @@ table {
 }
 
 #bilanTable {
+    display: block;
     overflow-x: auto;
-    max-width: 100%;
     -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
 }
 
 #bilanTable table {
-    width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     margin-top: 20px;
-    min-width: 0 !important; /* Surmonte min-width: 800px inline */
-    max-width: 100% !important; /* Limite la largeur totale */
+    width: auto; /* largeur flexible */
+    min-width: 600px; /* pour forcer scroll horizontal */
 }
 
 #bilanTable th, #bilanTable td {
-    border: 1px solid #ddd !important; /* Surmonte border: 1px solid #000 inline */
+    border: 1px solid #ddd !important;
     padding: 8px;
     text-align: center;
-    font-size: 14px !important; /* Police augmentée sur PC */
+    font-size: 14px !important;
     white-space: nowrap;
 }
 
@@ -1207,7 +1207,8 @@ table {
     color: #333;
 }
 
-#bilanTable th:first-child, #bilanTable td:first-child {
+#bilanTable th:first-child,
+#bilanTable td:first-child {
     position: sticky;
     left: 0;
     background: white;
@@ -1299,79 +1300,88 @@ table {
     background: rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ RESPONSIVE MOBILE */
 @media (max-width: 480px) {
+    html {
+        font-size: 16px;
+    }
+
     #bilanPage {
-        padding: 6px; /* Réduit pour éliminer les 2 mm */
+        padding: 6px;
         width: 100vw;
         max-width: 100vw;
         margin: 0;
         border-radius: 0;
         box-shadow: none;
     }
+
     #bilanPage h2 {
-        font-size: 1.1em;
+        font-size: 1.4em;
         margin-bottom: 10px;
     }
-    #bilanTable {
-        max-width: 100%;
-    }
-    #bilanTable table {
-        min-width: 0 !important;
-        max-width: 100% !important;
-    }
+
     #bilanTable th, #bilanTable td {
-        font-size: 12px !important; /* Police augmentée sur mobile */
+        font-size: 14px !important;
+        padding: 4px;
+    }
+
+    #bilanTable th:first-child,
+    #bilanTable td:first-child {
+        min-width: 70px;
+        font-size: 14px !important;
+    }
+
+    #bilanTable input[type="number"] {
+        width: 40px;
+        font-size: 14px;
         padding: 2px;
     }
-    #bilanTable th:first-child, #bilanTable td:first-child {
-        min-width: 40px; /* Réduit pour éviter le débordement */
-        font-size: 12px !important;
-        border-left: 1px solid #ddd !important;
-        border-right: 2px solid #ddd !important;
-        box-shadow: inset 0 0 0 1px #ddd, 2px 0 2px rgba(0, 0, 0, 0.1);
-    }
-    #bilanTable input[type="number"] {
-        width: 30px;
-        font-size: 12px;
-        padding: 1px;
-    }
+
     #bilanPage .date-filter {
         gap: 5px;
         margin-bottom: 10px;
     }
+
     #bilanPage .date-filter label {
-        font-size: 12px;
+        font-size: 14px;
         margin-top: 4px;
         margin-bottom: 2px;
     }
+
     #bilanPage .date-filter input {
-        padding: 4px;
-        font-size: 12px;
+        padding: 6px;
+        font-size: 14px;
     }
+
     #bilanPage .buttons.no-print {
         gap: 5px;
         margin-top: 10px;
     }
+
     #bilanPage button {
-        font-size: 0.7em;
-        padding: 5px 10px;
+        font-size: 0.9em;
+        padding: 6px 12px;
     }
 }
+
 @media print {
     #bilanPage .no-print,
     #bilanPage button,
     #bilanPage .buttons {
         display: none !important;
     }
+
     #bilanTable {
         width: 100%;
         page-break-inside: auto;
     }
+
     #bilanTable tr {
         page-break-inside: avoid;
         page-break-after: auto;
     }
 }
+
 
 
     </style>
@@ -7375,19 +7385,21 @@ function displayBilan() {
     const startInput = document.getElementById("bilanStartDate").value || "2024-12-09";
     let endInput = document.getElementById("bilanEndDate").value;
 
-    // Créer des objets Date avec l'heure locale
-    const startDate = new Date(startInput + "T00:00:00");
-    let endDate = endInput ? new Date(endInput + "T23:59:59") : new Date();
-
-    // Si aucune date de fin n'est saisie, utiliser la date actuelle
+    // Si endInput est vide, définir la date actuelle
     if (!endInput) {
-        endDate = new Date(); // Date actuelle (31 mai 2025 à 00:33 CEST)
-        // Mettre à jour l'input pour refléter la date actuelle
-        document.getElementById("bilanEndDate").value = endDate.toISOString().split('T')[0];
+        const now = new Date();
+        const parisOffsetMinutes = 120; // CEST = UTC+2
+        const parisTime = new Date(now.getTime() + parisOffsetMinutes * 60 * 1000);
+        endInput = parisTime.toISOString().split('T')[0];
+        document.getElementById("bilanEndDate").value = endInput;
     }
 
-    // Débogage pour vérifier la date
-    console.log("endDate:", endDate.toISOString(), "Input value:", document.getElementById("bilanEndDate").value);
+    // Créer des objets Date
+    const startDate = new Date(startInput + "T00:00:00");
+    const endDate = new Date(endInput + "T23:59:59");
+
+    // Débogage pour vérifier les dates
+    console.log("startDate:", startDate.toISOString(), "endDate:", endDate.toISOString(), "endInput:", endInput);
 
     // Fonction pour obtenir un label de mois stable
     function getStableMonthLabel(date) {
@@ -7503,7 +7515,7 @@ function displayBilan() {
     // Sauvegarde des charges
     localStorage.setItem("chargesMensuelles", JSON.stringify(chargesMensuelles));
 
-    // Génération HTML
+    // Génération HTML (✔️ avec overflow-x:auto pour affichage responsive)
     let html = `<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;"><thead><tr><th style="position:sticky;left:0;background:white;border:1px solid #ddd;"></th>`;
     monthLabels.forEach(m => html += `<th style="border:1px solid #ddd;">${m}</th>`);
     html += `</tr></thead><tbody>`;
@@ -8085,15 +8097,21 @@ const initialMenu = [
         input.click();
     }
 
-     window.addEventListener('DOMContentLoaded', () => {
-    // Récupère la date du jour en heure de Paris
-    const paris = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
-    // Formate en 'YYYY-MM-DD' pour input type="date"
-    const todayISO = paris.toISOString().split('T')[0];
-    // Affecte aux deux champs de la page bilan
+   window.addEventListener('DOMContentLoaded', () => {
+    // Obtenir la date actuelle en UTC
+    const now = new Date();
+    // Calculer le décalage horaire de Paris (CEST = UTC+2 en mai)
+    const parisOffsetMinutes = 120; // CEST = +2h
+    const parisTime = new Date(now.getTime() + parisOffsetMinutes * 60 * 1000);
+    // Formater en 'YYYY-MM-DD' pour l'input
+    const todayISO = parisTime.toISOString().split('T')[0];
+    // Affecter aux champs de la page bilan
     const endInput = document.getElementById('bilanEndDate');
     if (endInput) endInput.value = todayISO;
-  });
+
+    // Débogage pour vérifier la date
+    console.log("Date définie dans DOMContentLoaded:", todayISO);
+});
 
      
 
