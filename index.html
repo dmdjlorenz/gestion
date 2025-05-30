@@ -718,6 +718,7 @@ table {
 #purchasesManagementPage .date-filter,
 #personnelManagementPage .date-filter,
 #indicatorsPage .date-filter,
+#bilanPage .date-filter,
 #fiscalPage .date-filter {
     display: flex;
     flex-direction: column;
@@ -730,6 +731,7 @@ table {
 #purchasesManagementPage .date-filter labelme label,
 #personnelManagementPage .date-filter label,
 #indicatorsPage .date-filter label,
+#bilanPagePage .date-filter label,
 #fiscalPage .date-filter label {
     font-weight: bold;
     color: #333;
@@ -739,6 +741,7 @@ table {
 #purchasesManagementPage .date-filter input,
 #personnelManagementPage .date-filter input,
 #indicatorsPage .date-filter input,
+#bilanPage .date-filter input,
 #fiscalPage .date-filter input {
     padding: 8px;
     border: 1px solid #ccc;
@@ -964,7 +967,7 @@ table {
     border-radius: 15px;
     cursor: pointer;
 }
-#indicatorsPage {
+#indicatorsPage , #bilanPage {
     max-width: 600px;
     margin: 0 auto;
     background: white;
@@ -973,7 +976,7 @@ table {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     text-align: center;
 }
-#indicatorsPage h2 {
+#indicatorsPage h2 , #bilanPage h2 {
     font-size: 1.5em;
     margin-bottom: 20px;
     color: #333;
@@ -1151,6 +1154,26 @@ table {
     max-width: 100%;
 }
 
+#homePage #bilanBtn {
+    background: #00BFFF;
+}
+#homePage #bilanBtn:hover {
+    background: #00A5E0;
+}
+
+#bilanTable {
+    overflow-x: auto;
+    max-width: 100%;
+}
+.bilan-table th:first-child,
+.bilan-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+}
+
+
 
     </style>
     <link rel="manifest" href="manifest.json">
@@ -1167,51 +1190,53 @@ table {
         <button onclick="checkPassword()">Valider</button>
         <p id="errorMessage" style="color: red; display: none;">Mot de passe incorrect !</p>
     </div>
-    <div id="homePage" class="hidden">
-    <h2>Mon Appli Gestion</h2>
-    <h2>CHEZ BARTH</h2>
-    <div class="button-grid">
-       <button id="recipeBookBtn" onclick="showRecipeBook()">
-    <i class="fas fa-euro-sign"></i>
-    Ventes
-</button>
-
-        <button id="purchasesBtn" onclick="showPurchases()">
-            <i class="fas fa-shopping-cart"></i>
-            Achats
-        </button>
-        <button id="personnelBtn" onclick="showPersonnel()">
-            <i class="fas fa-users"></i>
-            Personnel
-        </button>
-        <button id="invoiceBtn" onclick="showInvoice()">
-            <i class="fas fa-file-invoice"></i>
-            Commande Facture
-        </button>
-        <button id="budgetBtn" onclick="showBudget()">
-            <i class="fas fa-wallet"></i>
-            Budget
-        </button>
-     <button id="officialRecipeBookBtn" onclick="exportRecipeToPdfofficiel()">
-    <i class="fas fa-book-open"></i>
-    Livre des recettes officiel
-</button>
-
-        <button id="indicatorsBtn" onclick="showIndicators()">
-            <i class="fas fa-chart-line"></i>
-            Indicateurs
-        </button>
-        <button id="fiscalBtn" onclick="showFiscal()" style="display: flex; flex-direction: column; align-items: center;">
-    <span style="font-size: 2em; margin-bottom: 5px;">😣</span>
-    Taxes
-</button>
-    </div>
-    <button id="settingsBtn" onclick="showSettings()" class="wide-settings-btn">
-        <i class="fas fa-cog"></i>
-        Paramètres
+ <div id="homePage" class="hidden">
+  <h2>CHEZ BARTH Gestion</h2>
+  <div class="button-grid">
+    <button id="recipeBookBtn" onclick="showRecipeBook()">
+      <i class="fas fa-euro-sign"></i>
+      Ventes
     </button>
+    <button id="purchasesBtn" onclick="showPurchases()">
+      <i class="fas fa-shopping-cart"></i>
+      Achats
+    </button>
+    <button id="personnelBtn" onclick="showPersonnel()">
+      <i class="fas fa-users"></i>
+      Personnel
+    </button>
+    <button id="invoiceBtn" onclick="showInvoice()">
+      <i class="fas fa-file-invoice"></i>
+      Commande Facture
+    </button>
+    <button id="budgetBtn" onclick="showBudget()">
+      <i class="fas fa-wallet"></i>
+      Budget
+    </button>
+    <button id="officialRecipeBookBtn" onclick="exportRecipeToPdfofficiel()">
+      <i class="fas fa-book-open"></i>
+      Livre des recettes officiel
+    </button>
+    <button id="indicatorsBtn" onclick="showIndicators()">
+      <i class="fas fa-chart-line"></i>
+      Indicateurs
+    </button>
+    <button id="fiscalBtn" onclick="showFiscal()">
+      <span style="font-size:2em; margin-bottom:5px;">😣</span>
+      Taxes
+    </button>
+    <!-- Nouveaux boutons intégrés à la grille -->
+    <button id="bilanBtn" onclick="showBilan()">
+      <i class="fas fa-coins"></i>
+      Bilan
+    </button>
+    <button id="settingsBtn" onclick="showSettings()">
+      <i class="fas fa-cog"></i>
+      Paramètres
+    </button>
+  </div>
 </div>
-    </div>
+
 
 <div id="fiscalPage" class="page hidden">
     <h2>Taxes, Impôts et Urssaf</h2>
@@ -1228,6 +1253,21 @@ table {
 </div>
 
 
+<div id="bilanPage" class="page hidden">
+    <h2>Compte de Résultat Estimatif</h2>
+    <div class="date-filter" style="text-align: left;">
+        <label style="display: block; margin-bottom: 5px;">Date de début :</label>
+        <input type="date" id="bilanStartDate" value="2024-12-09" onchange="displayBilan()">
+        <label style="display: block; margin-top: 10px; margin-bottom: 5px;">Date de fin :</label>
+        <input type="date" id="bilanEndDate" onchange="displayBilan()">
+    </div>
+    <div id="bilanTable" style="overflow-x: auto; max-width: 100%;">
+        <!-- Le tableau généré dynamiquement s'affichera ici -->
+    </div>
+    <div class="buttons no-print" style="margin-top: 20px;">
+        <button onclick="backToHome()" style="background:#666666; color:white;">Retour</button>
+    </div>
+</div>
 
 
 
@@ -1788,7 +1828,7 @@ function navigateTo(pageId) {
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage' , 'fiscalPage'
+        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage' , 'fiscalPage' , 'bilanPage'
     ];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
@@ -1803,6 +1843,8 @@ function navigateTo(pageId) {
     if (pageId === 'personnelManagementPage') filterPersonnel();
     if (pageId === 'indicatorsPage') displayIndicatorsTable();
     if (pageId === 'fiscalPage') displayFiscalTable();
+    if (pageId === 'bilanPage') displayBilan();
+
 }
 
 
@@ -1816,7 +1858,7 @@ function checkPassword() {
             'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
             'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
             'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-            'passwordPage', 'budgetPage', 'settingsPage' , 'indicatorsPage' , 'fiscalPage'
+            'passwordPage', 'budgetPage', 'settingsPage' , 'indicatorsPage' , 'fiscalPage' , 'bilanPage'
         ];
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById('homePage').classList.remove('hidden');
@@ -2190,6 +2232,7 @@ function showPurchases() {
         document.getElementById('budgetPage').classList.add('hidden');
         document.getElementById('homePage').classList.remove('hidden');
         document.getElementById('fiscalPage').classList.remove('hidden');
+        document.getElementById('bilanPage').classList.remove('hidden');
     }
 
 
@@ -5921,6 +5964,8 @@ function updateMonthlyTable() {
     const endConditionalDate = new Date('2025-04-11');
 
     const months = Object.keys(monthlyTotals).sort();
+    const personnelByMonthFinal = {}; // ➕ Ajouté
+
     months.forEach(month => {
         let monthHours = 0, monthMinutes = 0, monthComments = 0, monthEstimated = 0;
 
@@ -5936,13 +5981,10 @@ function updateMonthlyTable() {
             // Apply conditional calculation based on date range
             let estimated;
             if (monthDate >= startConditionalDate && monthDate <= endConditionalDate) {
-                // Use taux horaire * nb d'heures + commentaire for Dec 11, 2024 - Apr 11, 2025
                 estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
             } else if (monthDate > endConditionalDate) {
-                // Use Math.round(totalHoursDecimal * rate * 1.1) after Apr 11, 2025
                 estimated = Math.round(totalHoursDecimal * rate * 1.1);
             } else {
-                // Default to original calculation for dates before Dec 11, 2024
                 estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
             }
 
@@ -5980,6 +6022,11 @@ function updateMonthlyTable() {
         grandTotalMinutes += monthMinutes;
         grandTotalComments += monthComments;
         grandTotalEstimated += monthEstimated;
+
+        // ➕ Enregistrement du total estimé mensuel
+        const label = new Date(month + "-01").toLocaleDateString("fr-FR", { month: 'short', year: '2-digit' }).replace('.', '').replace(' ', '-');
+
+        personnelByMonthFinal[label] = Math.round(monthEstimated);
     });
 
     grandTotalHours += Math.floor(grandTotalMinutes / 60);
@@ -6015,7 +6062,11 @@ function updateMonthlyTable() {
     if (monthlyTableDiv) {
         monthlyTableDiv.innerHTML = monthlyTable;
     }
+
+    // ✅ Sauvegarde des totaux estimés mensuels pour displayBilan()
+    localStorage.setItem("personnelTotalMensuel", JSON.stringify(personnelByMonthFinal));
 }
+
 
             window.updateHourlyRate = function(employee, month, value) {
     const rate = parseFloat(value);
@@ -6524,7 +6575,7 @@ window.addEventListener('popstate', function(event) {
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage',
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage',
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage'
+        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage' , 'bilanPage'
     ];
 
     const homePage = document.getElementById('homePage');
@@ -6542,6 +6593,7 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
         if (currentPage === 'fiscalPage') displayFiscalTable();
+        if (currentPage === 'bilanPage') displayBilan();
 
         if (currentPage === 'homePage') {
             history.replaceState(null, '', '#');
@@ -6554,7 +6606,7 @@ window.addEventListener('popstate', function(event) {
 });
 
 function showIndicators() {
-    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage' , 'fiscalPage'];
+    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage' , 'fiscalPage' , 'bilanPage'];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById('indicatorsPage').classList.remove('hidden');
     displayIndicatorsTable();
@@ -6921,7 +6973,7 @@ function displayIndicatorsTable() {
 }
 
 function showFiscal() {
-    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage'];
+    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage' , 'bilanPage'];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById('fiscalPage').classList.remove('hidden');
     displayFiscalTable();
@@ -7101,13 +7153,182 @@ function displayFiscalTable() {
     }
 }
 
+function showBilan() {
+    const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage', 'bilanPage'];
+    pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+    document.getElementById('bilanPage').classList.remove('hidden');
+
+    // ✅ Affiche d'abord les données fiscales, puis le bilan
+    displayFiscalTable();
+    setTimeout(displayBilan, 100);
+
+    history.pushState({ page: 'bilanPage' }, '', '#bilan');
+}
+
+
+
+
+
+
+
+
+function displayBilan() {
+    const start = document.getElementById("bilanStartDate").value || "2024-12-09";
+    const end = document.getElementById("bilanEndDate").value || new Date().toISOString().split('T')[0];
+    const startDate = new Date(start), endDate = new Date(end);
+
+    function getStableMonthLabel(date) {
+        const months = ["janv","févr","mars","avr","mai","juin","juil","août","sept","oct","nov","déc"];
+        return `${months[date.getMonth()]}-${date.getFullYear().toString().slice(-2)}`;
+    }
+
+    // Prépare les mois
+    const monthDates = [], monthLabels = [], monthKeys = [];
+    for (let d = new Date(startDate); d <= endDate; d.setMonth(d.getMonth()+1)) {
+        monthDates.push(new Date(d));
+        monthLabels.push(getStableMonthLabel(d));
+        monthKeys.push(d.toISOString().slice(0,7));
+    }
+    monthLabels.push("CUMUL");
+
+    // Valeurs par défaut
+    const defaultCharges = {
+        "déc-24":1925,"janv-25":2372,"févr-25":1952,"mars-25":1908,"avr-25":2092
+    };
+
+    let chargesMensuelles = JSON.parse(localStorage.getItem("chargesMensuelles")||"{}");
+    const sales = JSON.parse(localStorage.getItem("salesData")||"{}");
+    const purchases = JSON.parse(localStorage.getItem("purchases")||"[]");
+    const personnelMensuel = JSON.parse(localStorage.getItem("personnelTotalMensuel")||"{}");
+
+    // Extraction fiscal
+    const fiscalUrssafData = {}, fiscalTvaData = {};
+    const tbl = document.getElementById("fiscalTable");
+    if (tbl) {
+        const monthMap = { janvier:"janv", février:"févr", mars:"mars", avril:"avr", mai:"mai",
+            juin:"juin", juillet:"juil", août:"août", septembre:"sept",
+            octobre:"oct", novembre:"nov", décembre:"déc" };
+        tbl.querySelectorAll("tr").forEach(row => {
+            const c = row.querySelectorAll("td");
+            if (c.length >= 6) {
+                const parts = c[0].innerText.trim().split(" ");
+                const ml = parts[0].toLowerCase(), yy = parts[1]?.slice(-2);
+                const lbl = ml in monthMap && yy ? `${monthMap[ml]}-${yy}` : null;
+                if (!lbl) return;
+                fiscalUrssafData[lbl] = parseInt(c[2].innerText.replace(/\D/g,""))||0;
+                const tvaCell = c[5];
+                fiscalTvaData[lbl] = tvaCell.classList.contains("crossed")
+                    ? 0
+                    : parseInt(tvaCell.innerText.replace(/\D/g,""))||0;
+            }
+        });
+    }
+
+    // Préparation des lignes
+    const lignes = {
+        "Chiffre d'affaire TTC":[], "Achats":[], "Charges":[],
+        "Personnel":[], "Impôt et Urssaf":[], "TVA":[],
+        "Bénéfice Net":[], "Rentabilité %":[]
+    };
+    let totalCA=0, totalNet=0;
+
+    // Calcul par mois
+    monthDates.forEach((date,i) => {
+        const key = monthKeys[i], lbl = monthLabels[i];
+        // CA
+        let ca=0;
+        Object.entries(sales).forEach(([d,dt]) => {
+            if (d.startsWith(key)) ca += parseFloat(dt.total||0);
+        });
+        ca = Math.round(ca); totalCA += ca; lignes["Chiffre d'affaire TTC"].push(ca);
+        // Achats
+        let ach = purchases.filter(p=>p.date.startsWith(key))
+            .reduce((s,a)=>s+parseFloat(a.amountTTC||0),0);
+        ach = Math.round(ach); lignes["Achats"].push(ach);
+        // Charges
+        let ch = chargesMensuelles[lbl];
+        if (!ch) { ch = defaultCharges[lbl]||2000; chargesMensuelles[lbl]=ch; }
+        lignes["Charges"].push(
+            `<input type="number" value="${ch}" data-month="${lbl}" onchange="updateCharge(this)" style="width:70px;"> €`
+        );
+        // Personnel
+        const pers = Math.round(personnelMensuel[lbl]||0);
+        lignes["Personnel"].push(pers);
+        // URSSAF
+        const ur = fiscalUrssafData[lbl]||0;
+        lignes["Impôt et Urssaf"].push(ur);
+        // TVA
+        const tv = fiscalTvaData[lbl]||0;
+        lignes["TVA"].push(tv);
+        // Bénéfice net
+        const net = ca - ach - ch - pers - ur - tv;
+        totalNet += net; lignes["Bénéfice Net"].push(net);
+        // Rentabilité %
+        lignes["Rentabilité %"].push(ca>0?Math.round((net/ca)*100):0);
+    });
+
+    // Calcul du cumul des charges à partir des valeurs mensuelles affichées
+    const monthlyChargeValues = monthLabels.slice(0,-1).map(lbl => {
+        const html = lignes["Charges"][ monthLabels.indexOf(lbl) ];
+        return parseInt(html.match(/value="(\d+)"/)[1]) || 0;
+    });
+    const cumCh = monthlyChargeValues.reduce((a,b)=>a+b,0);
+
+    // Cumul
+    lignes["Chiffre d'affaire TTC"].push(totalCA);
+    lignes["Achats"].push(lignes["Achats"].reduce((a,b)=>a+b,0));
+    lignes["Charges"].push(`${cumCh} `);
+    lignes["Personnel"].push(lignes["Personnel"].reduce((a,b)=>a+b,0));
+    lignes["Impôt et Urssaf"].push(lignes["Impôt et Urssaf"].reduce((a,b)=>a+b,0));
+    lignes["TVA"].push(lignes["TVA"].reduce((a,b)=>a+b,0));
+    lignes["Bénéfice Net"].push(totalNet);
+    const rentCum = totalCA>0?Math.round((totalNet/totalCA)*100):0;
+    lignes["Rentabilité %"].push(rentCum);
+
+    // Sauvegarde charges
+    localStorage.setItem("chargesMensuelles", JSON.stringify(chargesMensuelles));
+
+    // Génération HTML
+    let html = `<div style="overflow-x:auto;"><table style="border-collapse:collapse;min-width:800px;width:100%;"><thead><tr><th style="position:sticky;left:0;background:white;border:1px solid #000;"></th>`;
+    monthLabels.forEach(m=> html+=`<th style="border:1px solid #000;">${m}</th>`);
+    html+=`</tr></thead><tbody>`;
+
+    Object.entries(lignes).forEach(([label,vals])=>{
+        const bold = (label==="Chiffre d'affaire TTC"||label==="Bénéfice Net")?"font-weight:bold;":"";
+        html+=`<tr><td style="position:sticky;left:0;background:white;border:1px solid #000;${bold}">${label}</td>`;
+        vals.forEach(val=>{
+            let cell;
+            if (typeof val==="string" && /</.test(val)) cell = val;
+            else if (label==="Rentabilité %") cell = `${val}%`;
+            else cell = `${val} €`;
+            html+=`<td style="border:1px solid #000;text-align:center;${bold}">${cell}</td>`;
+        });
+        html+=`</tr>`;
+    });
+
+    html+=`</tbody></table></div>`;
+    document.getElementById("bilanTable").innerHTML = html;
+}
+
+function updateCharge(input) {
+    const lbl = input.dataset.month;
+    const val = parseInt(input.value)||0;
+    const ch = JSON.parse(localStorage.getItem("chargesMensuelles")||"{}");
+    ch[lbl] = val;
+    localStorage.setItem("chargesMensuelles", JSON.stringify(ch));
+    displayBilan();
+}
+
+
+
+
 // Mettre à jour l'écouteur popstate
 window.addEventListener('popstate', function(event) {
     const pages = [
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage',
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage',
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage'
+        'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage' , 'bilanPage'
     ];
 
     const homePage = document.getElementById('homePage');
@@ -7125,6 +7346,7 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
         if (currentPage === 'fiscalPage') displayFiscalTable();
+        if (currentPage === 'bilanPage') displayBilan();
 
         if (currentPage === 'homePage') {
             history.replaceState(null, '', '#');
@@ -7135,6 +7357,12 @@ window.addEventListener('popstate', function(event) {
         history.replaceState(null, '', '#');
     }
 });
+
+
+
+
+
+
 
 
 // Fonction pour afficher la page Budget
@@ -7644,10 +7872,18 @@ const initialMenu = [
         input.click();
     }
 
-    
+     window.addEventListener('DOMContentLoaded', () => {
+    // Récupère la date du jour en heure de Paris
+    const paris = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+    // Formate en 'YYYY-MM-DD' pour input type="date"
+    const todayISO = paris.toISOString().split('T')[0];
+    // Affecte aux deux champs de la page bilan
+    const endInput = document.getElementById('bilanEndDate');
+    if (endInput) endInput.value = todayISO;
+  });
 
-      </script>
-<script>
+     
+
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js')
           .then(() => console.log("Service Worker installé ✅"))
