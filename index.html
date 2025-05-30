@@ -1158,6 +1158,10 @@ table {
     background: #00A5E0;
 }
 
+* {
+    box-sizing: border-box; /* Assure que padding et bordures sont inclus dans la largeur */
+}
+
 #bilanPage {
     max-width: 600px;
     margin: 0 auto;
@@ -1166,8 +1170,7 @@ table {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
-    box-sizing: border-box;
-    width: 100%; /* Assure que la page ne dépasse pas l'écran */
+    width: 100%;
 }
 
 #bilanPage h2 {
@@ -1187,7 +1190,7 @@ table {
     border-collapse: separate;
     border-spacing: 0;
     margin-top: 20px;
-    min-width: 0; /* Permet au tableau de s'adapter à l'écran */
+    min-width: 0;
 }
 
 #bilanTable th, #bilanTable td {
@@ -1221,7 +1224,6 @@ table {
     border: 1px solid #ccc;
     border-radius: 4px;
     text-align: center;
-    box-sizing: border-box;
 }
 
 #bilanPage .date-filter {
@@ -1245,7 +1247,6 @@ table {
     border-radius: 4px;
     font-size: 16px;
     width: 100%;
-    box-sizing: border-box;
 }
 
 #bilanPage .buttons.no-print {
@@ -1299,15 +1300,16 @@ table {
 
 @media (max-width: 480px) {
     #bilanPage {
-        padding: 10px; /* Réduit pour plus d'espace */
-        width: 100vw; /* Force l'adaptation à la largeur de l'écran */
+        padding: 8px; /* Réduit pour éliminer les 2 mm de débordement */
+        width: 100vw;
+        max-width: 100vw; /* Force l'adaptation complète à l'écran */
         margin: 0;
-        border-radius: 0; /* Supprime les coins arrondis pour mobile */
-        box-shadow: none; /* Supprime l'ombre pour un look plus plat */
+        border-radius: 0;
+        box-shadow: none;
     }
     #bilanPage h2 {
-        font-size: 1.1em; /* Taille réduite pour mobile */
-        margin-bottom: 15px;
+        font-size: 1.1em;
+        margin-bottom: 12px;
     }
     #bilanTable {
         max-width: 100%;
@@ -1316,42 +1318,42 @@ table {
         min-width: 0;
     }
     #bilanTable th, #bilanTable td {
-        font-size: 11px; /* Plus petit pour mobile */
-        padding: 3px; /* Réduit pour économiser l'espace */
+        font-size: 10px; /* Encore plus petit pour mobile */
+        padding: 2px;
     }
     #bilanTable th:first-child, #bilanTable td:first-child {
-        min-width: 50px; /* Réduit pour éviter le débordement */
-        font-size: 11px;
+        min-width: 45px; /* Réduit pour éviter le débordement */
+        font-size: 10px;
         border-left: 1px solid #ddd !important;
         border-right: 2px solid #ddd !important;
         box-shadow: inset 0 0 0 1px #ddd, 2px 0 2px rgba(0, 0, 0, 0.1);
     }
     #bilanTable input[type="number"] {
-        width: 35px; /* Plus compact sur mobile */
-        font-size: 11px;
+        width: 30px; /* Encore plus compact */
+        font-size: 10px;
         padding: 1px;
     }
     #bilanPage .date-filter {
         flex-direction: column;
-        gap: 8px;
-        margin-bottom: 15px;
+        gap: 6px;
+        margin-bottom: 12px;
     }
     #bilanPage .date-filter label {
-        font-size: 14px;
-        margin-top: 6px;
-        margin-bottom: 4px;
+        font-size: 13px;
+        margin-top: 5px;
+        margin-bottom: 3px;
     }
     #bilanPage .date-filter input {
-        padding: 6px;
-        font-size: 14px;
+        padding: 5px;
+        font-size: 13px;
     }
     #bilanPage .buttons.no-print {
-        gap: 8px;
-        margin-top: 15px;
+        gap: 6px;
+        margin-top: 12px;
     }
     #bilanPage button {
-        font-size: 0.8em;
-        padding: 8px 16px;
+        font-size: 0.75em;
+        padding: 6px 12px;
     }
 }
 
@@ -1451,7 +1453,7 @@ table {
 
 
 <div id="bilanPage" class="page hidden">
-    <h2>Compte de Résultat Estimatif</h2>
+    <h2>COMPTES DE RESULTAT</h2>
     <div class="date-filter" style="text-align: left;">
         <label style="display: block; margin-bottom: 5px;">Date de début :</label>
         <input type="date" id="bilanStartDate" value="2024-12-09" onchange="displayBilan()">
