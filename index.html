@@ -6882,7 +6882,6 @@ function displayIndicatorsTable() {
             return;
         }
 
-        // Initialiser les valeurs par défaut des champs de date si vide
         if (!startInput.value) {
             const defaultStartDate = new Date('2024-12-01');
             startInput.value = defaultStartDate.toISOString().split('T')[0];
@@ -6892,7 +6891,6 @@ function displayIndicatorsTable() {
             endInput.value = defaultEndDate.toISOString().split('T')[0];
         }
 
-        // Ajouter des écouteurs d'événements pour mise à jour instantanée
         const updateTable = () => {
             displayIndicatorsTable();
         };
@@ -6901,7 +6899,6 @@ function displayIndicatorsTable() {
         startInput.addEventListener('input', updateTable);
         endInput.addEventListener('input', updateTable);
 
-        // Vérifier salesData
         if (!salesData) {
             console.error('salesData non défini');
             tableContainer.innerHTML = '<p>Erreur : Données de ventes non disponibles.</p>';
@@ -7061,7 +7058,6 @@ function displayIndicatorsTable() {
         `;
         tableContainer.innerHTML = tableHTML;
 
-        // Calcul des moyennes du CA par jour de la semaine
         const joursSemaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
         const caParJourSemaine = Array(7).fill(0).map(() => ({ total: 0, count: 0 }));
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
@@ -7069,7 +7065,7 @@ function displayIndicatorsTable() {
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             const dateKey = `${year}-${month}-${day}`;
-            const dayIndex = d.getDay() === 0 ? 6 : d.getDay() - 1; // Dimanche (0) -> 6, Lundi (1) -> 0, etc.
+            const dayIndex = d.getDay() === 0 ? 6 : d.getDay() - 1;
             if (salesData[dateKey]) {
                 caParJourSemaine[dayIndex].total += salesData[dateKey].total;
                 caParJourSemaine[dayIndex].count += 1;
@@ -7129,6 +7125,10 @@ function displayIndicatorsTable() {
                             title: {
                                 display: true,
                                 text: canvasId === 'weekdayCaChart' ? 'Jour de la semaine' : 'Mois'
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
                             }
                         }
                     },
@@ -7179,7 +7179,13 @@ function displayIndicatorsTable() {
                                 } else {
                                     label = `${value.toFixed(2)}€`;
                                 }
-                                ctx.fillText(label, point.x, point.y - 10);
+                                if (canvasId === 'caMensuelChart') {
+                                    ctx.translate(point.x, point.y - 15); // Increased offset to -15 for more space
+                                    ctx.rotate(-45 * Math.PI / 180); // Rotate -45 degrees for diagonal upward
+                                    ctx.fillText(label, 0, 0);
+                                } else {
+                                    ctx.fillText(label, point.x, point.y - 10);
+                                }
                                 ctx.restore();
                             });
                         });
@@ -7216,7 +7222,7 @@ function displayIndicatorsTable() {
         createChart('margeBruteChart', 'Marge Brute Panier Moyen', margeBruteData, 'Marge Brute (€)', 4, 8, '#8B4513', 'line');
         createChart('caMensuelChart', 'Chiffre d\'affaire mensuel', caMensuelData, 'Chiffre d\'affaire (€)', 0, 30000, '#000066', 'bar');
         createChart('caParJourChart', 'Ventes par jour en moyenne', caParJourData, 'Ventes par jour (€)', 0, 1600, '#006600', 'bar');
-        createChart('weekdayCaChart', 'CA moyen des jours de semaine', weekdayCaData, 'CA Moyen (€)', 0, 1200, '#C71585', 'bar', joursSemaine);
+        createChart('weekdayCaChart', 'CA moyen des jours de semaine', weekdayCaData, 'CA moyen (€)', 0, 1200, '#C71585', 'bar', joursSemaine);
         createChart('cashRateChart', 'Taux de cash', cashRateData, 'Taux de cash (%)', 10, 40, '#FF4500', 'line');
 
     } catch (error) {
