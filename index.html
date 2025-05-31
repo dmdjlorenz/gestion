@@ -1191,15 +1191,16 @@ table {
     border-spacing: 0;
     margin-top: 20px;
     width: 100%; /* S'adapter à la largeur du conteneur parent */
-    min-width: 0; /* Supprimer la contrainte de largeur minimale */
+    min-width: 0; /* Pas de largeur minimale forcée */
 }
 
 #bilanTable th, #bilanTable td {
     border: 1px solid #ddd !important;
     padding: 8px;
     text-align: center;
-    font-size: 14px !important;
-    white-space: nowrap;
+    font-size: 16px !important; /* Augmenter la taille de la police */
+    white-space: nowrap; /* Empêcher le retour à la ligne, y compris pour € */
+    width: auto; /* Laisser la cellule s'adapter au contenu */
 }
 
 #bilanTable th {
@@ -1213,16 +1214,16 @@ table {
     left: 0;
     background: white;
     z-index: 5;
-    min-width: 100px;
+    min-width: 120px; /* Augmenter légèrement pour s'adapter à la police plus grande */
     border-left: 1px solid #ddd !important;
     border-right: 2px solid #ddd !important;
     box-shadow: inset 0 0 0 1px #ddd, 2px 0 2px rgba(0, 0, 0, 0.1);
 }
 
 #bilanTable input[type="number"] {
-    width: 50px;
-    font-size: 14px;
-    padding: 2px;
+    width: 60px; /* Augmenter la largeur pour s'adapter à la police plus grande */
+    font-size: 16px; /* Correspondre à la taille des cellules */
+    padding: 3px;
     border: 1px solid #ccc;
     border-radius: 4px;
     text-align: center;
@@ -1326,20 +1327,21 @@ table {
     }
 
     #bilanTable th, #bilanTable td {
-        font-size: 12px !important; /* Réduire légèrement pour mobile */
-        padding: 4px;
+        font-size: 14px !important; /* Taille de police augmentée pour mobile */
+        padding: 6px; /* Légère augmentation du padding pour la lisibilité */
+        width: auto; /* S'adapter au contenu */
     }
 
     #bilanTable th:first-child,
     #bilanTable td:first-child {
-        min-width: 70px;
-        font-size: 12px !important;
+        min-width: 90px; /* Réduire légèrement pour mobile */
+        font-size: 14px !important;
     }
 
     #bilanTable input[type="number"] {
-        width: 40px;
-        font-size: 12px;
-        padding: 2px;
+        width: 50px; /* Ajuster pour mobile */
+        font-size: 14px; /* Correspondre à la taille des cellules */
+        padding: 3px;
     }
 
     #bilanPage .date-filter {
@@ -7421,6 +7423,9 @@ function displayBilan() {
     }
     monthLabels.push("CUMUL");
 
+    // Débogage des mois générés
+    console.log("monthLabels:", monthLabels, "monthKeys:", monthKeys);
+
     // Valeurs par défaut
     const defaultCharges = {
         "déc-24": 1925, "janv-25": 2372, "févr-25": 1952, "mars-25": 1908, "avr-25": 2092, "mai-25": 2000
@@ -7431,6 +7436,9 @@ function displayBilan() {
     const sales = JSON.parse(localStorage.getItem("salesData") || "{}");
     const purchases = JSON.parse(localStorage.getItem("purchases") || "[]");
     const personnelMensuel = JSON.parse(localStorage.getItem("personnelTotalMensuel") || "{}");
+
+    // Débogage des données chargées
+    console.log("purchases:", purchases);
 
     // Extraction des données fiscales
     const fiscalUrssafData = {}, fiscalTvaData = {};
@@ -7466,6 +7474,8 @@ function displayBilan() {
     // Calcul par mois
     monthDates.forEach((date, i) => {
         const key = monthKeys[i], lbl = monthLabels[i];
+        // Débogage du mois courant
+        console.log(`Processing month: ${lbl}, key: ${key}`);
         // CA
         let ca = 0;
         Object.entries(sales).forEach(([d, dt]) => {
@@ -7473,9 +7483,22 @@ function displayBilan() {
         });
         ca = Math.round(ca); totalCA += ca; lignes["Chiffre d'affaire TTC"].push(ca);
         // Achats
-        let ach = purchases.filter(p => p.date.startsWith(key))
-            .reduce((s, a) => s + parseFloat(a.amountTTC || 0), 0);
-        ach = Math.round(ach); lignes["Achats"].push(ach);
+        let ach;
+        if (lbl === "déc-24") {
+            console.log("Applying fixed value 2184 for déc-24");
+            ach = 2184; // Remplacement par 2184 € pour décembre 2024
+        } else {
+            try {
+                ach = purchases.filter(p => p.date && p.date.startsWith(key))
+                    .reduce((s, a) => s + (parseFloat(a.amountTTC) || 0), 0);
+                ach = Math.round(ach);
+                console.log(`Calculated purchases for ${lbl}: ${ach}`);
+            } catch (e) {
+                console.error(`Error calculating purchases for ${lbl}:`, e);
+                ach = 0; // Valeur par défaut en cas d'erreur
+            }
+        }
+        lignes["Achats"].push(ach);
         // Charges
         let ch = chargesMensuelles[lbl];
         if (!ch) { ch = defaultCharges[lbl] || 2000; chargesMensuelles[lbl] = ch; }
@@ -7501,7 +7524,7 @@ function displayBilan() {
     // Calcul du cumul des charges à partir des valeurs mensuelles affichées
     const monthlyChargeValues = monthLabels.slice(0, -1).map(lbl => {
         const html = lignes["Charges"][monthLabels.indexOf(lbl)];
-        return parseInt(html.match(/value="(\d+)"/)[1]) || 0;
+        return parseInt(html.match(/value="(\d+)"/)?.[1]) || 0;
     });
     const cumCh = monthlyChargeValues.reduce((a, b) => a + b, 0);
 
@@ -7519,7 +7542,7 @@ function displayBilan() {
     // Sauvegarde des charges
     localStorage.setItem("chargesMensuelles", JSON.stringify(chargesMensuelles));
 
-    // Génération HTML (✔️ avec overflow-x:auto pour affichage responsive)
+    // Génération HTML
     let html = `<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;"><thead><tr><th style="position:sticky;left:0;background:white;border:1px solid #ddd;"></th>`;
     monthLabels.forEach(m => html += `<th style="border:1px solid #ddd;">${m}</th>`);
     html += `</tr></thead><tbody>`;
