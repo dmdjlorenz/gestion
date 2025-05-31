@@ -11,7 +11,7 @@
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-  body {
+body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
@@ -25,7 +25,6 @@
     overflow-x: hidden;
 }
 
-
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -35,16 +34,12 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-
-
-
 html {
     width: 100vw;
     overflow-x: hidden;
 }
 .invoice-button-group.buttons.no-print {
-    display: flex;
-    flex-direction: column;
+    display: flex “…flex;
     align-items: center;
     gap: 6px;
     width: 100%;
@@ -683,7 +678,6 @@ table {
 }
 #invoicePage .total-table,
 #personnelPage .total-table {
-    width Alt 1;
     width: 100%;
     max-width: 300px;
     margin-left: auto;
@@ -727,7 +721,7 @@ table {
 }
 #recipeManagementPage .date-filter label,
 #invoiceManagementPage .date-filter label,
-#purchasesManagementPage .date-filter labelme label,
+#purchasesManagementPage .date-filter label,
 #personnelManagementPage .date-filter label,
 #indicatorsPage .date-filter label,
 #fiscalPage .date-filter label {
@@ -1020,7 +1014,7 @@ table {
 }
 #indicatorsPage canvas {
     max-height: 300px;
-    width: 100%;
+    width: auto;
     box-sizing: border-box;
 }
 #indicatorsPage input[type="date"] {
@@ -1032,8 +1026,17 @@ table {
     margin-bottom: 10px;
     font-size: 1.1em;
 }
-
-
+.chart-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    margin-bottom: 10px;
+}
+.chart-container canvas {
+    max-width: none;
+    width: auto;
+}
 #homePage #fiscalBtn {
     background: #FF0000;
 }
@@ -1190,17 +1193,17 @@ table {
     border-collapse: separate;
     border-spacing: 0;
     margin-top: 20px;
-    width: 100%; /* S'adapter à la largeur du conteneur parent */
-    min-width: 0; /* Pas de largeur minimale forcée */
+    width: 100%;
+    min-width: 0;
 }
 
 #bilanTable th, #bilanTable td {
     border: 1px solid #ddd !important;
     padding: 8px;
     text-align: center;
-    font-size: 16px !important; /* Augmenter la taille de la police */
-    white-space: nowrap; /* Empêcher le retour à la ligne, y compris pour € */
-    width: auto; /* Laisser la cellule s'adapter au contenu */
+    font-size: 16px !important;
+    white-space: nowrap;
+    width: auto;
 }
 
 #bilanTable th {
@@ -1214,15 +1217,15 @@ table {
     left: 0;
     background: white;
     z-index: 5;
-    min-width: 120px; /* Augmenter légèrement pour s'adapter à la police plus grande */
+    min-width: 120px;
     border-left: 1px solid #ddd !important;
     border-right: 2px solid #ddd !important;
     box-shadow: inset 0 0 0 1px #ddd, 2px 0 2px rgba(0, 0, 0, 0.1);
 }
 
 #bilanTable input[type="number"] {
-    width: 60px; /* Augmenter la largeur pour s'adapter à la police plus grande */
-    font-size: 16px; /* Correspondre à la taille des cellules */
+    width: 60px;
+    font-size: 16px;
     padding: 3px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -1301,7 +1304,6 @@ table {
     background: rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ RESPONSIVE MOBILE */
 @media (max-width: 480px) {
     html {
         font-size: 16px;
@@ -1323,24 +1325,24 @@ table {
 
     #bilanTable table {
         width: 100%;
-        min-width: 0; /* Assurer l'adaptation complète */
+        min-width: 0;
     }
 
     #bilanTable th, #bilanTable td {
-        font-size: 14px !important; /* Taille de police augmentée pour mobile */
-        padding: 6px; /* Légère augmentation du padding pour la lisibilité */
-        width: auto; /* S'adapter au contenu */
+        font-size: 14px !important;
+        padding: 6px;
+        width: auto;
     }
 
     #bilanTable th:first-child,
     #bilanTable td:first-child {
-        min-width: 90px; /* Réduire légèrement pour mobile */
+        min-width: 90px;
         font-size: 14px !important;
     }
 
     #bilanTable input[type="number"] {
-        width: 50px; /* Ajuster pour mobile */
-        font-size: 14px; /* Correspondre à la taille des cellules */
+        width: 50px;
+        font-size: 14px;
         padding: 3px;
     }
 
@@ -1506,21 +1508,37 @@ table {
 
     <div id="indicatorsTable"></div>
     <h4>Coefficient de vente</h4>
-    <canvas id="coefVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="coefVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <h4>Coût de revient Panier Moyen</h4>
-    <canvas id="coutReviensChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="coutReviensChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <h4>Prix de vente Panier Moyen</h4>
-    <canvas id="prixVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="prixVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <h4>Marge Brute Panier Moyen</h4>
-    <canvas id="margeBruteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="margeBruteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <h4>Chiffre d'affaire mensuel</h4>
-    <canvas id="caMensuelChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="caMensuelChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <h4>Ventes par jour en moyenne</h4>
-    <canvas id="caParJourChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="caParJourChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <h4>CA moyen des jours de semaine</h4>
-    <canvas id="weekdayCaChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="weekdayCaChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <h4>Taux de cash</h4>
-    <canvas id="cashRateChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    <div class="chart-container">
+        <canvas id="cashRateChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+    </div>
     <div class="buttons no-print" style="margin-top: 20px;">
         <button onclick="backToHome()" style="background:#000000; color:white;">Retour</button>
     </div>
@@ -1649,8 +1667,8 @@ function filterRecipes() {
 <div id="invoicePage" class="hidden">
     <h1>GESTION DES FACTURES CLIENTS</h1>
     <div class="checkbox-group">
-        <label class="first-label">CA inf à 85000€ <input type="checkbox" id="caBelow85000" onchange="toggleCA(this)"></label>
-        <label>CA sup à 85000€ <input type="checkbox" id="caAbove85000" onchange="toggleCA(this)" checked></label>
+        <label class="first-label">CA inf à 93500€ <input type="checkbox" id="caBelow93500" onchange="toggleCA(this)"></label>
+        <label>CA sup à 93500€ <input type="checkbox" id="caAbove93500" onchange="toggleCA(this)" checked></label>
     </div>
     <div class="dropdown">
     <button onclick="toggleDropdown('menuDropdown')">LA CARTE Chez BARTH</button>
@@ -2026,7 +2044,7 @@ let invoices = [];
 let invoiceCounter = 0;
 let order = [];
 let menu = [];
-let caBelow85000 = false; // Par défaut, CA supérieur à 85000€
+let caBelow93500 = false; // Par défaut, CA supérieur à 93500€
 let currentPaymentMethod = 'Non spécifié'; // Mode de paiement global pour la facture en cours
 let filteredPersonnelRecords = [];
 let selectedPersonnelRecord = null;
@@ -2167,10 +2185,10 @@ function showSettings() {
     }
 
 function updateMenuTvaRates() {
-    console.log('Dans updateMenuTvaRates, caBelow85000 =', caBelow85000);
+    console.log('Dans updateMenuTvaRates, caBelow93500 =', caBelow93500);
     menu.forEach(item => {
-        if (caBelow85000) {
-            // Si CA < 85000€, TVA à 0% pour tous les produits
+        if (caBelow93500) {
+            // Si CA < 93500€, TVA à 0% pour tous les produits
             item.tvaRate = 0;
             item.priceHT = item.priceTTC; // Pas de TVA, donc HT = TTC
         } else {
@@ -3197,7 +3215,7 @@ function filterRecipes() {
                              (month === '01' && year === '2025') ? 0.96 :
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
-                             (month === '04' && year === '2025') ? 0.85 : 0.85;
+                             (month === '04' && year === '2025') ? 0.85 : 0.80;
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
 
@@ -3528,29 +3546,29 @@ function downloadRecipesPDF() {
     
 
     function saveCAStatus() {
-        const caBelow = document.getElementById('caBelow85000').checked;
+        const caBelow = document.getElementById('caBelow93500').checked;
         localStorage.setItem('caStatus', caBelow ? 'below' : 'above');
     }
 
    function toggleCA(checkbox) {
-    const belowCheckbox = document.getElementById('caBelow85000');
-    const aboveCheckbox = document.getElementById('caAbove85000');
+    const belowCheckbox = document.getElementById('caBelow93500');
+    const aboveCheckbox = document.getElementById('caAbove93500');
 
     // S'assurer qu'une seule case est cochée à la fois
-    if (checkbox.id === 'caBelow85000' && checkbox.checked) {
+    if (checkbox.id === 'caBelow93500' && checkbox.checked) {
         aboveCheckbox.checked = false;
-        caBelow85000 = true;
-    } else if (checkbox.id === 'caAbove85000' && checkbox.checked) {
+        caBelow93500 = true;
+    } else if (checkbox.id === 'caAbove93500' && checkbox.checked) {
         belowCheckbox.checked = false;
-        caBelow85000 = false;
+        caBelow93500 = false;
     } else if (!belowCheckbox.checked && !aboveCheckbox.checked) {
-        // Si aucune case n'est cochée, on coche par défaut CA > 85000€
+        // Si aucune case n'est cochée, on coche par défaut CA > 93500€
         aboveCheckbox.checked = true;
-        caBelow85000 = false;
+        caBelow93500 = false;
     }
 
     // Sauvegarder l'état dans localStorage
-    localStorage.setItem('caBelow85000', JSON.stringify(caBelow85000));
+    localStorage.setItem('caBelow93500', JSON.stringify(caBelow93500));
 
     // Mettre à jour les taux de TVA et recalculer les prix
     updateMenuTvaRates();
@@ -3690,7 +3708,7 @@ function confirmAddProduct() {
     }
 
     // Calculer le prix HT selon le type et le statut CA
-    const tvaRate = caBelow85000 ? 0 : (type === "B" ? 0.055 : 0.1);
+    const tvaRate = caBelow93500 ? 0 : (type === "B" ? 0.055 : 0.1);
     const priceHT = priceTTC / (1 + tvaRate);
 
     const newProduct = {
@@ -3765,7 +3783,7 @@ function updateOrderList() {
     const orderList = document.getElementById('orderList');
     const orderTotal = document.getElementById('orderTotal');
     const invoiceHeader = document.getElementById('invoiceHeader');
-    const caBelow = document.getElementById('caBelow85000').checked;
+    const caBelow = document.getElementById('caBelow93500').checked;
     const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
     const lineHeightOrderList = "normal"; 
@@ -3895,7 +3913,7 @@ function saveInvoice() {
     invoiceCounter++;
     const invoiceNumber = invoiceCounter;
     const timestamp = new Date().toISOString();
-    const caBelow = document.getElementById('caBelow85000').checked;
+    const caBelow = document.getElementById('caBelow93500').checked;
     const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
     let totalHT = 0;
@@ -4038,7 +4056,7 @@ function sendInvoiceBySms() {
     smsText += "SIRET: " + preventAutoLink("93253222900014") + "\n";
     smsText += "APE: 56.10C\nEntreprise Individuelle\n\n";
 
-    const caBelow = document.getElementById('caBelow85000').checked;
+    const caBelow = document.getElementById('caBelow93500').checked;
     smsText += `Fact N° ${invoiceCounter} du ${formattedDate}\n`;
     if (customerName) {
         smsText += `Client : ${customerName}\n`;
@@ -4100,7 +4118,7 @@ function sendInvoiceBySms() {
 
 
 function sendInvoiceByEmail() {
-    const caBelow = document.getElementById('caBelow85000').checked;
+    const caBelow = document.getElementById('caBelow93500').checked;
     const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
     let totalHT = 0;
@@ -4166,7 +4184,7 @@ async function printToBluetoothThermal() {
 
         const customerNameInput = document.getElementById('customerNameInput');
         const customerName = customerNameInput ? customerNameInput.value.trim() : '';
-        const caBelow = document.getElementById('caBelow85000').checked;
+        const caBelow = document.getElementById('caBelow93500').checked;
         const date = new Date().toLocaleDateString('fr-FR');
 
         let text = "";
@@ -5133,7 +5151,7 @@ function filterPurchases() {
                              (month === '01' && year === '2025') ? 0.96 :
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
-                             (month === '04' && year === '2025') ? 0.85 : 0.85;
+                             (month === '04' && year === '2025') ? 0.85 : 0.80;
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
 
@@ -6984,7 +7002,7 @@ function displayIndicatorsTable() {
                          (month === '01' && year === '2025') ? 0.96 :
                          (month === '02' && year === '2025') ? 0.9 :
                          (month === '03' && year === '2025') ? 0.85 :
-                         (month === '04' && year === '2025') ? 0.85 : 0.85;
+                         (month === '04' && year === '2025') ? 0.85 : 0.80;
 
             let panierJour = 0;
             if (joursTravailles > 0) {
@@ -7311,7 +7329,7 @@ function displayFiscalTable() {
         const sortedKeys = Object.keys(monthlyData).sort();
         sortedKeys.forEach(key => {
             cumulativeCA += monthlyData[key].caAjuste;
-            monthlyData[key].tvaExoneree = cumulativeCA <= 85000 ? 'Oui' : 'Non';
+            monthlyData[key].tvaExoneree = cumulativeCA <= 93500 ? 'Oui' : 'Non';
         });
 
         // Générer le tableau
@@ -7539,18 +7557,22 @@ function displayBilan() {
     localStorage.setItem("chargesMensuelles", JSON.stringify(chargesMensuelles));
 
     let html = `<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;"><thead><tr><th style="position:sticky;left:0;background:white;border:1px solid #ddd;"></th>`;
-    monthLabels.forEach(m => html += `<th style="border:1px solid #ddd;">${m}</th>`);
+    monthLabels.forEach((m, i) => {
+        const isCumul = m === "CUMUL" ? 'background-color:#f0f0f0;' : ''; // Gray background for CUMUL header
+        html += `<th style="border:1px solid #ddd;${isCumul}">${m}</th>`;
+    });
     html += `</tr></thead><tbody>`;
 
     for (const [label, vals] of Object.entries(lignes)) {
         const bold = (label === "Chiffre d'affaire TTC" || label === "Bénéfice Net") ? "font-weight:bold;" : "";
         html += `<tr><td style="position:sticky;left:0;background:white;border:1px solid #ddd;${bold}">${label}</td>`;
-        vals.forEach(val => {
+        vals.forEach((val, i) => {
             let cell;
             if (typeof val === "string" && /</.test(val)) cell = val;
             else if (label === "Rentabilité %") cell = `${val}%`;
             else cell = `${val} €`;
-            html += `<td style="border:1px solid #ddd;text-align:center;${bold}">${cell}</td>`;
+            const isCumul = i === vals.length - 1 ? 'background-color:#f0f0f0;' : ''; // Gray background for CUMUL column
+            html += `<td style="border:1px solid #ddd;text-align:center;${bold}${isCumul}">${cell}</td>`;
         });
         html += `</tr>`;
     }
@@ -7558,7 +7580,6 @@ function displayBilan() {
     html += `</tbody></table></div>`;
     document.getElementById("bilanTable").innerHTML = html;
 }
-
 
 function updateCharge(input) {
     const lbl = input.dataset.month;
@@ -7652,10 +7673,10 @@ var chiffreAffaires = prix * panier * jours * semaines;
 var loyerAnnuel = loyerMensuel * 12;
 var coutMatieres = cout * panier * jours * semaines;
 
-// Calcul de la TVA (à partir de 85000€ de CA)
+// Calcul de la TVA (à partir de 93500€ de CA)
 // TVA encaissée - TVA déductible sur achats (5,5%) - TVA déductible sur loyer/charges externes (20%)
-var tvaCalcul = (chiffreAffaires > 85000) ? 
-    (chiffreAffaires - 85000) * (
+var tvaCalcul = (chiffreAffaires > 93500) ? 
+    (chiffreAffaires - 93500) * (
         (tva / (1 + tva)) - 
         (cout / prix) * (0.055 / (1 + 0.055)) - 
         ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
@@ -7708,7 +7729,7 @@ resultat.innerHTML = `
         </ul>
     </ul>
     <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (C)</strong></p>
-    <p><strong>* TVA-TVA déductible (si CA > 85000€): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
+    <p><strong>* TVA-TVA déductible (si CA > 93500€): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
     <p><strong>* Impôts Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
     <p><strong>* BENEFICE NET ANNUEL: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
 
@@ -7731,8 +7752,8 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
 
         // Calcul de la TVA seulement si le chiffre d'affaires dépasse 85 000€
         var tvaCalcul = 0;
-        if (chiffreAffaires > 85000) {
-            tvaCalcul = (chiffreAffaires - 85000) * (tva / (1 + tva) - (cout / prix) * (0.055 / (1 + 0.055)) - ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / 1 + 0.2));
+        if (chiffreAffaires > 93500) {
+            tvaCalcul = (chiffreAffaires - 93500) * (tva / (1 + tva) - (cout / prix) * (0.055 / (1 + 0.055)) - ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / 1 + 0.2));
         }
 
         // Calcul du bénéfice net
@@ -7782,8 +7803,8 @@ function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaine
         var loyerAnnuel = loyerMensuel * 12;
         var chiffreAffaires = prix * i * jours * semaines;
 
-        var tvaCalcul = (chiffreAffaires > 85000) ?
-            (chiffreAffaires - 85000) * (
+        var tvaCalcul = (chiffreAffaires > 93500) ?
+            (chiffreAffaires - 93500) * (
                 (tva / (1 + tva)) -
                 (cout / prix) * (0.055 / (1 + 0.055)) -
                 ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
