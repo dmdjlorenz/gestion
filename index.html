@@ -7452,14 +7452,22 @@ function displayBilan() {
         return;
     }
 
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const showCurrentMonth = now.getDate() >= 20;
+
     const monthNames = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
     const getLabel = (date) => `${monthNames[date.getMonth()]}-${date.getFullYear().toString().slice(-2)}`;
 
     const monthLabels = [], monthKeys = [];
     let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
     while (currentDate <= endDate) {
-        monthLabels.push(getLabel(currentDate));
-        monthKeys.push(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`);
+        const isCurrentMonth = currentDate.getFullYear() === currentYear && currentDate.getMonth() === currentMonth;
+        if (!isCurrentMonth || (isCurrentMonth && showCurrentMonth)) {
+            monthLabels.push(getLabel(currentDate));
+            monthKeys.push(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`);
+        }
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
     monthLabels.push("CUMUL");
@@ -7564,7 +7572,7 @@ function displayBilan() {
 
     let html = `<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;"><thead><tr><th style="position:sticky;left:0;background:white;border:1px solid #ddd;"></th>`;
     monthLabels.forEach((m, i) => {
-        const isCumul = m === "CUMUL" ? 'background-color:#f0f0f0;' : ''; // Gray background for CUMUL header
+        const isCumul = m === "CUMUL" ? 'background-color:#f0f0f0;' : '';
         html += `<th style="border:1px solid #ddd;${isCumul}">${m}</th>`;
     });
     html += `</tr></thead><tbody>`;
@@ -7577,7 +7585,7 @@ function displayBilan() {
             if (typeof val === "string" && /</.test(val)) cell = val;
             else if (label === "Rentabilité %") cell = `${val}%`;
             else cell = `${val} €`;
-            const isCumul = i === vals.length - 1 ? 'background-color:#f0f0f0;' : ''; // Gray background for CUMUL column
+            const isCumul = i === vals.length - 1 ? 'background-color:#f0f0f0;' : '';
             html += `<td style="border:1px solid #ddd;text-align:center;${bold}${isCumul}">${cell}</td>`;
         });
         html += `</tr>`;
