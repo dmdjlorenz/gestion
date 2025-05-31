@@ -6176,7 +6176,7 @@ function updateMonthlyTable() {
     let grandTotalHours = 0, grandTotalMinutes = 0, grandTotalComments = 0, grandTotalEstimated = 0;
 
     const startConditionalDate = new Date('2024-12-11');
-    const endConditionalDate = new Date('2025-04-11');
+    const endConditionalDate = new Date('2025-03-31');
 
     const months = Object.keys(monthlyTotals).sort();
     const personnelByMonthFinal = {}; // ➕ Ajouté
@@ -6198,7 +6198,7 @@ function updateMonthlyTable() {
             if (monthDate >= startConditionalDate && monthDate <= endConditionalDate) {
                 estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
             } else if (monthDate > endConditionalDate) {
-                estimated = Math.round(totalHoursDecimal * rate * 1.1);
+                estimated = Math.round(totalHoursDecimal * rate * 1.25);
             } else {
                 estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
             }
@@ -6266,7 +6266,7 @@ function updateMonthlyTable() {
                         <th>Taux horaire</th>
                         <th>Total Heures</th>
                         ${showComments ? '<th>Total Commentaires</th>' : ''}
-                        <th>Total Estimé(€)</th>
+                        <th>COÛT SALARIAL</th>
                     </tr>
                     ${monthlyTableRows}
                 </table>
