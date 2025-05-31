@@ -6113,7 +6113,7 @@ function deletePersonnelRecord(index) {
             function convertToHoursMinutes(decimal) {
                 const h = Math.floor(decimal);
                 const m = Math.round((decimal - h) * 60);
-                return (h === 0 && m === 0) ? '' : `${h}${m ? ' h ' + m.toString().padStart(2, '0') : ' h'}`;
+                return (h === 0 && m === 0) ? '' : `${h}${m ? 'h' + m.toString().padStart(2, '0') : 'h'}`;
             }
 
             let tableRows = '';
@@ -6179,21 +6179,23 @@ function updateMonthlyTable() {
     const endConditionalDate = new Date('2025-03-31');
 
     const months = Object.keys(monthlyTotals).sort();
-    const personnelByMonthFinal = {}; // ➕ Ajouté
+    const personnelByMonthFinal = {};
+    const globalEmployeeTotals = {};
+
+    const monthMapShort = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
 
     months.forEach(month => {
         let monthHours = 0, monthMinutes = 0, monthComments = 0, monthEstimated = 0;
+
+        const [year, monthNum] = month.split('-').map(Number);
+        const monthDate = new Date(year, monthNum - 1, 1);
+        const monthLabel = `${monthMapShort[monthDate.getMonth()]}-${String(year).slice(-2)}`;
 
         Object.keys(monthlyTotals[month]).forEach(employee => {
             const { hours, minutes, comments } = monthlyTotals[month][employee];
             const totalHoursDecimal = hours + minutes / 60;
             const rate = getEffectiveHourlyRate(employee, month);
 
-            // Parse the month string (YYYY-MM) to a Date object for comparison
-            const [year, monthNum] = month.split('-').map(Number);
-            const monthDate = new Date(year, monthNum - 1, 1);
-
-            // Apply conditional calculation based on date range
             let estimated;
             if (monthDate >= startConditionalDate && monthDate <= endConditionalDate) {
                 estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
@@ -6205,7 +6207,7 @@ function updateMonthlyTable() {
 
             monthlyTableRows += `
                 <tr>
-                    <td>${month}</td>
+                    <td>${monthLabel}</td>
                     <td>${employee}</td>
                     <td><input type="number" step="0.01" inputmode="decimal"
                         value="${rate.toFixed(2)}"
@@ -6215,6 +6217,14 @@ function updateMonthlyTable() {
                     ${showComments ? `<td>${comments ? Math.round(comments) : ''}</td>` : ''}
                     <td>${estimated} €</td>
                 </tr>`;
+
+            if (!globalEmployeeTotals[employee]) {
+                globalEmployeeTotals[employee] = { hours: 0, minutes: 0, comments: 0, estimated: 0 };
+            }
+            globalEmployeeTotals[employee].hours += hours;
+            globalEmployeeTotals[employee].minutes += minutes;
+            globalEmployeeTotals[employee].comments += comments;
+            globalEmployeeTotals[employee].estimated += estimated;
 
             monthHours += hours;
             monthMinutes += minutes;
@@ -6227,7 +6237,7 @@ function updateMonthlyTable() {
 
         monthlyTableRows += `
             <tr style="font-weight: bold; background-color: #f0f0f0;">
-                <td>Total ${month}</td><td></td><td></td>
+                <td>Total ${monthLabel}</td><td></td><td></td>
                 <td>${convertToHoursMinutes(monthHours + monthMinutes / 60)}</td>
                 ${showComments ? `<td>${monthComments ? Math.round(monthComments) : ''}</td>` : ''}
                 <td>${Math.round(monthEstimated)} €</td>
@@ -6238,10 +6248,21 @@ function updateMonthlyTable() {
         grandTotalComments += monthComments;
         grandTotalEstimated += monthEstimated;
 
-        // ➕ Enregistrement du total estimé mensuel
-        const label = new Date(month + "-01").toLocaleDateString("fr-FR", { month: 'short', year: '2-digit' }).replace('.', '').replace(' ', '-');
+        // Enregistrement au bon format dans le localStorage
+        personnelByMonthFinal[monthLabel] = Math.round(monthEstimated);
+    });
 
-        personnelByMonthFinal[label] = Math.round(monthEstimated);
+    // Totaux globaux par employé
+    Object.entries(globalEmployeeTotals).forEach(([employee, totals]) => {
+        const totalDecimal = totals.hours + totals.minutes / 60;
+        monthlyTableRows += `
+            <tr style="font-style: italic; background-color: #e9e9e9;">
+                <td>Total</td>
+                <td>${employee}</td><td></td>
+                <td>${convertToHoursMinutes(totalDecimal)}</td>
+                ${showComments ? `<td>${totals.comments ? Math.round(totals.comments) : ''}</td>` : ''}
+                <td>${Math.round(totals.estimated)} €</td>
+            </tr>`;
     });
 
     grandTotalHours += Math.floor(grandTotalMinutes / 60);
@@ -6266,7 +6287,7 @@ function updateMonthlyTable() {
                         <th>Taux horaire</th>
                         <th>Total Heures</th>
                         ${showComments ? '<th>Total Commentaires</th>' : ''}
-                        <th>COÛT SALARIAL</th>
+                        <th>Coût salarial</th>
                     </tr>
                     ${monthlyTableRows}
                 </table>
@@ -6278,9 +6299,11 @@ function updateMonthlyTable() {
         monthlyTableDiv.innerHTML = monthlyTable;
     }
 
-    // ✅ Sauvegarde des totaux estimés mensuels pour displayBilan()
     localStorage.setItem("personnelTotalMensuel", JSON.stringify(personnelByMonthFinal));
 }
+
+
+
 
 
             window.updateHourlyRate = function(employee, month, value) {
@@ -7387,70 +7410,53 @@ function showBilan() {
 
 
 function displayBilan() {
-    // Obtenir les dates d'entrée ou définir les valeurs par défaut
     const startInput = document.getElementById("bilanStartDate").value || "2024-12-09";
     let endInput = document.getElementById("bilanEndDate").value;
 
-    // Si endInput est vide, définir la date actuelle
     if (!endInput) {
         const now = new Date();
-        const parisOffsetMinutes = 120; // CEST = UTC+2
-        const parisTime = new Date(now.getTime() + parisOffsetMinutes * 60 * 1000);
-        endInput = parisTime.toISOString().split('T')[0];
+        const parisOffsetMinutes = 120;
+        const parisTime = new Date(now.getTime() + parisOffsetMinutes * 60000);
+        endInput = parisTime.toISOString().split("T")[0];
         document.getElementById("bilanEndDate").value = endInput;
     }
 
-    // Créer des objets Date
     const startDate = new Date(startInput + "T00:00:00");
     const endDate = new Date(endInput + "T23:59:59");
-
-    // Vérifier la validité des dates
     if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
-        console.error("Dates invalides ou startDate > endDate", { startInput, endInput });
         document.getElementById("bilanTable").innerHTML = "<p>Erreur : Dates invalides</p>";
         return;
     }
 
-    // Débogage pour vérifier les dates
-    console.log("startDate:", startDate.toISOString(), "endDate:", endDate.toISOString());
+    const monthNames = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
+    const getLabel = (date) => `${monthNames[date.getMonth()]}-${date.getFullYear().toString().slice(-2)}`;
 
-    // Fonction pour obtenir un label de mois stable
-    function getStableMonthLabel(date) {
-        const months = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
-        return `${months[date.getMonth()]}-${date.getFullYear().toString().slice(-2)}`;
-    }
-
-    // Préparer les mois
-    const monthDates = [], monthLabels = [], monthKeys = [];
-    let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1); // Commencer au 1er du mois
+    const monthLabels = [], monthKeys = [];
+    let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
     while (currentDate <= endDate) {
-        monthDates.push(new Date(currentDate));
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        monthLabels.push(getStableMonthLabel(currentDate));
-        monthKeys.push(`${year}-${String(month + 1).padStart(2, '0')}`); // Format YYYY-MM
+        monthLabels.push(getLabel(currentDate));
+        monthKeys.push(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`);
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
     monthLabels.push("CUMUL");
 
-    // Débogage des mois générés
-    console.log("monthLabels:", monthLabels, "monthKeys:", monthKeys);
-
-    // Valeurs par défaut
     const defaultCharges = {
-        "déc-24": 1925, "janv-25": 2372, "févr-25": 1952, "mars-25": 1908, "avr-25": 2092, "mai-25": 2000
+        "déc-24": 1925, "janv-25": 2372, "févr-25": 1952,
+        "mars-25": 1908, "avr-25": 2092, "mai-25": 2000
     };
 
-    // Charger les données du localStorage
     let chargesMensuelles = JSON.parse(localStorage.getItem("chargesMensuelles") || "{}");
     const sales = JSON.parse(localStorage.getItem("salesData") || "{}");
     const purchases = JSON.parse(localStorage.getItem("purchases") || "[]");
     const personnelMensuel = JSON.parse(localStorage.getItem("personnelTotalMensuel") || "{}");
 
-    // Débogage des données chargées
-    console.log("sales:", sales, "purchases:", purchases, "personnelMensuel:", personnelMensuel, "chargesMensuelles:", chargesMensuelles);
+    const lignes = {
+        "Chiffre d'affaire TTC": [], "Achats": [], "Charges": [],
+        "Personnel": [], "Impôt et Urssaf": [], "TVA": [],
+        "Bénéfice Net": [], "Rentabilité %": []
+    };
+    let totalCA = 0, totalNet = 0;
 
-    // Extraction des données fiscales
     const fiscalUrssafData = {}, fiscalTvaData = {};
     const tbl = document.getElementById("fiscalTable");
     if (tbl) {
@@ -7467,125 +7473,76 @@ function displayBilan() {
                 const lbl = ml in monthMap && yy ? `${monthMap[ml]}-${yy}` : null;
                 if (!lbl) return;
                 fiscalUrssafData[lbl] = parseInt(c[2].innerText.replace(/\D/g, "")) || 0;
-                const tvaCell = c[5];
-                fiscalTvaData[lbl] = tvaCell.classList.contains("crossed")
+                fiscalTvaData[lbl] = c[5].classList.contains("crossed")
                     ? 0
-                    : parseInt(tvaCell.innerText.replace(/\D/g, "")) || 0;
+                    : parseInt(c[5].innerText.replace(/\D/g, "")) || 0;
             }
         });
     }
 
-    // Débogage des données fiscales
-    console.log("fiscalUrssafData:", fiscalUrssafData, "fiscalTvaData:", fiscalTvaData);
+    monthLabels.slice(0, -1).forEach((lbl, i) => {
+        const key = monthKeys[i];
 
-    // Préparation des lignes
-    const lignes = {
-        "Chiffre d'affaire TTC": [], "Achats": [], "Charges": [],
-        "Personnel": [], "Impôt et Urssaf": [], "TVA": [],
-        "Bénéfice Net": [], "Rentabilité %": []
-    };
-    let totalCA = 0, totalNet = 0;
-
-    // Calcul par mois
-    monthDates.forEach((date, i) => {
-        const key = monthKeys[i], lbl = monthLabels[i];
-        console.log(`Processing month: ${lbl}, key: ${key}`);
-
-        // CA
         let ca = 0;
-        Object.entries(sales).forEach(([d, dt]) => {
-            if (d.startsWith(key)) ca += parseFloat(dt.total || 0);
-        });
+        for (const [d, val] of Object.entries(sales)) {
+            if (d.startsWith(key)) ca += parseFloat(val.total || 0);
+        }
         ca = Math.round(ca);
         totalCA += ca;
         lignes["Chiffre d'affaire TTC"].push(ca);
 
-        // Achats
-        let ach;
+        let ach = 0;
         if (lbl === "déc-24") {
-            console.log("Applying fixed value 2184 for déc-24");
-            ach = 2184; // Remplacement par 2184 € pour décembre 2024
+            ach = 2184;
         } else {
-            try {
-                ach = purchases.filter(p => p.date && p.date.startsWith(key))
-                    .reduce((s, a) => s + (parseFloat(a.amountTTC) || 0), 0);
-                ach = Math.round(ach);
-                console.log(`Calculated purchases for ${lbl}: ${ach}`);
-            } catch (e) {
-                console.error(`Error calculating purchases for ${lbl}:`, e);
-                ach = 0;
-            }
+            ach = purchases.filter(p => p.date?.startsWith(key))
+                .reduce((s, a) => s + (parseFloat(a.amountTTC) || 0), 0);
+            ach = Math.round(ach);
         }
         lignes["Achats"].push(ach);
 
-        // Charges
         let ch = chargesMensuelles[lbl];
         if (!ch) { ch = defaultCharges[lbl] || 2000; chargesMensuelles[lbl] = ch; }
         lignes["Charges"].push(
             `<input type="number" value="${ch}" data-month="${lbl}" onchange="updateCharge(this)" style="width:50px;"> €`
         );
 
-        // Personnel
         const pers = Math.round(personnelMensuel[lbl] || 0);
         lignes["Personnel"].push(pers);
 
-        // URSSAF
         const ur = fiscalUrssafData[lbl] || 0;
         lignes["Impôt et Urssaf"].push(ur);
 
-        // TVA
         const tv = fiscalTvaData[lbl] || 0;
         lignes["TVA"].push(tv);
 
-        // Bénéfice net
         const net = ca - ach - ch - pers - ur - tv;
         totalNet += net;
         lignes["Bénéfice Net"].push(net);
-        console.log(`Bénéfice Net for ${lbl}: ${net} = ${ca} - ${ach} - ${ch} - ${pers} - ${ur} - ${tv}`);
-
-        // Rentabilité %
         lignes["Rentabilité %"].push(ca > 0 ? Math.round((net / ca) * 100) : 0);
     });
 
-    // Calcul du cumul des charges à partir des valeurs mensuelles affichées
-    const monthlyChargeValues = monthLabels.slice(0, -1).map(lbl => {
-        const html = lignes["Charges"][monthLabels.indexOf(lbl)];
-        return parseInt(html.match(/value="(\d+)"/)?.[1]) || 0;
-    });
-    const cumCh = monthlyChargeValues.reduce((a, b) => a + b, 0);
+    const cumCharges = monthLabels.slice(0, -1).reduce((sum, lbl, i) => {
+        const html = lignes["Charges"][i];
+        return sum + (parseInt(html.match(/value="(\d+)"/)?.[1]) || 0);
+    }, 0);
 
-    // Cumul
     lignes["Chiffre d'affaire TTC"].push(totalCA);
     lignes["Achats"].push(lignes["Achats"].reduce((a, b) => a + b, 0));
-    lignes["Charges"].push(`${cumCh} `);
+    lignes["Charges"].push(`${cumCharges} `);
     lignes["Personnel"].push(lignes["Personnel"].reduce((a, b) => a + b, 0));
     lignes["Impôt et Urssaf"].push(lignes["Impôt et Urssaf"].reduce((a, b) => a + b, 0));
     lignes["TVA"].push(lignes["TVA"].reduce((a, b) => a + b, 0));
     lignes["Bénéfice Net"].push(totalNet);
-    const rentCum = totalCA > 0 ? Math.round((totalNet / totalCA) * 100) : 0;
-    lignes["Rentabilité %"].push(rentCum);
+    lignes["Rentabilité %"].push(totalCA > 0 ? Math.round((totalNet / totalCA) * 100) : 0);
 
-    // Débogage du cumul
-    console.log("Cumul:", {
-        totalCA,
-        totalAchats: lignes["Achats"].reduce((a, b) => a + b, 0),
-        totalCharges: cumCh,
-        totalPersonnel: lignes["Personnel"].reduce((a, b) => a + b, 0),
-        totalUrssaf: lignes["Impôt et Urssaf"].reduce((a, b) => a + b, 0),
-        totalTVA: lignes["TVA"].reduce((a, b) => a + b, 0),
-        totalNet,
-        rentCum
-    });
-
-    // Sauvegarde des charges
     localStorage.setItem("chargesMensuelles", JSON.stringify(chargesMensuelles));
 
-    // Génération HTML
     let html = `<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;"><thead><tr><th style="position:sticky;left:0;background:white;border:1px solid #ddd;"></th>`;
     monthLabels.forEach(m => html += `<th style="border:1px solid #ddd;">${m}</th>`);
     html += `</tr></thead><tbody>`;
 
-    Object.entries(lignes).forEach(([label, vals]) => {
+    for (const [label, vals] of Object.entries(lignes)) {
         const bold = (label === "Chiffre d'affaire TTC" || label === "Bénéfice Net") ? "font-weight:bold;" : "";
         html += `<tr><td style="position:sticky;left:0;background:white;border:1px solid #ddd;${bold}">${label}</td>`;
         vals.forEach(val => {
@@ -7596,11 +7553,12 @@ function displayBilan() {
             html += `<td style="border:1px solid #ddd;text-align:center;${bold}">${cell}</td>`;
         });
         html += `</tr>`;
-    });
+    }
 
     html += `</tbody></table></div>`;
     document.getElementById("bilanTable").innerHTML = html;
 }
+
 
 function updateCharge(input) {
     const lbl = input.dataset.month;
