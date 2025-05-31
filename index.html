@@ -7404,8 +7404,15 @@ function displayBilan() {
     const startDate = new Date(startInput + "T00:00:00");
     const endDate = new Date(endInput + "T23:59:59");
 
+    // Vérifier la validité des dates
+    if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
+        console.error("Dates invalides ou startDate > endDate", { startInput, endInput });
+        document.getElementById("bilanTable").innerHTML = "<p>Erreur : Dates invalides</p>";
+        return;
+    }
+
     // Débogage pour vérifier les dates
-    console.log("startDate:", startDate.toISOString(), "endDate:", endDate.toISOString(), "endInput:", endInput);
+    console.log("startDate:", startDate.toISOString(), "endDate:", endDate.toISOString());
 
     // Fonction pour obtenir un label de mois stable
     function getStableMonthLabel(date) {
@@ -7415,11 +7422,14 @@ function displayBilan() {
 
     // Préparer les mois
     const monthDates = [], monthLabels = [], monthKeys = [];
-    for (let d = new Date(startDate); d <= endDate; d.setMonth(d.getMonth() + 1)) {
-        const currentDate = new Date(d);
-        monthDates.push(currentDate);
+    let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1); // Commencer au 1er du mois
+    while (currentDate <= endDate) {
+        monthDates.push(new Date(currentDate));
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
         monthLabels.push(getStableMonthLabel(currentDate));
-        monthKeys.push(currentDate.toISOString().slice(0, 7));
+        monthKeys.push(`${year}-${String(month + 1).padStart(2, '0')}`); // Format YYYY-MM
+        currentDate.setMonth(currentDate.getMonth() + 1);
     }
     monthLabels.push("CUMUL");
 
@@ -7438,15 +7448,17 @@ function displayBilan() {
     const personnelMensuel = JSON.parse(localStorage.getItem("personnelTotalMensuel") || "{}");
 
     // Débogage des données chargées
-    console.log("purchases:", purchases);
+    console.log("sales:", sales, "purchases:", purchases, "personnelMensuel:", personnelMensuel, "chargesMensuelles:", chargesMensuelles);
 
     // Extraction des données fiscales
     const fiscalUrssafData = {}, fiscalTvaData = {};
     const tbl = document.getElementById("fiscalTable");
     if (tbl) {
-        const monthMap = { janvier: "janv", février: "févr", mars: "mars", avril: "avr", mai: "mai",
+        const monthMap = {
+            janvier: "janv", février: "févr", mars: "mars", avril: "avr", mai: "mai",
             juin: "juin", juillet: "juil", août: "août", septembre: "sept",
-            octobre: "oct", novembre: "nov", décembre: "déc" };
+            octobre: "oct", novembre: "nov", décembre: "déc"
+        };
         tbl.querySelectorAll("tr").forEach(row => {
             const c = row.querySelectorAll("td");
             if (c.length >= 6) {
@@ -7463,6 +7475,9 @@ function displayBilan() {
         });
     }
 
+    // Débogage des données fiscales
+    console.log("fiscalUrssafData:", fiscalUrssafData, "fiscalTvaData:", fiscalTvaData);
+
     // Préparation des lignes
     const lignes = {
         "Chiffre d'affaire TTC": [], "Achats": [], "Charges": [],
@@ -7474,14 +7489,17 @@ function displayBilan() {
     // Calcul par mois
     monthDates.forEach((date, i) => {
         const key = monthKeys[i], lbl = monthLabels[i];
-        // Débogage du mois courant
         console.log(`Processing month: ${lbl}, key: ${key}`);
+
         // CA
         let ca = 0;
         Object.entries(sales).forEach(([d, dt]) => {
             if (d.startsWith(key)) ca += parseFloat(dt.total || 0);
         });
-        ca = Math.round(ca); totalCA += ca; lignes["Chiffre d'affaire TTC"].push(ca);
+        ca = Math.round(ca);
+        totalCA += ca;
+        lignes["Chiffre d'affaire TTC"].push(ca);
+
         // Achats
         let ach;
         if (lbl === "déc-24") {
@@ -7495,28 +7513,36 @@ function displayBilan() {
                 console.log(`Calculated purchases for ${lbl}: ${ach}`);
             } catch (e) {
                 console.error(`Error calculating purchases for ${lbl}:`, e);
-                ach = 0; // Valeur par défaut en cas d'erreur
+                ach = 0;
             }
         }
         lignes["Achats"].push(ach);
+
         // Charges
         let ch = chargesMensuelles[lbl];
         if (!ch) { ch = defaultCharges[lbl] || 2000; chargesMensuelles[lbl] = ch; }
         lignes["Charges"].push(
             `<input type="number" value="${ch}" data-month="${lbl}" onchange="updateCharge(this)" style="width:50px;"> €`
         );
+
         // Personnel
         const pers = Math.round(personnelMensuel[lbl] || 0);
         lignes["Personnel"].push(pers);
+
         // URSSAF
         const ur = fiscalUrssafData[lbl] || 0;
         lignes["Impôt et Urssaf"].push(ur);
+
         // TVA
         const tv = fiscalTvaData[lbl] || 0;
         lignes["TVA"].push(tv);
+
         // Bénéfice net
         const net = ca - ach - ch - pers - ur - tv;
-        totalNet += net; lignes["Bénéfice Net"].push(net);
+        totalNet += net;
+        lignes["Bénéfice Net"].push(net);
+        console.log(`Bénéfice Net for ${lbl}: ${net} = ${ca} - ${ach} - ${ch} - ${pers} - ${ur} - ${tv}`);
+
         // Rentabilité %
         lignes["Rentabilité %"].push(ca > 0 ? Math.round((net / ca) * 100) : 0);
     });
@@ -7538,6 +7564,18 @@ function displayBilan() {
     lignes["Bénéfice Net"].push(totalNet);
     const rentCum = totalCA > 0 ? Math.round((totalNet / totalCA) * 100) : 0;
     lignes["Rentabilité %"].push(rentCum);
+
+    // Débogage du cumul
+    console.log("Cumul:", {
+        totalCA,
+        totalAchats: lignes["Achats"].reduce((a, b) => a + b, 0),
+        totalCharges: cumCh,
+        totalPersonnel: lignes["Personnel"].reduce((a, b) => a + b, 0),
+        totalUrssaf: lignes["Impôt et Urssaf"].reduce((a, b) => a + b, 0),
+        totalTVA: lignes["TVA"].reduce((a, b) => a + b, 0),
+        totalNet,
+        rentCum
+    });
 
     // Sauvegarde des charges
     localStorage.setItem("chargesMensuelles", JSON.stringify(chargesMensuelles));
