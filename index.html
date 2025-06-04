@@ -3334,7 +3334,6 @@ function deleteSale(date) {
 }
 
 function printAllRecipes() {
-    // Vérification des dépendances
     if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
         return;
@@ -3349,10 +3348,15 @@ function printAllRecipes() {
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-    // Vérification des dates valides
     if (isNaN(startDate) || isNaN(endDate)) {
         alert("Erreur : Dates invalides.");
         return;
+    }
+
+    // Generate all dates in the range
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        allDates.push(new Date(d));
     }
 
     const filteredSales = Object.entries(salesData).filter(([date]) => {
@@ -3360,7 +3364,7 @@ function printAllRecipes() {
         return saleDate >= startDate && saleDate <= endDate;
     }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
 
-    if (filteredSales.length === 0) {
+    if (allDates.length === 0) {
         alert("Aucune vente à télécharger dans cette période.");
         return;
     }
@@ -3387,7 +3391,10 @@ function printAllRecipes() {
     y += rowHeight;
 
     doc.setFont('helvetica', 'normal');
-    filteredSales.forEach(([date, data]) => {
+    allDates.forEach(date => {
+        const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
+        const saleForDate = filteredSales.find(([saleDate]) => new Date(saleDate).toDateString() === date.toDateString());
+
         if (y > doc.internal.pageSize.getHeight() - margin - 20) {
             doc.addPage();
             y = margin;
@@ -3403,11 +3410,11 @@ function printAllRecipes() {
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
-        const dateStr = `${dayAbbreviations[new Date(date).getDay()]} ${new Date(date).toLocaleDateString('fr-FR')}`;
+
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(data.card)}€`, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(data.cash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(data.total)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(saleForDate ? `${Math.round(saleForDate[1].card)}€` : '', tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(saleForDate ? `${Math.round(saleForDate[1].cash)}€` : '', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(saleForDate ? `${Math.round(saleForDate[1].total)}€` : '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
         y += rowHeight;
     });
 
@@ -3431,7 +3438,6 @@ function printAllRecipes() {
 }
 
 function downloadRecipesPDF() {
-    // Vérification des dépendances
     if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
         return;
@@ -3446,10 +3452,15 @@ function downloadRecipesPDF() {
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-    // Vérification des dates valides
     if (isNaN(startDate) || isNaN(endDate)) {
         alert("Erreur : Dates invalides.");
         return;
+    }
+
+    // Generate all dates in the range
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        allDates.push(new Date(d));
     }
 
     const filteredSales = Object.entries(salesData).filter(([date]) => {
@@ -3457,7 +3468,7 @@ function downloadRecipesPDF() {
         return saleDate >= startDate && saleDate <= endDate;
     }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
 
-    if (filteredSales.length === 0) {
+    if (allDates.length === 0) {
         alert("Aucune vente à télécharger dans cette période.");
         return;
     }
@@ -3484,7 +3495,10 @@ function downloadRecipesPDF() {
     y += rowHeight;
 
     doc.setFont('helvetica', 'normal');
-    filteredSales.forEach(([date, data]) => {
+    allDates.forEach(date => {
+        const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
+        const saleForDate = filteredSales.find(([saleDate]) => new Date(saleDate).toDateString() === date.toDateString());
+
         if (y > doc.internal.pageSize.getHeight() - margin - 20) {
             doc.addPage();
             y = margin;
@@ -3500,11 +3514,11 @@ function downloadRecipesPDF() {
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
-        const dateStr = `${dayAbbreviations[new Date(date).getDay()]} ${new Date(date).toLocaleDateString('fr-FR')}`;
+
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(data.card)}€`, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(data.cash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(data.total)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(saleForDate ? `${Math.round(saleForDate[1].card)}€` : '', tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(saleForDate ? `${Math.round(saleForDate[1].cash)}€` : '', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(saleForDate ? `${Math.round(saleForDate[1].total)}€` : '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
         y += rowHeight;
     });
 
@@ -3524,12 +3538,11 @@ function downloadRecipesPDF() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(totalCash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(totalSales)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
 
-    const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
+    const startStr = startDate.toLocaleDateString('fr-CA');
     const endStr = endDate.toLocaleDateString('fr-CA');
     const fileName = `Chez_Barth_Ventes_${startStr}_au_${endStr}.pdf`;
     doc.save(fileName);
 
-    // Message de confirmation
     setTimeout(() => {
         alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
@@ -5281,7 +5294,6 @@ function deleteSelectedPurchase() {
 
 
 function printPurchases() {
-    // Vérification des dépendances
     if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
         return;
@@ -5298,10 +5310,15 @@ function printPurchases() {
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-    // Vérification des dates valides
     if (isNaN(startDate) || isNaN(endDate)) {
         alert("Erreur : Dates invalides.");
         return;
+    }
+
+    // Generate all dates in the range
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        allDates.push(new Date(d));
     }
 
     const filteredPurchases = purchases.filter(purchase => {
@@ -5309,7 +5326,7 @@ function printPurchases() {
         return purchaseDate >= startDate && purchaseDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    if (filteredPurchases.length === 0) {
+    if (allDates.length === 0) {
         alert("Aucune donnée d'achat à télécharger.");
         return;
     }
@@ -5339,11 +5356,6 @@ function printPurchases() {
         y += rowHeight;
     };
 
-    // Totaux
-    const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
-    const totalsByPayment = { Carte: 0, Espèce: 0 };
-    let totalTTC = 0;
-
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
@@ -5353,46 +5365,61 @@ function printPurchases() {
     drawHeader();
     doc.setFont('helvetica', 'normal');
 
-    for (let i = 0; i < filteredPurchases.length; i++) {
-        const purchase = filteredPurchases[i];
-        const purchaseDate = new Date(purchase.date);
-        const dateStr = `${dayAbbreviations[purchaseDate.getDay()]} ${purchaseDate.toLocaleDateString('fr-FR')}`;
-        const type = purchase.type;
-        const payment = purchase.payment;
-        const comment = purchase.comment || '';
-        const amount = Math.round(purchase.amountTTC);
+    const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
+    const totalsByPayment = { Carte: 0, Espèce: 0 };
+    let totalTTC = 0;
 
-        totalsByType[type] += purchase.amountTTC;
-        totalsByPayment[payment] += purchase.amountTTC;
-        totalTTC += purchase.amountTTC;
+    allDates.forEach(date => {
+        const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
+        const purchasesForDate = filteredPurchases.filter(purchase => new Date(purchase.date).toDateString() === date.toDateString());
 
-        // Vérifie si une nouvelle page est nécessaire
         if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
             drawHeader();
         }
 
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        if (showComments) {
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-            doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        if (purchasesForDate.length === 0) {
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            if (showComments) {
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+                doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            }
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+            doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+            y += rowHeight;
+        } else {
+            purchasesForDate.forEach(purchase => {
+                const type = purchase.type;
+                const payment = purchase.payment;
+                const comment = purchase.comment || '';
+                const amount = Math.round(purchase.amountTTC);
+
+                totalsByType[type] += purchase.amountTTC;
+                totalsByPayment[payment] += purchase.amountTTC;
+                totalTTC += purchase.amountTTC;
+
+                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+                if (showComments) {
+                    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+                    doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                }
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+                doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+                y += rowHeight;
+            });
         }
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-        doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    });
 
-        y += rowHeight;
-    }
-
-    // Totaux (type, paiement, général)
     const printTotalRow = (label, value, color = 'black') => {
         if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
         }
-
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(color);
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(label, tableX + 2, y + 6);
@@ -5413,12 +5440,10 @@ function printPurchases() {
     printTotalRow('Par Espèce', totalsByPayment['Espèce'], 'green');
     printTotalRow('Total Général', totalTTC, 'black');
 
-    // Afficher dans un nouvel onglet
     window.open(doc.output('bloburl'), '_blank');
 }
 
 function downloadPurchasesPDF() {
-    // Vérification des dépendances
     if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
         return;
@@ -5435,10 +5460,15 @@ function downloadPurchasesPDF() {
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-    // Vérification des dates valides
     if (isNaN(startDate) || isNaN(endDate)) {
         alert("Erreur : Dates invalides.");
         return;
+    }
+
+    // Generate all dates in the range
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        allDates.push(new Date(d));
     }
 
     const filteredPurchases = purchases.filter(purchase => {
@@ -5446,7 +5476,7 @@ function downloadPurchasesPDF() {
         return purchaseDate >= startDate && purchaseDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    if (filteredPurchases.length === 0) {
+    if (allDates.length === 0) {
         alert("Aucune donnée d'achat à télécharger.");
         return;
     }
@@ -5476,11 +5506,6 @@ function downloadPurchasesPDF() {
         y += rowHeight;
     };
 
-    // Totaux
-    const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
-    const totalsByPayment = { Carte: 0, Espèce: 0 };
-    let totalTTC = 0;
-
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
@@ -5490,46 +5515,61 @@ function downloadPurchasesPDF() {
     drawHeader();
     doc.setFont('helvetica', 'normal');
 
-    for (let i = 0; i < filteredPurchases.length; i++) {
-        const purchase = filteredPurchases[i];
-        const purchaseDate = new Date(purchase.date);
-        const dateStr = `${dayAbbreviations[purchaseDate.getDay()]} ${purchaseDate.toLocaleDateString('fr-FR')}`;
-        const type = purchase.type;
-        const payment = purchase.payment;
-        const comment = purchase.comment || '';
-        const amount = Math.round(purchase.amountTTC);
+    const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
+    const totalsByPayment = { Carte: 0, Espèce: 0 };
+    let totalTTC = 0;
 
-        totalsByType[type] += purchase.amountTTC;
-        totalsByPayment[payment] += purchase.amountTTC;
-        totalTTC += purchase.amountTTC;
+    allDates.forEach(date => {
+        const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
+        const purchasesForDate = filteredPurchases.filter(purchase => new Date(purchase.date).toDateString() === date.toDateString());
 
-        // Vérifie si une nouvelle page est nécessaire
         if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
             drawHeader();
         }
 
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        if (showComments) {
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-            doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        if (purchasesForDate.length === 0) {
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            if (showComments) {
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+                doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            }
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+            doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+            y += rowHeight;
+        } else {
+            purchasesForDate.forEach(purchase => {
+                const type = purchase.type;
+                const payment = purchase.payment;
+                const comment = purchase.comment || '';
+                const amount = Math.round(purchase.amountTTC);
+
+                totalsByType[type] += purchase.amountTTC;
+                totalsByPayment[payment] += purchase.amountTTC;
+                totalTTC += purchase.amountTTC;
+
+                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+                if (showComments) {
+                    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+                    doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                }
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+                doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+                y += rowHeight;
+            });
         }
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-        doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    });
 
-        y += rowHeight;
-    }
-
-    // Totaux (type, paiement, général)
     const printTotalRow = (label, value, color = 'black') => {
         if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
         }
-
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(color);
         doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(label, tableX + 2, y + 6);
@@ -5550,12 +5590,11 @@ function downloadPurchasesPDF() {
     printTotalRow('Par Espèce', totalsByPayment['Espèce'], 'green');
     printTotalRow('Total Général', totalTTC, 'black');
 
-    const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
+    const startStr = startDate.toLocaleDateString('fr-CA');
     const endStr = endDate.toLocaleDateString('fr-CA');
     const fileName = `Chez_Barth_Achats_${startStr}_au_${endStr}.pdf`;
     doc.save(fileName);
 
-    // Message de confirmation
     setTimeout(() => {
         alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
@@ -6486,137 +6525,6 @@ function formatHours(hours) {
 }
 
 function printPersonnel() {
-    const startDateInput = document.getElementById('personnelStartDate').value;
-    const endDateInput = document.getElementById('personnelEndDate').value;
-    const showComments = document.getElementById('showComments').checked;
-
-    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
-    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
-
-    const filteredRecords = personnelRecords.filter(record => {
-        const recordDate = new Date(record.date);
-        return recordDate >= startDate && recordDate <= endDate;
-    }).sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    if (filteredRecords.length === 0) {
-        alert("Aucune donnée du personnel à imprimer.");
-        return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const margin = 10;
-    let y = margin;
-    const colWidths = showComments ? [28, 38, 28, 28, 28, 38] : [28, 38, 28, 28, 28];
-    const rowHeight = 10;
-    const tableX = margin;
-    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
-
-    doc.setFontSize(12);
-    doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-    y += 10;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-    if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
-    y += rowHeight;
-
-    doc.setFont('helvetica', 'normal');
-    filteredRecords.forEach(record => {
-        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
-            doc.addPage();
-            y = margin;
-            doc.setFontSize(12);
-            doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-            y += 10;
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-            if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
-            y += rowHeight;
-            doc.setFont('helvetica', 'normal');
-        }
-        const hourLabel = record.employee && record.employee.trim() !== '' 
-            ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
-            : '';
-        const recordDate = new Date(record.date);
-        const dateLabel = `${dayAbbreviations[recordDate.getDay()]} ${recordDate.toLocaleDateString('fr-FR')}`;
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateLabel, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-        if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
-        y += rowHeight;
-    });
-
-    y += 5;
-    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
-        doc.addPage();
-        y = margin;
-    }
-    doc.setFont('helvetica', 'bold');
-    const totals = {};
-    const commentTotals = {};
-    filteredRecords.forEach(record => {
-        if (record.employee && record.employee.trim() !== '') {
-            if (!totals[record.employee]) totals[record.employee] = 0;
-            if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
-            totals[record.employee] += record.hours;
-            if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
-        }
-    });
-    const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
-    const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
-
-    Object.keys(totals).forEach(employee => {
-        if (y > doc.internal.pageSize.getHeight() - margin - 20) {
-            doc.addPage();
-            y = margin;
-        }
-        const hours = Math.floor(totals[employee]);
-        const minutes = Math.round((totals[employee] - hours) * 60);
-        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(`Total ${employee}`, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-        if (showComments) doc.text(`${commentTotals[employee].toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
-        y += rowHeight;
-    });
-
-    if (Object.keys(totals).length > 0) {
-        const hours = Math.floor(totalHours);
-        const minutes = Math.round((totalHours - hours) * 60);
-        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-        if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
-    }
-
-    window.open(doc.output('bloburl'), '_blank');
-}
-
-function downloadPersonnelPDF() {
-    // Vérification des dépendances
     if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
         return;
@@ -6633,10 +6541,15 @@ function downloadPersonnelPDF() {
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-    // Vérification des dates valides
     if (isNaN(startDate) || isNaN(endDate)) {
         alert("Erreur : Dates invalides.");
         return;
+    }
+
+    // Generate all dates in the range
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        allDates.push(new Date(d));
     }
 
     const filteredRecords = personnelRecords.filter(record => {
@@ -6644,8 +6557,8 @@ function downloadPersonnelPDF() {
         return recordDate >= startDate && recordDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    if (filteredRecords.length === 0) {
-        alert("Aucune donnée du personnel à télécharger.");
+    if (allDates.length === 0) {
+        alert("Aucune donnée du personnel à imprimer.");
         return;
     }
 
@@ -6676,7 +6589,10 @@ function downloadPersonnelPDF() {
     y += rowHeight;
 
     doc.setFont('helvetica', 'normal');
-    filteredRecords.forEach(record => {
+    allDates.forEach(date => {
+        const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
+        const recordsForDate = filteredRecords.filter(record => new Date(record.date).toDateString() === date.toDateString());
+
         if (y > doc.internal.pageSize.getHeight() - margin - 40) {
             doc.addPage();
             y = margin;
@@ -6697,21 +6613,35 @@ function downloadPersonnelPDF() {
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
-        const hourLabel = record.employee && record.employee.trim() !== '' 
-            ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
-            : '';
-        const recordDate = new Date(record.date);
-        const dateLabel = `${dayAbbreviations[recordDate.getDay()]} ${recordDate.toLocaleDateString('fr-FR')}`;
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateLabel, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) {
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
-            doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+
+        if (recordsForDate.length === 0) {
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            if (showComments) {
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+                doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            }
+            y += rowHeight;
+        } else {
+            recordsForDate.forEach(record => {
+                const hourLabel = record.employee && record.employee.trim() !== '' 
+                    ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
+                    : '';
+                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+                if (showComments) {
+                    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+                    doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+                }
+                y += rowHeight;
+            });
         }
-        y += rowHeight;
     });
 
     y += 5;
@@ -6768,10 +6698,186 @@ function downloadPersonnelPDF() {
         }
     }
 
-    const fileName = 'Activité_du_personnel_Chez_Barth.pdf';
+    window.open(doc.output('bloburl'), '_blank');
+}
+
+function downloadPersonnelPDF() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
+        return;
+    }
+    if (!personnelRecords || !Array.isArray(personnelRecords)) {
+        alert("Erreur : Les données du personnel ne sont pas disponibles.");
+        return;
+    }
+
+    const startDateInput = document.getElementById('personnelStartDate').value;
+    const endDateInput = document.getElementById('personnelEndDate').value;
+    const showComments = document.getElementById('showComments').checked;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Erreur : Dates invalides.");
+        return;
+    }
+
+    // Generate all dates in the range
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        allDates.push(new Date(d));
+    }
+
+    const filteredRecords = personnelRecords.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (allDates.length === 0) {
+        alert("Aucune donnée du personnel à télécharger.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = showComments ? [28, 38, 28, 28, 28, 38] : [28, 38, 28, 28, 28];
+    const rowHeight = 10;
+    const tableX = margin;
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
+
+    doc.setFontSize(12);
+    doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    if (showComments) {
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+        doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    }
+    y += rowHeight;
+
+    doc.setFont('helvetica', 'normal');
+    allDates.forEach(date => {
+        const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
+        const recordsForDate = filteredRecords.filter(record => new Date(record.date).toDateString() === date.toDateString());
+
+        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+            doc.addPage();
+            y = margin;
+            doc.setFontSize(12);
+            doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            if (showComments) {
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+                doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            }
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
+        }
+
+        if (recordsForDate.length === 0) {
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            if (showComments) {
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+                doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            }
+            y += rowHeight;
+        } else {
+            recordsForDate.forEach(record => {
+                const hourLabel = record.employee && record.employee.trim() !== '' 
+                    ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
+                    : '';
+                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+                if (showComments) {
+                    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+                    doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+                }
+                y += rowHeight;
+            });
+        }
+    });
+
+    y += 5;
+    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+        doc.addPage();
+        y = margin;
+    }
+    doc.setFont('helvetica', 'bold');
+    const totals = {};
+    const commentTotals = {};
+    filteredRecords.forEach(record => {
+        if (record.employee && record.employee.trim() !== '') {
+            if (!totals[record.employee]) totals[record.employee] = 0;
+            if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
+            totals[record.employee] += record.hours;
+            if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
+        }
+    });
+    const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
+    const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
+
+    Object.keys(totals).forEach(employee => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+            doc.addPage();
+            y = margin;
+        }
+        const hours = Math.floor(totals[employee]);
+        const minutes = Math.round((totals[employee] - hours) * 60);
+        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(`Total ${employee}`, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+            doc.text(`${commentTotals[employee].toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        }
+        y += rowHeight;
+    });
+
+    if (Object.keys(totals).length > 0) {
+        const hours = Math.floor(totalHours);
+        const minutes = Math.round((totalHours - hours) * 60);
+        const hourLabel = `${hours}h${minutes.toString().padStart(2, '0')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+            doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        }
+    }
+
+    const fileName = `Activité_du_personnel_Chez_Barth_${startDate.toLocaleDateString('fr-CA')}_au_${endDate.toLocaleDateString('fr-CA')}.pdf`;
     doc.save(fileName);
 
-    // Message de confirmation
     setTimeout(() => {
         alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
