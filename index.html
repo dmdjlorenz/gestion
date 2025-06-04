@@ -3333,11 +3333,27 @@ function deleteSale(date) {
     }
 }
 
-    function printAllRecipes() {
+function printAllRecipes() {
+    // Vérification des dépendances
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
+        return;
+    }
+    if (!salesData || typeof salesData !== 'object') {
+        alert("Erreur : Les données des ventes ne sont pas disponibles.");
+        return;
+    }
+
     const startDateInput = document.getElementById('recipeStartDate').value;
     const endDateInput = document.getElementById('recipeEndDate').value;
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    // Vérification des dates valides
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Erreur : Dates invalides.");
+        return;
+    }
 
     const filteredSales = Object.entries(salesData).filter(([date]) => {
         const saleDate = new Date(date);
@@ -3349,15 +3365,17 @@ function deleteSale(date) {
         return;
     }
 
+    const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const margin = 10;
     let y = margin;
     const colWidths = [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
 
     doc.setFontSize(12);
-    doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des ventes du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -3374,7 +3392,7 @@ function deleteSale(date) {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Liste des ventes du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -3385,7 +3403,8 @@ function deleteSale(date) {
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        const dateStr = `${dayAbbreviations[new Date(date).getDay()]} ${new Date(date).toLocaleDateString('fr-FR')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(data.card)}€`, tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(data.cash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(data.total)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
@@ -3412,10 +3431,26 @@ function deleteSale(date) {
 }
 
 function downloadRecipesPDF() {
+    // Vérification des dépendances
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
+        return;
+    }
+    if (!salesData || typeof salesData !== 'object') {
+        alert("Erreur : Les données des ventes ne sont pas disponibles.");
+        return;
+    }
+
     const startDateInput = document.getElementById('recipeStartDate').value;
     const endDateInput = document.getElementById('recipeEndDate').value;
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    // Vérification des dates valides
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Erreur : Dates invalides.");
+        return;
+    }
 
     const filteredSales = Object.entries(salesData).filter(([date]) => {
         const saleDate = new Date(date);
@@ -3427,15 +3462,17 @@ function downloadRecipesPDF() {
         return;
     }
 
+    const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const margin = 10;
     let y = margin;
     const colWidths = [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
 
     doc.setFontSize(12);
-    doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des ventes du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -3452,7 +3489,7 @@ function downloadRecipesPDF() {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Liste des ventes du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -3463,7 +3500,8 @@ function downloadRecipesPDF() {
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        const dateStr = `${dayAbbreviations[new Date(date).getDay()]} ${new Date(date).toLocaleDateString('fr-FR')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(data.card)}€`, tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(data.cash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(data.total)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
@@ -3486,19 +3524,15 @@ function downloadRecipesPDF() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(totalCash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(totalSales)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
 
-    const fileName = 'Liste_ventes_Chez_Barth.pdf'; 
+    const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
+    const endStr = endDate.toLocaleDateString('fr-CA');
+    const fileName = `Chez_Barth_Ventes_${startStr}_au_${endStr}.pdf`;
     doc.save(fileName);
 
     // Message de confirmation
     setTimeout(() => {
-    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
-
-    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
-    const blob = doc.output('blob');
-    const blobUrl = URL.createObjectURL(blob);
-    window.open(blobUrl, '_blank');
+        alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
-
 }
 
     // --- Facture ---
@@ -5247,12 +5281,28 @@ function deleteSelectedPurchase() {
 
 
 function printPurchases() {
-   const startDateInput = document.getElementById('purchaseStartDate').value;
+    // Vérification des dépendances
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
+        return;
+    }
+    if (!purchases || !Array.isArray(purchases)) {
+        alert("Erreur : Les données des achats ne sont pas disponibles.");
+        return;
+    }
+
+    const startDateInput = document.getElementById('purchaseStartDate').value;
     const endDateInput = document.getElementById('purchaseEndDate').value;
     const showComments = document.getElementById('showPurchaseComments').checked;
 
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    // Vérification des dates valides
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Erreur : Dates invalides.");
+        return;
+    }
 
     const filteredPurchases = purchases.filter(purchase => {
         const purchaseDate = new Date(purchase.date);
@@ -5272,6 +5322,7 @@ function printPurchases() {
     const colWidths = showComments ? [38, 38, 38, 38, 38] : [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
 
     const drawHeader = () => {
         doc.setFontSize(10);
@@ -5296,7 +5347,7 @@ function printPurchases() {
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Chez Barth-Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des achats du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     drawHeader();
@@ -5304,7 +5355,8 @@ function printPurchases() {
 
     for (let i = 0; i < filteredPurchases.length; i++) {
         const purchase = filteredPurchases[i];
-        const dateStr = new Date(purchase.date).toLocaleDateString('fr-FR');
+        const purchaseDate = new Date(purchase.date);
+        const dateStr = `${dayAbbreviations[purchaseDate.getDay()]} ${purchaseDate.toLocaleDateString('fr-FR')}`;
         const type = purchase.type;
         const payment = purchase.payment;
         const comment = purchase.comment || '';
@@ -5366,12 +5418,28 @@ function printPurchases() {
 }
 
 function downloadPurchasesPDF() {
+    // Vérification des dépendances
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
+        return;
+    }
+    if (!purchases || !Array.isArray(purchases)) {
+        alert("Erreur : Les données des achats ne sont pas disponibles.");
+        return;
+    }
+
     const startDateInput = document.getElementById('purchaseStartDate').value;
     const endDateInput = document.getElementById('purchaseEndDate').value;
     const showComments = document.getElementById('showPurchaseComments').checked;
 
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    // Vérification des dates valides
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Erreur : Dates invalides.");
+        return;
+    }
 
     const filteredPurchases = purchases.filter(purchase => {
         const purchaseDate = new Date(purchase.date);
@@ -5391,6 +5459,7 @@ function downloadPurchasesPDF() {
     const colWidths = showComments ? [38, 38, 38, 38, 38] : [38, 38, 38, 38];
     const rowHeight = 10;
     const tableX = margin;
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
 
     const drawHeader = () => {
         doc.setFontSize(10);
@@ -5415,7 +5484,7 @@ function downloadPurchasesPDF() {
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Chez Barth-Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des achats du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     drawHeader();
@@ -5423,7 +5492,8 @@ function downloadPurchasesPDF() {
 
     for (let i = 0; i < filteredPurchases.length; i++) {
         const purchase = filteredPurchases[i];
-        const dateStr = new Date(purchase.date).toLocaleDateString('fr-FR');
+        const purchaseDate = new Date(purchase.date);
+        const dateStr = `${dayAbbreviations[purchaseDate.getDay()]} ${purchaseDate.toLocaleDateString('fr-FR')}`;
         const type = purchase.type;
         const payment = purchase.payment;
         const comment = purchase.comment || '';
@@ -5480,24 +5550,15 @@ function downloadPurchasesPDF() {
     printTotalRow('Par Espèce', totalsByPayment['Espèce'], 'green');
     printTotalRow('Total Général', totalTTC, 'black');
 
-  const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
-  const endStr = endDate.toLocaleDateString('fr-CA');
-
-
-  const fileName = 'Chez_Barth_Achats_${startStr}_au_${endStr}.pdf'; 
+    const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
+    const endStr = endDate.toLocaleDateString('fr-CA');
+    const fileName = `Chez_Barth_Achats_${startStr}_au_${endStr}.pdf`;
     doc.save(fileName);
 
     // Message de confirmation
     setTimeout(() => {
-    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
-
-    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
-    const blob = doc.output('blob');
-    const blobUrl = URL.createObjectURL(blob);
-    window.open(blobUrl, '_blank');
+        alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
-
-
 }
 
 
@@ -6449,9 +6510,10 @@ function printPersonnel() {
     const colWidths = showComments ? [28, 38, 28, 28, 28, 38] : [28, 38, 28, 28, 28];
     const rowHeight = 10;
     const tableX = margin;
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
 
     doc.setFontSize(12);
-    doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -6471,7 +6533,7 @@ function printPersonnel() {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -6488,7 +6550,9 @@ function printPersonnel() {
         const hourLabel = record.employee && record.employee.trim() !== '' 
             ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
             : '';
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(record.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        const recordDate = new Date(record.date);
+        const dateLabel = `${dayAbbreviations[recordDate.getDay()]} ${recordDate.toLocaleDateString('fr-FR')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateLabel, tableX + 2, y + 6);
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
@@ -6552,12 +6616,28 @@ function printPersonnel() {
 }
 
 function downloadPersonnelPDF() {
+    // Vérification des dépendances
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Erreur : La bibliothèque jsPDF n'est pas chargée.");
+        return;
+    }
+    if (!personnelRecords || !Array.isArray(personnelRecords)) {
+        alert("Erreur : Les données du personnel ne sont pas disponibles.");
+        return;
+    }
+
     const startDateInput = document.getElementById('personnelStartDate').value;
     const endDateInput = document.getElementById('personnelEndDate').value;
     const showComments = document.getElementById('showComments').checked;
 
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    // Vérification des dates valides
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Erreur : Dates invalides.");
+        return;
+    }
 
     const filteredRecords = personnelRecords.filter(record => {
         const recordDate = new Date(record.date);
@@ -6576,9 +6656,10 @@ function downloadPersonnelPDF() {
     const colWidths = showComments ? [28, 38, 28, 28, 28, 38] : [28, 38, 28, 28, 28];
     const rowHeight = 10;
     const tableX = margin;
+    const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
 
     doc.setFontSize(12);
-    doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -6588,8 +6669,10 @@ function downloadPersonnelPDF() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-    if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    if (showComments) {
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+        doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    }
     y += rowHeight;
 
     doc.setFont('helvetica', 'normal');
@@ -6598,7 +6681,7 @@ function downloadPersonnelPDF() {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Activité du personnel du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -6607,21 +6690,27 @@ function downloadPersonnelPDF() {
             doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
             doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-            if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            if (showComments) {
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+                doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            }
             y += rowHeight;
             doc.setFont('helvetica', 'normal');
         }
         const hourLabel = record.employee && record.employee.trim() !== '' 
             ? `${Math.floor(record.hours)}h${Math.round((record.hours - Math.floor(record.hours)) * 60).toString().padStart(2, '0')}` 
             : '';
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(record.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        const recordDate = new Date(record.date);
+        const dateLabel = `${dayAbbreviations[recordDate.getDay()]} ${recordDate.toLocaleDateString('fr-FR')}`;
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateLabel, tableX + 2, y + 6);
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee || '', tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-        if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+            doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        }
         y += rowHeight;
     });
 
@@ -6657,8 +6746,10 @@ function downloadPersonnelPDF() {
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-        if (showComments) doc.text(`${commentTotals[employee].toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+            doc.text(`${commentTotals[employee].toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        }
         y += rowHeight;
     });
 
@@ -6671,24 +6762,19 @@ function downloadPersonnelPDF() {
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(hourLabel, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); 
-        if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight);
+            doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        }
     }
 
-    const fileName = 'Activité_du_personnel_Chez_Barth.pdf'; 
+    const fileName = 'Activité_du_personnel_Chez_Barth.pdf';
     doc.save(fileName);
 
     // Message de confirmation
     setTimeout(() => {
-    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
-
-    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
-    const blob = doc.output('blob');
-    const blobUrl = URL.createObjectURL(blob);
-    window.open(blobUrl, '_blank');
+        alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
-
-
 }
 
 async function printPersonnelToBluetooth() {
@@ -6977,7 +7063,7 @@ function displayIndicatorsTable() {
 
         const currentDate = new Date();
         const currentYearMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
-        const isAfter15th = currentDate.getDate() >= 15;
+        const isAfter20th = currentDate.getDate() >= 20;
 
         const chartLabels = [];
         const coefVenteData = [];
@@ -6989,7 +7075,7 @@ function displayIndicatorsTable() {
         const cashRateData = [];
 
         Object.keys(monthlyPurchaseData).sort().forEach(key => {
-            if (key === currentYearMonth && !isAfter15th) return;
+            if (key === currentYearMonth && !isAfter20th) return;
             const [year, month] = key.split('-');
             const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
             const moisNomCourt = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'short' });
