@@ -3546,6 +3546,8 @@ function downloadRecipesPDF() {
     setTimeout(() => {
         alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
+
+ window.open(doc.output('bloburl'), '_blank');
 }
 
     // --- Facture ---
@@ -5598,6 +5600,8 @@ function downloadPurchasesPDF() {
     setTimeout(() => {
         alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
+
+ window.open(doc.output('bloburl'), '_blank');
 }
 
 
@@ -6881,6 +6885,8 @@ function downloadPersonnelPDF() {
     setTimeout(() => {
         alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
+
+ window.open(doc.output('bloburl'), '_blank');
 }
 
 async function printPersonnelToBluetooth() {
