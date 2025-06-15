@@ -3216,7 +3216,7 @@ function filterRecipes() {
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
                              (month === '04' && year === '2025') ? 0.85 : 
-                             (month === '05' && year === '2025') ? 0.80 : 0.80;
+                             (month === '05' && year === '2025') ? 0.80 : 0.70;
 
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
@@ -5203,7 +5203,7 @@ function filterPurchases() {
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
                              (month === '04' && year === '2025') ? 0.85 : 
-                             (month === '05' && year === '2025') ? 0.80 : 0.80;
+                             (month === '05' && year === '2025') ? 0.80 : 0.70;
 
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
@@ -7171,7 +7171,7 @@ function displayIndicatorsTable() {
                         <th>Mois</th>
                         <th>Coût de revient Panier Moyen</th>
                         <th>Prix de vente Panier Moy</th>
-                        <th>Coef de vente (objectif 2.8)</th>
+                        <th>Coef de vente (objectif 2.9)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -7202,7 +7202,7 @@ function displayIndicatorsTable() {
                          (month === '02' && year === '2025') ? 0.9 :
                          (month === '03' && year === '2025') ? 0.85 :
                          (month === '04' && year === '2025') ? 0.85 : 
-                         (month === '05' && year === '2025') ? 0.80 : 0.80;
+                         (month === '05' && year === '2025') ? 0.80 : 0.70;
 
             let panierJour = 0;
             if (joursTravailles > 0) {
@@ -7233,8 +7233,8 @@ function displayIndicatorsTable() {
             let coefClass = '';
             if (coefVente < 2.3) coefClass = 'coef-low';
             else if (coefVente >= 2.3 && coefVente <= 2.6) coefClass = 'coef-medium';
-            else if (coefVente > 2.6 && coefVente <= 2.8) coefClass = 'coef-high';
-            else if (coefVente > 2.8) coefClass = 'coef-champagne';
+            else if (coefVente > 2.6 && coefVente <= 2.9) coefClass = 'coef-high';
+            else if (coefVente > 2.9) coefClass = 'coef-champagne';
 
             tableHTML += `
                 <tr>
