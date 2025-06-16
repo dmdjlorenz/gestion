@@ -7636,7 +7636,7 @@ function showBilan() {
 
 
 
-function displayBilan() {
+function displayBilan() { 
     const startInput = document.getElementById("bilanStartDate").value || "2024-12-09";
     let endInput = document.getElementById("bilanEndDate").value;
 
@@ -7658,7 +7658,8 @@ function displayBilan() {
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    const showCurrentMonth = now.getDate() >= 20;
+    const currentDay = now.getDate();
+    const showCurrentMonth = now.getDate() >= 25;
 
     const monthNames = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
     const getLabel = (date) => `${monthNames[date.getMonth()]}-${date.getFullYear().toString().slice(-2)}`;
@@ -7737,7 +7738,23 @@ function displayBilan() {
         lignes["Achats"].push(ach);
 
         let ch = chargesMensuelles[lbl];
-        if (!ch) { ch = defaultCharges[lbl] || 2000; chargesMensuelles[lbl] = ch; }
+        if (ch == null) {
+            if (defaultCharges[lbl] != null) {
+                ch = defaultCharges[lbl];
+            } else {
+                const [year, month] = key.split("-").map(Number);
+                const daysInMonth = new Date(year, month, 0).getDate();
+
+                if (year === currentYear && month === currentMonth + 1) {
+                    // Mois en cours → prorata sur jours écoulés
+                    ch = Math.round(2000 * (currentDay / daysInMonth));
+                } else {
+                    ch = 2000;
+                }
+            }
+            chargesMensuelles[lbl] = ch;
+        }
+
         lignes["Charges"].push(
             `<input type="number" value="${ch}" data-month="${lbl}" onchange="updateCharge(this)" style="width:50px;"> €`
         );
@@ -7806,6 +7823,7 @@ function updateCharge(input) {
     localStorage.setItem("chargesMensuelles", JSON.stringify(ch));
     displayBilan();
 }
+
 
 
 // Mettre à jour l'écouteur popstate
