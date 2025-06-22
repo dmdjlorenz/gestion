@@ -3216,7 +3216,7 @@ function filterRecipes() {
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
                              (month === '04' && year === '2025') ? 0.85 : 
-                             (month === '05' && year === '2025') ? 0.80 : 0.70;
+                             (month === '05' && year === '2025') ? 0.80 : 0.90;
 
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
@@ -5203,7 +5203,7 @@ function filterPurchases() {
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
                              (month === '04' && year === '2025') ? 0.85 : 
-                             (month === '05' && year === '2025') ? 0.80 : 0.70;
+                             (month === '05' && year === '2025') ? 0.80 : 0.90;
 
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
@@ -7202,7 +7202,7 @@ function displayIndicatorsTable() {
                          (month === '02' && year === '2025') ? 0.9 :
                          (month === '03' && year === '2025') ? 0.85 :
                          (month === '04' && year === '2025') ? 0.85 : 
-                         (month === '05' && year === '2025') ? 0.80 : 0.70;
+                         (month === '05' && year === '2025') ? 0.80 : 0.90;
 
             let panierJour = 0;
             if (joursTravailles > 0) {
