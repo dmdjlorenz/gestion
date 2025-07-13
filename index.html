@@ -3216,7 +3216,8 @@ function filterRecipes() {
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
                              (month === '04' && year === '2025') ? 0.85 : 
-                             (month === '05' && year === '2025') ? 0.80 : 0.90;
+                             (month === '05' && year === '2025') ? 0.80 :
+                             (month === '06' && year === '2025') ? 0.90 : 0.70;
 
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
@@ -5203,7 +5204,8 @@ function filterPurchases() {
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
                              (month === '04' && year === '2025') ? 0.85 : 
-                             (month === '05' && year === '2025') ? 0.80 : 0.90;
+                             (month === '05' && year === '2025') ? 0.80 :
+                             (month === '06' && year === '2025') ? 0.90 : 0.70;
 
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
@@ -7198,11 +7200,12 @@ function displayIndicatorsTable() {
             const joursTravailles = monthlySalesData[key]?.activeDays || 0;
             const facteur = (month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025') ? 0.7 : 0.56;
             const coef = (month === '12' && year === '2024') ? 0.95 :
-                         (month === '01' && year === '2025') ? 0.96 :
-                         (month === '02' && year === '2025') ? 0.9 :
-                         (month === '03' && year === '2025') ? 0.85 :
-                         (month === '04' && year === '2025') ? 0.85 : 
-                         (month === '05' && year === '2025') ? 0.80 : 0.90;
+                             (month === '01' && year === '2025') ? 0.96 :
+                             (month === '02' && year === '2025') ? 0.90 :
+                             (month === '03' && year === '2025') ? 0.85 :
+                             (month === '04' && year === '2025') ? 0.85 : 
+                             (month === '05' && year === '2025') ? 0.80 :
+                             (month === '06' && year === '2025') ? 0.90 : 0.70;
 
             let panierJour = 0;
             if (joursTravailles > 0) {
