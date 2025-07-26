@@ -6364,12 +6364,13 @@ function updateMonthlyTable() {
         monthMinutes %= 60;
 
         monthlyTableRows += `
-            <tr style="font-weight: bold; background-color: #f0f0f0;">
-                <td>Total ${monthLabel}</td><td></td><td></td>
-                <td>${convertToHoursMinutes(monthHours + monthMinutes / 60)}</td>
-                ${showComments ? `<td>${monthComments ? Math.round(monthComments) : ''}</td>` : ''}
-                <td>${Math.round(monthEstimated)} €</td>
-            </tr>`;
+    <tr style="font-weight: bold; background-color: #f0f0f0;">
+        <td>Total ${monthLabel}</td><td></td><td></td>
+        <td>${convertToHoursMinutes(monthHours + monthMinutes / 60)}</td>
+        ${showComments ? `<td>${monthComments ? Math.round(monthComments) : ''}</td>` : ''}
+        <td>${Math.round(monthEstimated)} €</td>
+    </tr>
+    <tr style="height: 20px;"><td colspan="${showComments ? '6' : '5'}"></td></tr>`;
 
         grandTotalHours += monthHours;
         grandTotalMinutes += monthMinutes;
