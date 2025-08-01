@@ -6326,11 +6326,11 @@ function updateMonthlyTable() {
 
             let estimated;
             if (monthDate >= startConditionalDate && monthDate <= endConditionalDate) {
-                estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
+                estimated = Math.round(totalHoursDecimal * rate * 1.07 + comments);
             } else if (monthDate > endConditionalDate) {
-                estimated = Math.round(totalHoursDecimal * rate * 1.1);
+                estimated = Math.round(totalHoursDecimal * rate * 1.07);
             } else {
-                estimated = Math.round(totalHoursDecimal * rate * 1.1 + comments);
+                estimated = Math.round(totalHoursDecimal * rate * 1.07 + comments);
             }
 
             monthlyTableRows += `
