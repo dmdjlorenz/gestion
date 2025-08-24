@@ -3218,7 +3218,7 @@ function filterRecipes() {
                              (month === '04' && year === '2025') ? 0.85 : 
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
-                             (month === '07' && year === '2025') ? 0.62 : 0.75;
+                             (month === '07' && year === '2025') ? 0.62 : 0.87;
 
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
@@ -5207,7 +5207,7 @@ function filterPurchases() {
                              (month === '04' && year === '2025') ? 0.85 : 
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
-                             (month === '07' && year === '2025') ? 0.62 : 0.75;
+                             (month === '07' && year === '2025') ? 0.62 : 0.87;
 
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
@@ -7209,7 +7209,7 @@ function displayIndicatorsTable() {
                              (month === '04' && year === '2025') ? 0.85 : 
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
-                             (month === '07' && year === '2025') ? 0.62 : 0.75;
+                             (month === '07' && year === '2025') ? 0.62 : 0.87;
 
             let panierJour = 0;
             if (joursTravailles > 0) {
@@ -7426,10 +7426,10 @@ function displayIndicatorsTable() {
             new Chart(ctx, config);
         };
 
-        createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 1.5, 3.5, '#0000FF', 'line');
+        createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 2, 4, '#0000FF', 'line');
         createChart('coutReviensChart', 'Coût de revient Panier Moyen', coutReviensData, 'Coût de revient (€)', 3, 6, '#000000', 'line');
         createChart('prixVenteChart', 'Prix de vente Panier Moyen', prixVenteData, 'Prix de vente (€)', 8, 13, '#800080', 'line');
-        createChart('margeBruteChart', 'Marge Brute Panier Moyen', margeBruteData, 'Marge Brute (€)', 4, 8, '#8B4513', 'line');
+        createChart('margeBruteChart', 'Marge Brute Panier Moyen', margeBruteData, 'Marge Brute (€)', 4, 9, '#8B4513', 'line');
         createChart('caMensuelChart', 'Chiffre d\'affaire mensuel', caMensuelData, 'Chiffre d\'affaire (€)', 0, 30000, '#000066', 'bar');
         createChart('caParJourChart', 'Ventes par jour en moyenne', caParJourData, 'Ventes par jour (€)', 0, 1600, '#006600', 'bar');
         createChart('weekdayCaChart', 'CA moyen des jours de semaine', weekdayCaData, 'CA moyen (€)', 0, 1200, '#C71585', 'bar', joursSemaine);
