@@ -1980,6 +1980,14 @@ function filterRecipes() {
         <p>Régime fiscal/social :  Micro-entrepreneur</p>
       
         <p><strong>DONNEES D'ENTREE</strong> (à modifier si besoin) :  </p>
+        <div style="display: flex; align-items: center;">
+            <input type="checkbox" id="budgetAnnee0" name="budgetType" checked onclick="toggleBudgetType()">
+            <label for="budgetAnnee0" style="margin-right: 15px;">Budget année 0</label>
+            <input type="checkbox" id="budgetAnneesSuivantes" name="budgetType" onclick="toggleBudgetType()">
+            <label for="budgetAnneesSuivantes">Budget années suivantes</label>
+            <br><br>
+        </div>
+        
         <label for="prix">Prix de vente du panier moyen (€):</label>
         <input type="number" id="prix" value="10" oninput="calculerResultat()">
         
@@ -2007,7 +2015,7 @@ function filterRecipes() {
         <label for="charges">Charges annuelles d'électricité, gaz, eau, téléphone, assurance (€):</label>
         <input type="number" id="charges" value="3000" oninput="calculerResultat()">
         
-        <label for="externes">Charges annuelles externes (TPE, banque, commission CB, transport, entretien, honoraires, compta, pub, autres) (€):</label>
+        <label for="externes">Charges quanhuelles externes (TPE, banque, commission CB, transport, entretien, honoraires, compta, pub, autres) (€):</label>
         <input type="number" id="externes" value="10000" oninput="calculerResultat()">
         
         <label for="urssaf">Taux de cotisations sociales (12.415% reduit première année 6.2%) et impôt sur le revenu libératoire de 1% de Mathis et formation 0.3% (%):</label>
@@ -7892,6 +7900,27 @@ function showBudget() {
     calculerResultat(); // Calculer les résultats initiaux lors de l'affichage
 }
 
+// Fonction pour gérer la sélection des checkboxes
+function toggleBudgetType() {
+    var annee0 = document.getElementById('budgetAnnee0');
+    var anneesSuivantes = document.getElementById('budgetAnneesSuivantes');
+    var urssafInput = document.getElementById('urssaf');
+
+    // Assurer qu'une seule case est cochée
+    if (annee0.checked && anneesSuivantes.checked) {
+        if (event.target.id === 'budgetAnnee0') {
+            anneesSuivantes.checked = false;
+        } else {
+            annee0.checked = false;
+        }
+    }
+
+    // Mettre à jour le taux de cotisations sociales
+    urssafInput.value = anneesSuivantes.checked ? 13.715 : 7.5;
+
+    calculerResultat(); // Recalculer les résultats
+}
+
 function calculerResultat() {
     // Récupération des valeurs des inputs
     var prix = parseFloat(document.getElementById('prix').value);
@@ -7908,82 +7937,87 @@ function calculerResultat() {
     var tva = parseFloat(document.getElementById('tva').value) / 100;
     var apport = parseFloat(document.getElementById('apport').value);
 
-   // Calcul du chiffre d'affaires annuel
-var chiffreAffaires = prix * panier * jours * semaines;
+    // Calcul du chiffre d'affaires annuel
+    var chiffreAffaires = prix * panier * jours * semaines;
 
-// Calcul des charges fixes utilisées dans plusieurs calculs
-var loyerAnnuel = loyerMensuel * 12;
-var coutMatieres = cout * panier * jours * semaines;
+    // Calcul des charges fixes utilisées dans plusieurs calculs
+    var loyerAnnuel = loyerMensuel * 12;
+    var coutMatieres = cout * panier * jours * semaines;
 
-// Calcul de la TVA (à partir de 93500€ de CA)
-// TVA encaissée - TVA déductible sur achats (5,5%) - TVA déductible sur loyer/charges externes (20%)
-var tvaCalcul = (chiffreAffaires > 93500) ? 
-    (chiffreAffaires - 93500) * (
-        (tva / (1 + tva)) - 
-        (cout / prix) * (0.055 / (1 + 0.055)) - 
-        ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
-    ) 
-    : 0;
+    // Calcul de la TVA (condition selon le type de budget)
+    var isAnneesSuivantes = document.getElementById('budgetAnneesSuivantes').checked;
+    var tvaCalcul = isAnneesSuivantes ?
+        chiffreAffaires * (
+            (tva / (1 + tva)) - 
+            (cout / prix) * (0.055 / (1 + 0.055)) - 
+            ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+        ) :
+        (chiffreAffaires > 93500) ?
+        (chiffreAffaires - 93500) * (
+            (tva / (1 + tva)) - 
+            (cout / prix) * (0.055 / (1 + 0.055)) - 
+            ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+        ) : 0;
 
-// Calcul des charges de personnel (salaire brut annuel + charges patronales)
-var chargesPersonnel = salaire * 12 * (1 + patronales);
+    // Calcul des charges de personnel (salaire brut annuel + charges patronales)
+    var chargesPersonnel = salaire * 12 * (1 + patronales);
 
-// Calcul des charges d'exploitation
-var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
+    // Calcul des charges d'exploitation
+    var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
 
-// Calcul des charges sociales et impôts
-var chargesUrssaf = chiffreAffaires * urssaf;
+    // Calcul des charges sociales et impôts
+    var chargesUrssaf = chiffreAffaires * urssaf;
 
-// Calcul du bénéfice net
-var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
+    // Calcul du bénéfice net
+    var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
 
-// Calcul de l'amortissement annuel
-var amortissement = apport / 7;
+    // Calcul de l'amortissement annuel
+    var amortissement = apport / 7;
 
-// Calcul du résultat financier
-var resultatFinancier = beneficeNet - amortissement;
+    // Calcul du résultat financier
+    var resultatFinancier = beneficeNet - amortissement;
 
-// Calcul de la rentabilité économique minimum (Nb ventes pour bénéfice net > 0)
-var nbVentesEconomique = calculerRentabiliteMinimum('economique', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva);
+    // Calcul de la rentabilité économique minimum (Nb ventes pour bénéfice net > 0)
+    var nbVentesEconomique = calculerRentabiliteMinimum('economique', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva);
 
-// Calcul de la rentabilité financière minimum (Nb ventes pour résultat financier > 0)
-var nbVentesFinanciere = calculerRentabiliteMinimum('financiere', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
+    // Calcul de la rentabilité financière minimum (Nb ventes pour résultat financier > 0)
+    var nbVentesFinanciere = calculerRentabiliteMinimum('financiere', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
 
-// Affichage des résultats avec formatage et vérification des valeurs négatives
-var resultat = document.getElementById('resultat');
-var beneficeNetClass = beneficeNet < 0 ? 'negative' : '';
+    // Affichage des résultats avec formatage et vérification des valeurs négatives
+    var resultat = document.getElementById('resultat');
+    var beneficeNetClass = beneficeNet < 0 ? 'negative' : '';
 
-resultat.innerHTML = `
-    <p><strong>RESULTATS</strong> (calculés automatiquement) : </p>
-    <p><strong>   </p>
-    <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
-    <p><strong>   </p>
-    <p><strong>* CHIFFRE D'AFFAIRES ANNUEL: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
+    resultat.innerHTML = `
+        <p><strong>RESULTATS</strong> (calculés automatiquement) : </p>
+        <p><strong>   </p>
+        <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
+        <p><strong>   </p>
+        <p><strong>* CHIFFRE D'AFFAIRES ANNUEL: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
 
-    <ul>
-        <p>Détail charges annuelles d'exploitation:</p>
         <ul>
-            <li style="font-weight: normal;">Loyer :  ${loyerAnnuel.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Salaires et charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Achats alimentaires (Coût de revient matières): ${coutMatieres.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Charges externes (compta, pub, banque...): ${externes.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
+            <p>Détail charges annuelles d'exploitation:</p>
+            <ul>
+                <li style="font-weight: normal;">Loyer :  ${loyerAnnuel.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Salaires et charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Achats alimentaires (Coût de revient matières): ${coutMatieres.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Charges externes (compta, pub, banque...): ${externes.toFixed(0)} €</li>
+                <li style="font-weight: normal;">Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
+            </ul>
         </ul>
-    </ul>
-    <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (C)</strong></p>
-    <p><strong>* TVA-TVA déductible (si CA > 93500€): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
-    <p><strong>* Impôts Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
-    <p><strong>* BENEFICE NET ANNUEL: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
+        <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (C)</strong></p>
+        <p><strong>* TVA-TVA déductible: ${tvaCalcul.toFixed(0)} € (T)</strong></p>
+        <p><strong>* Impôts Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
+        <p><strong>* BENEFICE NET ANNUEL: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
 
-    <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
-    <p>  </p>`;
+        <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
+        <p>  </p>`;
 
-    
     // Appel pour calculer et afficher le tableau des bénéfices nets mensuels
     afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
 }
 
 function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva, amortissement = 0) {
+    var isAnneesSuivantes = document.getElementById('budgetAnneesSuivantes').checked;
     for (let i = 1; i <= 300; i++) {
         var chiffreAffaires = prix * i * jours * semaines;
         var chargesPersonnel = salaire * 12 * (1 + patronales);
@@ -7992,17 +8026,22 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
         var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
         var chargesUrssaf = chiffreAffaires * urssaf;
 
-        // Calcul de la TVA seulement si le chiffre d'affaires dépasse 85 000€
-        var tvaCalcul = 0;
-        if (chiffreAffaires > 93500) {
-            tvaCalcul = (chiffreAffaires - 93500) * (tva / (1 + tva) - (cout / prix) * (0.055 / (1 + 0.055)) - ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / 1 + 0.2));
-        }
+        // Calcul de la TVA selon le type de budget
+        var tvaCalcul = isAnneesSuivantes ?
+            chiffreAffaires * (
+                (tva / (1 + tva)) - 
+                (cout / prix) * (0.055 / (1 + 0.055)) - 
+                ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+            ) :
+            (chiffreAffaires > 93500) ?
+            (chiffreAffaires - 93500) * (
+                (tva / (1 + tva)) - 
+                (cout / prix) * (0.055 / (1 + 0.055)) - 
+                ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+            ) : 0;
 
         // Calcul du bénéfice net
         var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
-
-        // Affichage pour le débogage
-        console.log(`Iteration: ${i} | Chiffre d'affaires: ${chiffreAffaires} | TVA: ${tvaCalcul} | Bénéfice net: ${beneficeNet}`);
 
         // Vérification de la rentabilité en fonction du type
         if (type === 'economique' && beneficeNet >= 0) {
@@ -8030,28 +8069,30 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
     </tr>
     <tr>
         <td>Nombre de ventes journalières nécessaire</td>
-        ${calculerVentesPourBenefices(1000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
-        ${calculerVentesPourBenefices(2000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
-        ${calculerVentesPourBenefices(3000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
-        ${calculerVentesPourBenefices(4000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+        ${calculerVentesPourBenefices(1000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva)}
+        ${calculerVentesPourBenefices(2000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva)}
+        ${calculerVentesPourBenefices(3000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva)}
+        ${calculerVentesPourBenefices(4000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva)}
     </tr>`;
 }
 
-
-
-
-function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva) {
-    for (let i = 0; i <= 1000; i++) {
+function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva) {
+    var isAnneesSuivantes = document.getElementById('budgetAnneesSuivantes').checked;
+    var targetProfit = beneficeMensuel * 12;
+    
+    for (let i = 0; i <= 2000; i++) {
         var loyerAnnuel = loyerMensuel * 12;
         var chiffreAffaires = prix * i * jours * semaines;
 
-        var tvaCalcul = (chiffreAffaires > 93500) ?
-            (chiffreAffaires - 93500) * (
-                (tva / (1 + tva)) -
-                (cout / prix) * (0.055 / (1 + 0.055)) -
-                ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
-            ) :
-            0;
+        // Calcul des termes de TVA avec protection contre la division par zéro
+        var tvaTerms = (chiffreAffaires > 0) ?
+            ((tva / (1 + tva)) - 
+             (cout / prix) * (0.055 / (1 + 0.055)) - 
+             ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))) : 0;
+
+        var tvaCalcul = isAnneesSuivantes ?
+            chiffreAffaires * tvaTerms :
+            (chiffreAffaires > 93500) ? (chiffreAffaires - 93500) * tvaTerms : 0;
 
         var chargesPersonnel = salaire * 12 * (1 + patronales);
         var coutMatieres = cout * i * jours * semaines;
@@ -8059,10 +8100,17 @@ function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaine
         var chargesUrssaf = chiffreAffaires * urssaf;
         var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
 
-        if (beneficeNet >= (beneficeMensuel * 12)) {
+        // Debugging logs pour suivre les calculs
+        if (i % 100 === 0 || beneficeNet >= targetProfit) {
+            console.log(`i=${i}, CA=${chiffreAffaires.toFixed(2)}, tva=${tvaCalcul.toFixed(2)}, urssaf=${chargesUrssaf.toFixed(2)}, beneficeNet=${beneficeNet.toFixed(2)}, target=${targetProfit}`);
+        }
+
+        if (beneficeNet >= targetProfit) {
+            console.log(`Target atteint pour beneficeMensuel=${beneficeMensuel} à i=${i}, beneficeNet=${beneficeNet.toFixed(2)}`);
             return `<td>${i}</td>`;
         }
     }
+    console.log(`Target non atteint pour beneficeMensuel=${beneficeMensuel}, max i=2000`);
     return `<td>Non atteint</td>`;
 }
 
