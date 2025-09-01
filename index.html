@@ -7486,11 +7486,12 @@ function displayFiscalTable() {
         }
 
         // Paramètres fiscaux
-        const urssafRate = parseFloat(document.getElementById('urssaf')?.value || 22) / 100;
+        const today = new Date();
+        const urssafCutoffDate = new Date('2025-10-01');
+        const urssafRate = today < urssafCutoffDate ? 0.075 : 0.13715;
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
         // Set end date to today in DD/MM/YYYY format
-        const today = new Date();
         const todayFormatted = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
         endInput.value = endInput.value || todayFormatted; // Set to today if empty
 
