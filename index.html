@@ -3226,7 +3226,8 @@ function filterRecipes() {
                              (month === '04' && year === '2025') ? 0.85 : 
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
-                             (month === '07' && year === '2025') ? 0.62 : 0.87;
+                             (month === '07' && year === '2025') ? 0.62 :
+                             (month === '08' && year === '2025') ? 0.87 : 0.65;
 
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
@@ -5215,7 +5216,9 @@ function filterPurchases() {
                              (month === '04' && year === '2025') ? 0.85 : 
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
-                             (month === '07' && year === '2025') ? 0.62 : 0.87;
+                             (month === '07' && year === '2025') ? 0.62 :
+                             (month === '08' && year === '2025') ? 0.87 : 0.65;
+                             
 
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
@@ -7192,7 +7195,7 @@ function displayIndicatorsTable() {
 
         const currentDate = new Date();
         const currentYearMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
-        const isAfter10th = currentDate.getDate() >= 10;
+        const isAfter15th = currentDate.getDate() >= 15;
 
         const chartLabels = [];
         const coefVenteData = [];
@@ -7204,7 +7207,7 @@ function displayIndicatorsTable() {
         const cashRateData = [];
 
         Object.keys(monthlyPurchaseData).sort().forEach(key => {
-            if (key === currentYearMonth && !isAfter10th) return;
+            if (key === currentYearMonth && !isAfter15th) return;
             const [year, month] = key.split('-');
             const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
             const moisNomCourt = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'short' });
@@ -7217,7 +7220,9 @@ function displayIndicatorsTable() {
                              (month === '04' && year === '2025') ? 0.85 : 
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
-                             (month === '07' && year === '2025') ? 0.62 : 0.87;
+                             (month === '07' && year === '2025') ? 0.62 :
+                             (month === '08' && year === '2025') ? 0.87 : 0.65;
+                            
 
             let panierJour = 0;
             if (joursTravailles > 0) {
