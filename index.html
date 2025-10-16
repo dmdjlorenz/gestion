@@ -7493,7 +7493,7 @@ function displayFiscalTable() {
         // Paramètres fiscaux
         const today = new Date();
         const urssafCutoffDate = new Date('2025-10-01');
-        const urssafRate = today < urssafCutoffDate ? 0.075 : 0.13715;
+        const urssafRate = today < urssafCutoffDate ? 0.075 : 0.075;
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
         // Set end date to today in DD/MM/YYYY format
