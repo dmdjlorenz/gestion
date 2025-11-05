@@ -7493,7 +7493,6 @@ function displayFiscalTable() {
         // Paramètres fiscaux
         const today = new Date();
         const urssafCutoffDate = new Date('2025-10-01');
-        const urssafRate = today < urssafCutoffDate ? 0.075 : 0.075;
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
         // Set end date to today in DD/MM/YYYY format
@@ -7603,9 +7602,14 @@ function displayFiscalTable() {
 
         sortedKeys.forEach(key => {
             const [year, month] = key.split('-');
-            const moisNom = new Date(`${key}-01`).toLocaleDateString('fr-FR', { month: 'long' });
+            const moisDate = new Date(`${key}-01`);
+            const moisNom = moisDate.toLocaleDateString('fr-FR', { month: 'long' });
             const caAjuste = Math.round(monthlyData[key].caAjuste);
-            const urssaf = Math.round(caAjuste * urssafRate);
+
+            // ✅ Appliquer le taux selon la date du mois
+            const urssafRateForMonth = moisDate < urssafCutoffDate ? 0.075 : 0.13715;
+
+            const urssaf = Math.round(caAjuste * urssafRateForMonth);
             const tvaCollectee = Math.round(monthlyData[key].tvaCollectee);
             const tvaDeductible = Math.round(monthlyData[key].tvaDeductible);
             const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
@@ -7638,6 +7642,7 @@ function displayFiscalTable() {
         }
     }
 }
+
 
 function showBilan() {
     const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage', 'bilanPage'];
