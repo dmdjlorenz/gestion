@@ -1667,8 +1667,8 @@ function filterRecipes() {
 <div id="invoicePage" class="hidden">
     <h1>GESTION DES FACTURES CLIENTS</h1>
     <div class="checkbox-group">
-        <label class="first-label">CA inf à 93500€ <input type="checkbox" id="caBelow93500" onchange="toggleCA(this)"></label>
-        <label>CA sup à 93500€ <input type="checkbox" id="caAbove93500" onchange="toggleCA(this)" checked></label>
+        <label class="first-label">CA inf à 101000€ <input type="checkbox" id="caBelow101000" onchange="toggleCA(this)"></label>
+        <label>CA sup à 101000€ <input type="checkbox" id="caAbove101000" onchange="toggleCA(this)" checked></label>
     </div>
     <div class="dropdown">
     <button onclick="toggleDropdown('menuDropdown')">LA CARTE Chez BARTH</button>
@@ -2052,7 +2052,7 @@ let invoices = [];
 let invoiceCounter = 0;
 let order = [];
 let menu = [];
-let caBelow93500 = false; // Par défaut, CA supérieur à 93500€
+let caBelow101000 = false; // Par défaut, CA supérieur à 101000€
 let currentPaymentMethod = 'Non spécifié'; // Mode de paiement global pour la facture en cours
 let filteredPersonnelRecords = [];
 let selectedPersonnelRecord = null;
@@ -2193,10 +2193,10 @@ function showSettings() {
     }
 
 function updateMenuTvaRates() {
-    console.log('Dans updateMenuTvaRates, caBelow93500 =', caBelow93500);
+    console.log('Dans updateMenuTvaRates, caBelow101000 =', caBelow101000);
     menu.forEach(item => {
-        if (caBelow93500) {
-            // Si CA < 93500€, TVA à 0% pour tous les produits
+        if (caBelow101000) {
+            // Si CA < 101000€, TVA à 0% pour tous les produits
             item.tvaRate = 0;
             item.priceHT = item.priceTTC; // Pas de TVA, donc HT = TTC
         } else {
@@ -3227,7 +3227,8 @@ function filterRecipes() {
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
                              (month === '07' && year === '2025') ? 0.62 :
-                             (month === '08' && year === '2025') ? 0.87 : 0.6;
+                             (month === '08' && year === '2025') ? 0.87 :
+                             (month === '09' && year === '2025') ? 0.6 : 0.92;
 
                 panierJour = monthlyPurchaseData[key].Pain * coef / (jours * facteur);
             }
@@ -3608,29 +3609,29 @@ function downloadRecipesPDF() {
     
 
     function saveCAStatus() {
-        const caBelow = document.getElementById('caBelow93500').checked;
+        const caBelow = document.getElementById('caBelow101000').checked;
         localStorage.setItem('caStatus', caBelow ? 'below' : 'above');
     }
 
    function toggleCA(checkbox) {
-    const belowCheckbox = document.getElementById('caBelow93500');
-    const aboveCheckbox = document.getElementById('caAbove93500');
+    const belowCheckbox = document.getElementById('caBelow101000');
+    const aboveCheckbox = document.getElementById('caAbove101000');
 
     // S'assurer qu'une seule case est cochée à la fois
-    if (checkbox.id === 'caBelow93500' && checkbox.checked) {
+    if (checkbox.id === 'caBelow101000' && checkbox.checked) {
         aboveCheckbox.checked = false;
-        caBelow93500 = true;
-    } else if (checkbox.id === 'caAbove93500' && checkbox.checked) {
+        caBelow101000 = true;
+    } else if (checkbox.id === 'caAbove101000' && checkbox.checked) {
         belowCheckbox.checked = false;
-        caBelow93500 = false;
+        caBelow101000 = false;
     } else if (!belowCheckbox.checked && !aboveCheckbox.checked) {
-        // Si aucune case n'est cochée, on coche par défaut CA > 93500€
+        // Si aucune case n'est cochée, on coche par défaut CA > 101000€
         aboveCheckbox.checked = true;
-        caBelow93500 = false;
+        caBelow101000 = false;
     }
 
     // Sauvegarder l'état dans localStorage
-    localStorage.setItem('caBelow93500', JSON.stringify(caBelow93500));
+    localStorage.setItem('caBelow101000', JSON.stringify(caBelow101000));
 
     // Mettre à jour les taux de TVA et recalculer les prix
     updateMenuTvaRates();
@@ -3770,7 +3771,7 @@ function confirmAddProduct() {
     }
 
     // Calculer le prix HT selon le type et le statut CA
-    const tvaRate = caBelow93500 ? 0 : (type === "B" ? 0.055 : 0.1);
+    const tvaRate = caBelow101000 ? 0 : (type === "B" ? 0.055 : 0.1);
     const priceHT = priceTTC / (1 + tvaRate);
 
     const newProduct = {
@@ -3845,7 +3846,7 @@ function updateOrderList() {
     const orderList = document.getElementById('orderList');
     const orderTotal = document.getElementById('orderTotal');
     const invoiceHeader = document.getElementById('invoiceHeader');
-    const caBelow = document.getElementById('caBelow93500').checked;
+    const caBelow = document.getElementById('caBelow101000').checked;
     const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
     const lineHeightOrderList = "normal"; 
@@ -3975,7 +3976,7 @@ function saveInvoice() {
     invoiceCounter++;
     const invoiceNumber = invoiceCounter;
     const timestamp = new Date().toISOString();
-    const caBelow = document.getElementById('caBelow93500').checked;
+    const caBelow = document.getElementById('caBelow101000').checked;
     const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
     let totalHT = 0;
@@ -4118,7 +4119,7 @@ function sendInvoiceBySms() {
     smsText += "SIRET: " + preventAutoLink("93253222900014") + "\n";
     smsText += "APE: 56.10C\nEntreprise Individuelle\n\n";
 
-    const caBelow = document.getElementById('caBelow93500').checked;
+    const caBelow = document.getElementById('caBelow101000').checked;
     smsText += `Fact N° ${invoiceCounter} du ${formattedDate}\n`;
     if (customerName) {
         smsText += `Client : ${customerName}\n`;
@@ -4180,7 +4181,7 @@ function sendInvoiceBySms() {
 
 
 function sendInvoiceByEmail() {
-    const caBelow = document.getElementById('caBelow93500').checked;
+    const caBelow = document.getElementById('caBelow101000').checked;
     const customerName = document.getElementById('customerNameInput') ? document.getElementById('customerNameInput').value.trim() : '';
 
     let totalHT = 0;
@@ -4246,7 +4247,7 @@ async function printToBluetoothThermal() {
 
         const customerNameInput = document.getElementById('customerNameInput');
         const customerName = customerNameInput ? customerNameInput.value.trim() : '';
-        const caBelow = document.getElementById('caBelow93500').checked;
+        const caBelow = document.getElementById('caBelow101000').checked;
         const date = new Date().toLocaleDateString('fr-FR');
 
         let text = "";
@@ -5217,7 +5218,8 @@ function filterPurchases() {
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
                              (month === '07' && year === '2025') ? 0.62 :
-                             (month === '08' && year === '2025') ? 0.87 : 0.6;
+                             (month === '08' && year === '2025') ? 0.87 :
+                             (month === '09' && year === '2025') ? 0.6 : 0.92;
                              
 
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
@@ -7221,7 +7223,8 @@ function displayIndicatorsTable() {
                              (month === '05' && year === '2025') ? 0.80 :
                              (month === '06' && year === '2025') ? 0.90 : 
                              (month === '07' && year === '2025') ? 0.62 :
-                             (month === '08' && year === '2025') ? 0.87 : 0.6;
+                             (month === '08' && year === '2025') ? 0.87 :
+                             (month === '09' && year === '2025') ? 0.6 : 0.92;
                             
 
             let panierJour = 0;
@@ -7558,7 +7561,7 @@ function displayFiscalTable() {
         const sortedKeys = Object.keys(monthlyData).sort();
         sortedKeys.forEach(key => {
             cumulativeCA += monthlyData[key].caAjuste;
-            monthlyData[key].tvaExoneree = cumulativeCA <= 93500 ? 'Oui' : 'Non';
+            monthlyData[key].tvaExoneree = cumulativeCA <= 101000 ? 'Oui' : 'Non';
         });
 
         // Générer le tableau
@@ -7963,8 +7966,8 @@ function calculerResultat() {
             (cout / prix) * (0.055 / (1 + 0.055)) - 
             ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
         ) :
-        (chiffreAffaires > 93500) ?
-        (chiffreAffaires - 93500) * (
+        (chiffreAffaires > 101000) ?
+        (chiffreAffaires - 101000) * (
             (tva / (1 + tva)) - 
             (cout / prix) * (0.055 / (1 + 0.055)) - 
             ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
@@ -8044,8 +8047,8 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
                 (cout / prix) * (0.055 / (1 + 0.055)) - 
                 ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
             ) :
-            (chiffreAffaires > 93500) ?
-            (chiffreAffaires - 93500) * (
+            (chiffreAffaires > 101000) ?
+            (chiffreAffaires - 101000) * (
                 (tva / (1 + tva)) - 
                 (cout / prix) * (0.055 / (1 + 0.055)) - 
                 ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
@@ -8103,7 +8106,7 @@ function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaine
 
         var tvaCalcul = isAnneesSuivantes ?
             chiffreAffaires * tvaTerms :
-            (chiffreAffaires > 93500) ? (chiffreAffaires - 93500) * tvaTerms : 0;
+            (chiffreAffaires > 101000) ? (chiffreAffaires - 101000) * tvaTerms : 0;
 
         var chargesPersonnel = salaire * 12 * (1 + patronales);
         var coutMatieres = cout * i * jours * semaines;
