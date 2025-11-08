@@ -7630,31 +7630,29 @@ function displayFiscalTable() {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 width: 100%;
-                text-align: center;
                 margin: 0 auto;
             ">
-                <div style="display: inline-block; min-width: 100%;">
-                    <table style="
-                        border-collapse: collapse;
-                        width: max-content;
-                        margin: 0 auto;
-                    ">
-                        <thead>
-                            <tr>
-                                <th>Mois</th>
-                                <th>CA TTC</th>  
-                                <th>CA HT à déclarer</th>
-                                <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
-                                <th>Achats HT à TVA 20%</th>
-                                <th>TVA déductible 20%</th>
-                                <th>Achats HT à TVA 5.5%</th>
-                                <th>TVA déductible 5.5%</th>
-                                <th>TVA collectée</th>
-                                <th>TVA déductible</th>
-                                <th style="background-color: #FF6666;">TVA à payer</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <table style="
+                    border-collapse: collapse;
+                    width: max-content !important;
+                    margin: 0 auto;
+                ">
+                    <thead>
+                        <tr>
+                            <th>Mois</th>
+                            <th>CA TTC</th>  
+                            <th>CA HT à déclarer</th>
+                            <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
+                            <th>Achats HT à TVA 20%</th>
+                            <th>TVA déductible 20%</th>
+                            <th>Achats HT à TVA 5.5%</th>
+                            <th>TVA déductible 5.5%</th>
+                            <th>TVA collectée</th>
+                            <th>TVA déductible</th>
+                            <th style="background-color: #FF6666;">TVA à payer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
 
         sortedKeys.forEach(key => {
@@ -7699,9 +7697,8 @@ function displayFiscalTable() {
         });
 
         tableHTML += `
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
             </div>
         `;
         tableContainer.innerHTML = tableHTML;
@@ -7714,7 +7711,6 @@ function displayFiscalTable() {
         }
     }
 }
-
 
 
 
