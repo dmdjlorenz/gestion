@@ -7479,7 +7479,7 @@ function displayFiscalTable() {
             return;
         }
 
-        // Charger les données
+        // Charger les données (inchangé)
         let salesData = {};
         let purchases = [];
         let invoices = [];
@@ -7493,20 +7493,19 @@ function displayFiscalTable() {
             return;
         }
 
-        // Paramètres fiscaux
+        // Paramètres fiscaux (inchangé)
         const today = new Date();
         const urssafCutoffDate = new Date('2025-10-01');
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
 
-        // Set end date to today in DD/MM/YYYY format
+        // Set end date to today in DD/MM/YYYY format (inchangé)
         const todayFormatted = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
-        endInput.value = endInput.value || todayFormatted; // Set to today if empty
+        endInput.value = endInput.value || todayFormatted;
 
-        // Dates de filtrage
+        // Dates de filtrage (inchangé)
         const start = startInput.value;
         const end = endInput.value;
 
-        // Parse DD/MM/YYYY format
         const parseDate = (dateStr) => {
             if (!dateStr) return null;
             const [day, month, year] = dateStr.split('/').map(Number);
@@ -7522,118 +7521,163 @@ function displayFiscalTable() {
             return;
         }
 
-        // Agréger les données par mois, aligné avec filterRecipes
+        // Agréger les données par mois (inchangé pour sales)
         const monthlyData = {};
         Object.keys(salesData).forEach(dateKey => {
             const date = new Date(dateKey);
             if (date >= startDate && date <= endDate) {
                 const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                 if (!monthlyData[key]) {
-                    monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
+                    monthlyData[key] = { 
+                        caTTC: 0,  
+                        caHT: 0,   
+                        tvaCollectee: 0, 
+                        tvaDeductible: 0, 
+                        achatsHT_5_5: 0, 
+                        tvaDed_5_5: 0, 
+                        achatsHT_20: 0, 
+                        tvaDed_20: 0, 
+                        purchases: [], 
+                        days: 0 
+                    };
                 }
-                monthlyData[key].ca += salesData[dateKey].total || 0;
-                monthlyData[key].caAjuste += (salesData[dateKey].card || 0) + (salesData[dateKey].cash || 0) / 2;
+                monthlyData[key].caTTC += (salesData[dateKey].card || 0) + (salesData[dateKey].cash || 0) / 2;  
                 monthlyData[key].days += 1;
             }
         });
 
-        // Achats (TVA déductible)
+        // Achats (TVA déductible) : inchangé
         purchases.forEach(p => {
             const date = new Date(p.date);
             if (date >= startDate && date <= endDate) {
                 const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                 if (!monthlyData[key]) {
-                    monthlyData[key] = { ca: 0, caAjuste: 0, tvaCollectee: 0, tvaDeductible: 0, purchases: [], days: 0 };
+                    monthlyData[key] = { 
+                        caTTC: 0, 
+                        caHT: 0, 
+                        tvaCollectee: 0, 
+                        tvaDeductible: 0, 
+                        achatsHT_5_5: 0, 
+                        tvaDed_5_5: 0, 
+                        achatsHT_20: 0, 
+                        tvaDed_20: 0, 
+                        purchases: [], 
+                        days: 0 
+                    };
                 }
                 monthlyData[key].purchases.push(p);
-                const tvaRatePurchase = (p.type === 'Pain' || p.type === 'Alimentaire') ? 0.055 : 0.2;
-                monthlyData[key].tvaDeductible += p.amountTTC * (tvaRatePurchase / (1 + tvaRatePurchase));
+
+                if (p.type === 'Pain' || p.type === 'Alimentaire') {
+                    const ht = p.amountTTC / 1.055;
+                    const tva = ht * 0.055;
+                    monthlyData[key].achatsHT_5_5 += ht;
+                    monthlyData[key].tvaDed_5_5 += tva;
+                } else {
+                    const ht = p.amountTTC / 1.2;
+                    const tva = ht * 0.2;
+                    monthlyData[key].achatsHT_20 += ht;
+                    monthlyData[key].tvaDed_20 += tva;
+                }
+
+                monthlyData[key].tvaDeductible = monthlyData[key].tvaDed_5_5 + monthlyData[key].tvaDed_20;
             }
         });
 
-        // TVA collectée basée sur CA ajusté
-        Object.keys(monthlyData).forEach(key => {
-            monthlyData[key].tvaCollectee = monthlyData[key].caAjuste * (tvaRate / (1 + tvaRate));
-        });
-
-        // Calculer le CA cumulé pour vérifier l'exonération TVA
-        let cumulativeCA = 0;
+        // Calcul du CA HT basé sur le cumul du CA TTC (inchangé)
+        let cumulativeCATTC = 0;
         const sortedKeys = Object.keys(monthlyData).sort();
         sortedKeys.forEach(key => {
-            cumulativeCA += monthlyData[key].caAjuste;
-            monthlyData[key].tvaExoneree = cumulativeCA <= 101000 ? 'Oui' : 'Non';
+            cumulativeCATTC += monthlyData[key].caTTC;
+            if (cumulativeCATTC <= 101000) {
+                monthlyData[key].caHT = monthlyData[key].caTTC;  
+            } else {
+                monthlyData[key].caHT = monthlyData[key].caTTC / (1 + tvaRate);  
+            }
         });
 
-        // Générer le tableau
+        // Calcul du cumul CA HT pour la coloration
+        let cumulativeCAHT = 0;
+        sortedKeys.forEach(key => {
+            cumulativeCAHT += monthlyData[key].caHT;
+            monthlyData[key].cumulCAHT = cumulativeCAHT;  // Stocker pour utilisation dans l'affichage
+        });
+
+        // TVA collectée corrigée : 0.1 * CA HT (tvaRate * caHT)
+        Object.keys(monthlyData).forEach(key => {
+            monthlyData[key].tvaCollectee = monthlyData[key].caHT * tvaRate;
+        });
+
+        // Générer le tableau (suppression de .crossed)
         let tableHTML = `
             <style>
-                .crossed {
-                    position: relative;
-                    text-align: center;
-                }
-                .crossed::before,
-                .crossed::after {
-                    content: '';
-                    position: absolute;
-                    background-color: black;
-                    width: 50%;
-                    height: 1px;
-                    left: 20%;
-                    top: 50%;
-                }
-                .crossed::before {
-                    transform: rotate(45deg);
-                }
-                .crossed::after {
-                    transform: rotate(-45deg);
-                }
+                /* Suppression de .crossed */
             </style>
             <h3>Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mois</th>
-                        <th>CA à déclarer</th>
-                        <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
-                        <th>TVA collectée</th>
-                        <th>TVA déductible</th>
-                        <th style="background-color: #FF6666;">TVA à payer</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mois</th>
+                            <th>CA TTC</th>  
+                            <th>CA HT à déclarer</th>
+                            <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
+                            <th>Achats HT à TVA 20%</th>
+                            <th>TVA déductible 20%</th>
+                            <th>Achats HT à TVA 5.5%</th>
+                            <th>TVA déductible 5.5%</th>
+                            <th>TVA collectée</th>
+                            <th>TVA déductible</th>
+                            <th style="background-color: #FF6666;">TVA à payer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
 
         sortedKeys.forEach(key => {
             const [year, month] = key.split('-');
             const moisDate = new Date(`${key}-01`);
             const moisNom = moisDate.toLocaleDateString('fr-FR', { month: 'long' });
-            const caAjuste = Math.round(monthlyData[key].caAjuste);
+            const caTTC = Math.round(monthlyData[key].caTTC);
+            const caHT = Math.round(monthlyData[key].caHT);
 
-            // ✅ Appliquer le taux selon la date du mois
+            // URSSAF : basé sur CA HT (inchangé)
             const urssafRateForMonth = moisDate < urssafCutoffDate ? 0.075 : 0.13715;
+            const urssaf = Math.round(caHT * urssafRateForMonth);
 
-            const urssaf = Math.round(caAjuste * urssafRateForMonth);
+            const achatsHT_20 = Math.round(monthlyData[key].achatsHT_20);
+            const tvaDed_20 = Math.round(monthlyData[key].tvaDed_20);
+            const achatsHT_5_5 = Math.round(monthlyData[key].achatsHT_5_5);
+            const tvaDed_5_5 = Math.round(monthlyData[key].tvaDed_5_5);
+
             const tvaCollectee = Math.round(monthlyData[key].tvaCollectee);
             const tvaDeductible = Math.round(monthlyData[key].tvaDeductible);
             const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
-            const isExoneree = monthlyData[key].tvaExoneree === 'Oui';
-            const tvaCellClass = isExoneree ? 'crossed' : '';
+
+            // Coloration pour TVA à payer
+            const isBelowThreshold = monthlyData[key].cumulCAHT < 101000;
+            const tvaPayerBgColor = isBelowThreshold ? 'gray' : '#FF6666';
 
             tableHTML += `
                 <tr>
                     <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
-                    <td>${caAjuste}€</td>
+                    <td>${caTTC}€</td>
+                    <td>${caHT}€</td>
                     <td style="background-color: #FF6666; font-weight: bold;">${urssaf}€</td>
+                    <td>${achatsHT_20}€</td>
+                    <td>${tvaDed_20}€</td>
+                    <td>${achatsHT_5_5}€</td>
+                    <td>${tvaDed_5_5}€</td>
                     <td>${tvaCollectee}€</td>
                     <td>${tvaDeductible}€</td>
-                    <td style="background-color: #FF6666; font-weight: bold;" class="${tvaCellClass}">${tvaAPayer}€</td>
+                    <td style="background-color: ${tvaPayerBgColor}; font-weight: bold;">${tvaAPayer}€</td>
                 </tr>
             `;
         });
 
         tableHTML += `
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         `;
         tableContainer.innerHTML = tableHTML;
 
@@ -7665,10 +7709,9 @@ function showBilan() {
 
 
 
-function displayBilan() { 
+function displayBilan() {
     const startInput = document.getElementById("bilanStartDate").value || "2024-12-09";
     let endInput = document.getElementById("bilanEndDate").value;
-
     if (!endInput) {
         const now = new Date();
         const parisOffsetMinutes = 120;
@@ -7676,23 +7719,19 @@ function displayBilan() {
         endInput = parisTime.toISOString().split("T")[0];
         document.getElementById("bilanEndDate").value = endInput;
     }
-
     const startDate = new Date(startInput + "T00:00:00");
     const endDate = new Date(endInput + "T23:59:59");
     if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
         document.getElementById("bilanTable").innerHTML = "<p>Erreur : Dates invalides</p>";
         return;
     }
-
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
     const currentDay = now.getDate();
     const showCurrentMonth = now.getDate() >= 25;
-
     const monthNames = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
     const getLabel = (date) => `${monthNames[date.getMonth()]}-${date.getFullYear().toString().slice(-2)}`;
-
     const monthLabels = [], monthKeys = [];
     let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
     while (currentDate <= endDate) {
@@ -7704,24 +7743,20 @@ function displayBilan() {
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
     monthLabels.push("CUMUL");
-
     const defaultCharges = {
         "déc-24": 1925, "janv-25": 2372, "févr-25": 1952,
         "mars-25": 1908, "avr-25": 2092, "mai-25": 2000
     };
-
     let chargesMensuelles = JSON.parse(localStorage.getItem("chargesMensuelles") || "{}");
     const sales = JSON.parse(localStorage.getItem("salesData") || "{}");
     const purchases = JSON.parse(localStorage.getItem("purchases") || "[]");
     const personnelMensuel = JSON.parse(localStorage.getItem("personnelTotalMensuel") || "{}");
-
     const lignes = {
         "Chiffre d'affaire TTC": [], "Achats": [], "Charges": [],
         "Personnel": [], "Impôt et Urssaf": [], "TVA": [],
         "Bénéfice Net": [], "Rentabilité %": []
     };
     let totalCA = 0, totalNet = 0;
-
     const fiscalUrssafData = {}, fiscalTvaData = {};
     const tbl = document.getElementById("fiscalTable");
     if (tbl) {
@@ -7732,22 +7767,20 @@ function displayBilan() {
         };
         tbl.querySelectorAll("tr").forEach(row => {
             const c = row.querySelectorAll("td");
-            if (c.length >= 6) {
+            if (c.length >= 11) {  // Adjusted for new column count (11 columns)
                 const parts = c[0].innerText.trim().split(" ");
                 const ml = parts[0].toLowerCase(), yy = parts[1]?.slice(-2);
                 const lbl = ml in monthMap && yy ? `${monthMap[ml]}-${yy}` : null;
                 if (!lbl) return;
-                fiscalUrssafData[lbl] = parseInt(c[2].innerText.replace(/\D/g, "")) || 0;
-                fiscalTvaData[lbl] = c[5].classList.contains("crossed")
+                fiscalUrssafData[lbl] = parseInt(c[3].innerText.replace(/\D/g, "")) || 0;  // Changed from c[2] to c[3]
+                fiscalTvaData[lbl] = c[10].style.backgroundColor === 'gray'  // Changed condition from .crossed to background gray
                     ? 0
-                    : parseInt(c[5].innerText.replace(/\D/g, "")) || 0;
+                    : parseInt(c[10].innerText.replace(/\D/g, "")) || 0;  // Changed from c[5] to c[10]
             }
         });
     }
-
     monthLabels.slice(0, -1).forEach((lbl, i) => {
         const key = monthKeys[i];
-
         let ca = 0;
         for (const [d, val] of Object.entries(sales)) {
             if (d.startsWith(key)) ca += parseFloat(val.total || 0);
@@ -7755,7 +7788,6 @@ function displayBilan() {
         ca = Math.round(ca);
         totalCA += ca;
         lignes["Chiffre d'affaire TTC"].push(ca);
-
         let ach = 0;
         if (lbl === "déc-24") {
             ach = 2184;
@@ -7765,7 +7797,6 @@ function displayBilan() {
             ach = Math.round(ach);
         }
         lignes["Achats"].push(ach);
-
         let ch = chargesMensuelles[lbl];
         if (ch == null) {
             if (defaultCharges[lbl] != null) {
@@ -7773,7 +7804,6 @@ function displayBilan() {
             } else {
                 const [year, month] = key.split("-").map(Number);
                 const daysInMonth = new Date(year, month, 0).getDate();
-
                 if (year === currentYear && month === currentMonth + 1) {
                     // Mois en cours → prorata sur jours écoulés
                     ch = Math.round(2000 * (currentDay / daysInMonth));
@@ -7783,31 +7813,24 @@ function displayBilan() {
             }
             chargesMensuelles[lbl] = ch;
         }
-
         lignes["Charges"].push(
             `<input type="number" value="${ch}" data-month="${lbl}" onchange="updateCharge(this)" style="width:50px;"> €`
         );
-
         const pers = Math.round(personnelMensuel[lbl] || 0);
         lignes["Personnel"].push(pers);
-
         const ur = fiscalUrssafData[lbl] || 0;
         lignes["Impôt et Urssaf"].push(ur);
-
         const tv = fiscalTvaData[lbl] || 0;
         lignes["TVA"].push(tv);
-
         const net = ca - ach - ch - pers - ur - tv;
         totalNet += net;
         lignes["Bénéfice Net"].push(net);
         lignes["Rentabilité %"].push(ca > 0 ? Math.round((net / ca) * 100) : 0);
     });
-
     const cumCharges = monthLabels.slice(0, -1).reduce((sum, lbl, i) => {
         const html = lignes["Charges"][i];
         return sum + (parseInt(html.match(/value="(\d+)"/)?.[1]) || 0);
     }, 0);
-
     lignes["Chiffre d'affaire TTC"].push(totalCA);
     lignes["Achats"].push(lignes["Achats"].reduce((a, b) => a + b, 0));
     lignes["Charges"].push(`${cumCharges} `);
@@ -7816,16 +7839,13 @@ function displayBilan() {
     lignes["TVA"].push(lignes["TVA"].reduce((a, b) => a + b, 0));
     lignes["Bénéfice Net"].push(totalNet);
     lignes["Rentabilité %"].push(totalCA > 0 ? Math.round((totalNet / totalCA) * 100) : 0);
-
     localStorage.setItem("chargesMensuelles", JSON.stringify(chargesMensuelles));
-
     let html = `<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;"><thead><tr><th style="position:sticky;left:0;background:white;border:1px solid #ddd;"></th>`;
     monthLabels.forEach((m, i) => {
         const isCumul = m === "CUMUL" ? 'background-color:#f0f0f0;' : '';
         html += `<th style="border:1px solid #ddd;${isCumul}">${m}</th>`;
     });
     html += `</tr></thead><tbody>`;
-
     for (const [label, vals] of Object.entries(lignes)) {
         const bold = (label === "Chiffre d'affaire TTC" || label === "Bénéfice Net") ? "font-weight:bold;" : "";
         html += `<tr><td style="position:sticky;left:0;background:white;border:1px solid #ddd;${bold}">${label}</td>`;
@@ -7839,7 +7859,6 @@ function displayBilan() {
         });
         html += `</tr>`;
     }
-
     html += `</tbody></table></div>`;
     document.getElementById("bilanTable").innerHTML = html;
 }
