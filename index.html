@@ -7610,11 +7610,11 @@ function displayFiscalTable() {
         // Générer le tableau (suppression de .crossed)
         let tableHTML = `
             <style>
-                /* Suppression de .crossed */
+                /* suppression de .crossed */
             </style>
-            <h3>Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
-            <div style="overflow-x: auto;">
-                <table>
+            <h3 style="text-align: center;">Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
+            <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; max-width: 100%; margin: 0 auto; text-align: center;">
+                <table style="margin: 0 auto; border-collapse: collapse; width: auto; min-width: 100%;">
                     <thead>
                         <tr>
                             <th>Mois</th>
