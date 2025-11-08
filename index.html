@@ -1091,7 +1091,8 @@ table {
     color: #333;
 }
 #fiscalPage table {
-    width: 100%;
+    width: auto;
+    min-width: 0;
     border-collapse: collapse;
     margin-top: 20px;
 }
@@ -1105,6 +1106,9 @@ table {
     background-color: #ccc;
     color: #333;
 }
+
+#fiscalTable { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
+
 @media (max-width: 480px) {
     #fiscalPage {
         padding: 12px;
@@ -1390,7 +1394,27 @@ table {
         page-break-after: auto;
     }
 }
+@media (max-width: 480px) {
+    #fiscalPage table th,
+    #fiscalPage table td {
+        font-size: 14px !important;
+        padding: 6px;
+        white-space: nowrap;
+    }
+}
 
+#fiscalTable::-webkit-scrollbar {
+    height: 8px;
+}
+
+#fiscalTable::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+#fiscalTable::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
 
     </style>
     <link rel="manifest" href="manifest.json">
@@ -7626,17 +7650,8 @@ function displayFiscalTable() {
                 }
             </style>
             <h3 style="text-align: center;">Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
-            <div style="
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                width: 100%;
-                margin: 0 auto;
-            ">
-                <table style="
-                    border-collapse: collapse;
-                    width: max-content !important;
-                    margin: 0 auto;
-                ">
+            <div style="overflow-x: auto;">
+                <table style="border-collapse: collapse; width: 100%;">
                     <thead>
                         <tr>
                             <th>Mois</th>
@@ -7711,7 +7726,6 @@ function displayFiscalTable() {
         }
     }
 }
-
 
 
 function showBilan() {
