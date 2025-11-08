@@ -7607,30 +7607,54 @@ function displayFiscalTable() {
             monthlyData[key].tvaCollectee = monthlyData[key].caHT * tvaRate;
         });
 
-        // Générer le tableau (suppression de .crossed)
+        // Générer le tableau avec correction du centrage, défilement et colonne figée
         let tableHTML = `
             <style>
-                /* suppression de .crossed */
+                th, td {
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    white-space: nowrap;
+                }
+                th:first-child, td:first-child {
+                    position: sticky;
+                    left: 0;
+                    background: #f8f8f8;
+                    z-index: 2;
+                }
+                thead th:first-child {
+                    z-index: 3;
+                }
             </style>
             <h3 style="text-align: center;">Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
-            <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; max-width: 100%; margin: 0 auto; text-align: center;">
-                <table style="margin: 0 auto; border-collapse: collapse; width: auto; min-width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Mois</th>
-                            <th>CA TTC</th>  
-                            <th>CA HT à déclarer</th>
-                            <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
-                            <th>Achats HT à TVA 20%</th>
-                            <th>TVA déductible 20%</th>
-                            <th>Achats HT à TVA 5.5%</th>
-                            <th>TVA déductible 5.5%</th>
-                            <th>TVA collectée</th>
-                            <th>TVA déductible</th>
-                            <th style="background-color: #FF6666;">TVA à payer</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <div style="
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
+                text-align: center;
+                margin: 0 auto;
+            ">
+                <div style="display: inline-block; min-width: 100%;">
+                    <table style="
+                        border-collapse: collapse;
+                        width: max-content;
+                        margin: 0 auto;
+                    ">
+                        <thead>
+                            <tr>
+                                <th>Mois</th>
+                                <th>CA TTC</th>  
+                                <th>CA HT à déclarer</th>
+                                <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
+                                <th>Achats HT à TVA 20%</th>
+                                <th>TVA déductible 20%</th>
+                                <th>Achats HT à TVA 5.5%</th>
+                                <th>TVA déductible 5.5%</th>
+                                <th>TVA collectée</th>
+                                <th>TVA déductible</th>
+                                <th style="background-color: #FF6666;">TVA à payer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
         `;
 
         sortedKeys.forEach(key => {
@@ -7675,8 +7699,9 @@ function displayFiscalTable() {
         });
 
         tableHTML += `
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         `;
         tableContainer.innerHTML = tableHTML;
@@ -7689,6 +7714,8 @@ function displayFiscalTable() {
         }
     }
 }
+
+
 
 
 function showBilan() {
