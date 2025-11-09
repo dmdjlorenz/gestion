@@ -2044,14 +2044,25 @@ function filterRecipes() {
         <p>Statut Juridique : Entreprise Individuelle</p>
         <p>Régime fiscal/social :  Micro-entrepreneur</p>
       
-        <p><strong>DONNEES D'ENTREE</strong> (à modifier si besoin) :  </p>
-        <div style="display: flex; align-items: center;">
-            <input type="checkbox" id="budgetAnnee0" name="budgetType" checked onclick="toggleBudgetType()">
-            <label for="budgetAnnee0" style="margin-right: 15px;">Budget année 0</label>
-            <input type="checkbox" id="budgetAnneesSuivantes" name="budgetType" onclick="toggleBudgetType()">
-            <label for="budgetAnneesSuivantes">Budget années suivantes</label>
-            <br><br>
-        </div>
+       <p><strong>DONNÉES D'ENTRÉE</strong> (à modifier si besoin) :</p>
+
+<div style="display: flex; flex-direction: column; align-items: flex-start;">
+  <label style="display: inline-flex; align-items: center; gap: 1px;">
+    <span>Budget année 0</span>
+    <input type="checkbox" id="budgetAnnee0" name="budgetType" checked onclick="toggleBudgetType()">
+  </label>
+
+  <label style="display: inline-flex; align-items: center; gap: 1px; margin-top: 4px;">
+    <span>Budget années suivantes</span>
+    <input type="checkbox" id="budgetAnneesSuivantes" name="budgetType" onclick="toggleBudgetType()">
+  </label>
+</div>
+
+
+
+
+
+
         
         <label for="prix">Prix de vente du panier moyen (€):</label>
         <input type="number" id="prix" value="10" oninput="calculerResultat()">
