@@ -1444,11 +1444,11 @@ table {
     margin-bottom: 12px;
 }
 
-#indicatorsPage {
+/*#indicatorsPage {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
-}
+}*/
 
 
     </style>
@@ -7668,14 +7668,9 @@ function displayFiscalTable() {
 
 let tableHTML = `
     <style>
-        html, body {
-            width: 100%;
-            overflow-x: hidden; /* ✅ Empêche le débordement global */
-            margin: 0;
-            padding: 0;
-        }
+        /* ✅ Tout le style fiscal est maintenant isolé dans #fiscalTableContainer */
 
-        #fiscalTable {
+        #fiscalTableContainer {
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -7683,14 +7678,14 @@ let tableHTML = `
             box-sizing: border-box;
         }
 
-        h3 {
+        #fiscalTableContainer h3 {
             text-align: center;
             margin-bottom: 10px;
             padding: 0 10px;
             box-sizing: border-box;
         }
 
-        .table-container {
+        #fiscalTableContainer .table-container {
             width: 100%;
             overflow-x: auto; /* ✅ Scroll horizontal si nécessaire */
             -webkit-overflow-scrolling: touch;
@@ -7698,7 +7693,7 @@ let tableHTML = `
             padding: 0 5px; /* évite les coupures sur les bords */
         }
 
-        table {
+        #fiscalTableContainer table {
             border-collapse: collapse;
             margin: 0 auto;
             width: 100%;
@@ -7707,47 +7702,50 @@ let tableHTML = `
             box-sizing: border-box;
         }
 
-        th, td {
+        #fiscalTableContainer th,
+        #fiscalTableContainer td {
             padding: 6px;
             border: 1px solid #ccc;
             text-align: center;
         }
 
-        th {
+        #fiscalTableContainer th {
             white-space: nowrap; /* ✅ garde lisible les entêtes sans casser la mise en page */
         }
 
-/* ✅ Nouvelle règle pour figer la colonne "Mois" */
-        td:first-child, th:first-child {
+        /* ✅ Colonne "Mois" figée */
+        #fiscalTableContainer td:first-child,
+        #fiscalTableContainer th:first-child {
             position: sticky;
             left: 0;
             background: white;
             z-index: 2; /* s’assure qu’elle reste au-dessus des autres colonnes */
             box-shadow: 2px 0 2px rgba(0,0,0,0.1); /* petite ombre pour la lisibilité */
         }
-
     </style>
 
-    <h3>Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Mois</th>
-                    <th>CA TTC</th>  
-                    <th>CA HT à déclarer</th>
-                    <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
-                    <th>Achats HT à TVA 20%</th>
-                    <th>TVA déductible 20%</th>
-                    <th>Achats HT à TVA 5.5%</th>
-                    <th>TVA déductible 5.5%</th>
-                    <th>TVA collectée</th>
-                    <th>TVA déductible</th>
-                    <th style="background-color: #FF6666;">TVA à payer</th>
-                </tr>
-            </thead>
-            <tbody>
+    <div id="fiscalTableContainer">
+        <h3>Taxes et Impôts du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mois</th>
+                        <th>CA TTC</th>  
+                        <th>CA HT à déclarer</th>
+                        <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
+                        <th>Achats HT à TVA 20%</th>
+                        <th>TVA déductible 20%</th>
+                        <th>Achats HT à TVA 5.5%</th>
+                        <th>TVA déductible 5.5%</th>
+                        <th>TVA collectée</th>
+                        <th>TVA déductible</th>
+                        <th style="background-color: #FF6666;">TVA à payer</th>
+                    </tr>
+                </thead>
+                <tbody>
 `;
+
 
 
 
