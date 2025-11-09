@@ -3257,9 +3257,9 @@ function filterRecipes() {
                 <th style="width: 80px;">Nb Jours travaillés</th>
                 <th style="width: 80px;">Nb Paniers/J</th>
                 <th>Prix Vente Panier Moy</th>
-                <th style="width: 120px; background-color: #e0e0e0;">CA/mois à déclarer</th>
+                <th style="width: 120px; background-color: #e0e0e0;">CA TTC/mois retenu</th>
                 <th style="width: 120px; background-color: #e0e0e0;">TVA collectée à déclarer</th>
-                <th style="width: 120px; background-color: #e0e0e0;">Impôt et Urssaf</th>
+               
             </tr>
         `;
         summaryTable.appendChild(summaryThead);
@@ -3305,7 +3305,7 @@ function filterRecipes() {
             if (isBeforeOct2025) {
                 impotUrssaf = caAjuste * 0.075;
             } else {
-                impotUrssaf = caAjuste * 0.13715;
+                impotUrssaf = caAjuste * 0.13715 / 1.1;
             }
 
             const row = document.createElement('tr');
@@ -3319,7 +3319,7 @@ function filterRecipes() {
                 <td>${prixPanierJour.toFixed(2)}€</td>
                 <td style="background-color: #e0e0e0;">${Math.round(caAjuste)}€</td>
                 <td style="background-color: #e0e0e0;">${Math.round(tvaCollecteeDeclarer)} €</td>
-                <td style="background-color: #e0e0e0;">${Math.round(impotUrssaf)}€</td>
+             
             `;
             summaryTbody.appendChild(row);
         }
