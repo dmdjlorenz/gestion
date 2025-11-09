@@ -7148,6 +7148,7 @@ function showIndicators() {
     history.pushState({ page: 'indicatorsPage' }, '', '#indicators');
 }
 
+
 function displayIndicatorsTable() {
     try {
         const tableContainer = document.getElementById('indicatorsTable');
@@ -7160,7 +7161,6 @@ function displayIndicatorsTable() {
             }
             return;
         }
-
         if (!startInput.value) {
             const defaultStartDate = new Date('2024-12-01');
             startInput.value = defaultStartDate.toISOString().split('T')[0];
@@ -7169,7 +7169,6 @@ function displayIndicatorsTable() {
             const defaultEndDate = new Date();
             endInput.value = defaultEndDate.toISOString().split('T')[0];
         }
-
         const updateTable = () => {
             displayIndicatorsTable();
         };
@@ -7177,13 +7176,11 @@ function displayIndicatorsTable() {
         endInput.removeEventListener('input', updateTable);
         startInput.addEventListener('input', updateTable);
         endInput.addEventListener('input', updateTable);
-
         if (!salesData) {
             console.error('salesData non défini');
             tableContainer.innerHTML = '<p>Erreur : Données de ventes non disponibles.</p>';
             return;
         }
-
         const start = startInput.value;
         const end = endInput.value;
         const startDate = start ? new Date(start) : new Date('2024-12-01');
@@ -7195,7 +7192,6 @@ function displayIndicatorsTable() {
             tableContainer.innerHTML = '<p>Erreur : Dates invalides.</p>';
             return;
         }
-
         let purchases = [];
         try {
             const storedPurchases = localStorage.getItem('purchases');
@@ -7207,7 +7203,6 @@ function displayIndicatorsTable() {
             tableContainer.innerHTML = '<p>Erreur lors du chargement des achats.</p>';
             return;
         }
-
         const monthlyPurchaseData = {};
         purchases.forEach(p => {
             const date = new Date(p.date);
@@ -7221,7 +7216,6 @@ function displayIndicatorsTable() {
             if (p.type === 'Alimentaire') monthlyPurchaseData[key].Alimentaire += p.amountTTC;
             if (p.type === 'Pain') monthlyPurchaseData[key].joursPain.add(p.date);
         });
-
         const monthlySalesData = {};
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             const year = d.getFullYear();
@@ -7239,7 +7233,6 @@ function displayIndicatorsTable() {
                 monthlySalesData[monthKey].activeDays += 1;
             }
         }
-
         let tableHTML = `
             <h3>Indicateurs du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
             <table>
@@ -7253,11 +7246,9 @@ function displayIndicatorsTable() {
                 </thead>
                 <tbody>
         `;
-
         const currentDate = new Date();
         const currentYearMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
         const isAfter15th = currentDate.getDate() >= 15;
-
         const chartLabels = [];
         const coefVenteData = [];
         const coutReviensData = [];
@@ -7266,7 +7257,6 @@ function displayIndicatorsTable() {
         const caMensuelData = [];
         const caParJourData = [];
         const cashRateData = [];
-
         Object.keys(monthlyPurchaseData).sort().forEach(key => {
             if (key === currentYearMonth && !isAfter15th) return;
             const [year, month] = key.split('-');
@@ -7278,46 +7268,36 @@ function displayIndicatorsTable() {
                              (month === '01' && year === '2025') ? 0.96 :
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
-                             (month === '04' && year === '2025') ? 0.85 : 
+                             (month === '04' && year === '2025') ? 0.85 :
                              (month === '05' && year === '2025') ? 0.80 :
-                             (month === '06' && year === '2025') ? 0.90 : 
+                             (month === '06' && year === '2025') ? 0.90 :
                              (month === '07' && year === '2025') ? 0.62 :
                              (month === '08' && year === '2025') ? 0.87 :
                              (month === '09' && year === '2025') ? 0.6 : 0.92;
-                            
-
+                           
             let panierJour = 0;
             if (joursTravailles > 0) {
                 panierJour = monthlyPurchaseData[key].Pain * coef / (joursTravailles * facteur);
             }
-
             const totalAlimentaireArrondi = Math.round(monthlyPurchaseData[key].Alimentaire);
             const totalPainArrondi = Math.round(monthlyPurchaseData[key].Pain);
             const panierJourArrondi = Math.round(panierJour);
-
             let coutReviensPanierJour = 0;
             const denominateur = joursTravailles * panierJourArrondi;
             if (denominateur > 0) {
                 coutReviensPanierJour = (totalAlimentaireArrondi + totalPainArrondi) / denominateur;
             }
-
             const ca = monthlySalesData[key]?.total || 0;
             const caParJour = joursTravailles > 0 ? Math.round(ca / joursTravailles) : 0;
-
             const prixPanierJour = (joursTravailles > 0 && panierJourArrondi > 0) ? (caParJour / panierJourArrondi) : 0;
-
             const coefVente = prixPanierJour > 0 && coutReviensPanierJour > 0 ? (prixPanierJour / coutReviensPanierJour).toFixed(1) : 0;
-
             const margeBrute = prixPanierJour > 0 && coutReviensPanierJour > 0 ? (prixPanierJour - coutReviensPanierJour) : 0;
-
             const cashRate = ca > 0 ? Math.round(monthlySalesData[key].cash / ca * 100) : 0;
-
             let coefClass = '';
             if (coefVente < 2.3) coefClass = 'coef-low';
             else if (coefVente >= 2.3 && coefVente <= 2.6) coefClass = 'coef-medium';
             else if (coefVente > 2.6 && coefVente <= 3) coefClass = 'coef-high';
             else if (coefVente > 3) coefClass = 'coef-champagne';
-
             tableHTML += `
                 <tr>
                     <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
@@ -7326,7 +7306,6 @@ function displayIndicatorsTable() {
                     <td class="${coefClass}"><strong>${coefVente}</strong></td>
                 </tr>
             `;
-
             chartLabels.push(`${moisNomCourt} ${year}`);
             coefVenteData.push(parseFloat(coefVente));
             coutReviensData.push(Number(coutReviensPanierJour.toFixed(2)));
@@ -7336,13 +7315,11 @@ function displayIndicatorsTable() {
             caParJourData.push(caParJour);
             cashRateData.push(cashRate);
         });
-
         tableHTML += `
                 </tbody>
             </table>
         `;
         tableContainer.innerHTML = tableHTML;
-
         const joursSemaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
         const caParJourSemaine = Array(7).fill(0).map(() => ({ total: 0, count: 0 }));
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
@@ -7356,19 +7333,31 @@ function displayIndicatorsTable() {
                 caParJourSemaine[dayIndex].count += 1;
             }
         }
-
         const weekdayCaData = caParJourSemaine.map(day => day.count > 0 ? Math.round(day.total / day.count) : 0);
-
         const createChart = (canvasId, label, data, yAxisTitle, yMin, yMax, color, type = 'line', labels = chartLabels) => {
             const canvas = document.getElementById(canvasId);
             if (!canvas) {
                 console.warn(`Canvas ${canvasId} non trouvé, graphique non affiché`);
                 return;
             }
-
             const existingChart = Chart.getChart(canvasId);
             if (existingChart) existingChart.destroy();
-
+            let wrapper = canvas.parentElement;
+            if (!wrapper.classList.contains('chart-wrapper')) {
+                wrapper = document.createElement('div');
+                wrapper.className = 'chart-wrapper';
+                wrapper.style.width = '100%';
+                wrapper.style.overflowX = 'auto';
+                wrapper.style.overflowY = 'hidden';
+                canvas.parentNode.insertBefore(wrapper, canvas);
+                wrapper.appendChild(canvas);
+            }
+            const minWidthPerLabel = type === 'bar' ? 80 : 60;
+            const chartWidth = Math.max(400, labels.length * minWidthPerLabel);
+            canvas.setAttribute('width', chartWidth);
+            canvas.setAttribute('height', 400);
+            canvas.style.width = `${chartWidth}px`;
+            canvas.style.height = '400px';
             const ctx = canvas.getContext('2d');
             const config = {
                 type: type,
@@ -7387,7 +7376,8 @@ function displayIndicatorsTable() {
                     }]
                 },
                 options: {
-                    responsive: true,
+                    responsive: false,
+                    maintainAspectRatio: false,
                     layout: {
                         padding: {
                             left: 5
@@ -7477,7 +7467,6 @@ function displayIndicatorsTable() {
                     }
                 }]
             };
-
             if (canvasId === 'coefVenteChart') {
                 config.plugins.push({
                     id: 'backgroundZones',
@@ -7485,22 +7474,17 @@ function displayIndicatorsTable() {
                         const { ctx, chartArea, scales } = chart;
                         const { top, bottom } = chartArea;
                         const { y } = scales;
-
                         ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
                         ctx.fillRect(chartArea.left, y.getPixelForValue(2.2), chartArea.right - chartArea.left, bottom - y.getPixelForValue(2.2));
-
                         ctx.fillStyle = 'rgba(255, 165, 0, 0.3)';
                         ctx.fillRect(chartArea.left, y.getPixelForValue(2.5), chartArea.right - chartArea.left, y.getPixelForValue(2.2) - y.getPixelForValue(2.5));
-
                         ctx.fillStyle = 'rgba(0, 128, 0, 0.3)';
                         ctx.fillRect(chartArea.left, top, chartArea.right - chartArea.left, y.getPixelForValue(2.5) - top);
                     }
                 });
             }
-
             new Chart(ctx, config);
         };
-
         createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 2, 4, '#0000FF', 'line');
         createChart('coutReviensChart', 'Coût de revient Panier Moyen', coutReviensData, 'Coût de revient (€)', 3, 6, '#000000', 'line');
         createChart('prixVenteChart', 'Prix de vente Panier Moyen', prixVenteData, 'Prix de vente (€)', 8, 13, '#800080', 'line');
@@ -7509,7 +7493,6 @@ function displayIndicatorsTable() {
         createChart('caParJourChart', 'Ventes par jour en moyenne', caParJourData, 'Ventes par jour (€)', 0, 1600, '#006600', 'bar');
         createChart('weekdayCaChart', 'CA moyen des jours de semaine', weekdayCaData, 'CA moyen (€)', 0, 1200, '#C71585', 'bar', joursSemaine);
         createChart('cashRateChart', 'Taux de cash', cashRateData, 'Taux de cash (%)', 10, 40, '#FF4500', 'line');
-
     } catch (error) {
         console.error('Erreur dans displayIndicatorsTable:', error);
         const tableContainer = document.getElementById('indicatorsTable');
@@ -7518,6 +7501,9 @@ function displayIndicatorsTable() {
         }
     }
 }
+
+
+
 
 function showFiscal() {
     const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage' , 'bilanPage'];
