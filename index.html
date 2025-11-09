@@ -8210,7 +8210,7 @@ function calculerResultat() {
     var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
 
     // Calcul des charges sociales et impôts
-    var chargesUrssaf = chiffreAffaires * urssaf;
+    var chargesUrssaf = chiffreAffaires * urssaf / 1.1;
 
     // Calcul du bénéfice net
     var beneficeNet = chiffreAffaires - (chargesExploitation + tvaCalcul + chargesUrssaf);
@@ -8236,7 +8236,7 @@ function calculerResultat() {
         <p><strong>   </p>
         <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
         <p><strong>   </p>
-        <p><strong>* CHIFFRE D'AFFAIRES ANNUEL: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
+        <p><strong>* CHIFFRE D'AFFAIRES ANNUEL TTC: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
 
         <ul>
             <p>Détail charges annuelles d'exploitation:</p>
@@ -8249,8 +8249,8 @@ function calculerResultat() {
             </ul>
         </ul>
         <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (C)</strong></p>
-        <p><strong>* TVA-TVA déductible: ${tvaCalcul.toFixed(0)} € (T)</strong></p>
-        <p><strong>* Impôts Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
+        <p><strong>* TVA : ${tvaCalcul.toFixed(0)} € (T)</strong></p>
+        <p><strong>* Impôts Urssaf Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
         <p><strong>* BENEFICE NET ANNUEL: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
 
         <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
@@ -8268,7 +8268,7 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
         var loyerAnnuel = loyerMensuel * 12;
         var coutMatieres = cout * i * jours * semaines;
         var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
-        var chargesUrssaf = chiffreAffaires * urssaf;
+        var chargesUrssaf = chiffreAffaires * urssaf / 1.1;
 
         // Calcul de la TVA selon le type de budget
         var tvaCalcul = isAnneesSuivantes ?
