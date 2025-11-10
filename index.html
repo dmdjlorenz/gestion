@@ -8194,13 +8194,15 @@ function calculerResultat() {
         chiffreAffaires * (
             (tva / (1 + tva)) - 
             (cout / prix) * (0.055 / (1 + 0.055)) - 
-            ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+           /* ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2)) */
+              ((charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
         ) :
         (chiffreAffaires > 101000) ?
         (chiffreAffaires - 101000) * (
             (tva / (1 + tva)) - 
             (cout / prix) * (0.055 / (1 + 0.055)) - 
-            ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+         /*   ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2)) */
+              ((charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
         ) : 0;
 
     // Calcul des charges de personnel (salaire brut annuel + charges patronales)
@@ -8275,13 +8277,15 @@ function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMens
             chiffreAffaires * (
                 (tva / (1 + tva)) - 
                 (cout / prix) * (0.055 / (1 + 0.055)) - 
-                ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+              /*  ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2)) */
+                  ((charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
             ) :
             (chiffreAffaires > 101000) ?
             (chiffreAffaires - 101000) * (
                 (tva / (1 + tva)) - 
                 (cout / prix) * (0.055 / (1 + 0.055)) - 
-                ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
+               /* ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2)) */
+                  ((charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))
             ) : 0;
 
         // Calcul du bénéfice net
@@ -8332,8 +8336,8 @@ function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaine
         var tvaTerms = (chiffreAffaires > 0) ?
             ((tva / (1 + tva)) - 
              (cout / prix) * (0.055 / (1 + 0.055)) - 
-             ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))) : 0;
-
+           /*  ((loyerAnnuel + charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))) : 0; */
+               ((charges + externes) / chiffreAffaires) * (0.2 / (1 + 0.2))) : 0;
         var tvaCalcul = isAnneesSuivantes ?
             chiffreAffaires * tvaTerms :
             (chiffreAffaires > 101000) ? (chiffreAffaires - 101000) * tvaTerms : 0;
