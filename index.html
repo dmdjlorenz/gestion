@@ -7273,7 +7273,7 @@ function displayIndicatorsTable() {
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth();
         const currentDay = currentDate.getDate();
-        const showCurrentMonth = currentDate.getDate() >= 25;
+        const showCurrentMonth = currentDate.getDate() >= 15;
         const chartLabels = [];
         const coefVenteData = [];
         const coutReviensData = [];
@@ -7300,15 +7300,15 @@ function displayIndicatorsTable() {
             };
             tbl.querySelectorAll("tr").forEach(row => {
                 const c = row.querySelectorAll("td");
-                if (c.length >= 11) {
+                if (c.length >= 12) {
                     const parts = c[0].innerText.trim().split(" ");
                     const ml = parts[0].toLowerCase(), yy = parts[1]?.slice(-2);
                     const lbl = ml in monthMap && yy ? `${monthMap[ml]}-${yy}` : null;
                     if (!lbl) return;
-                    fiscalUrssafData[lbl] = parseInt(c[3].innerText.replace(/\D/g, "")) || 0;
-                    fiscalTvaData[lbl] = c[10].style.backgroundColor === 'gray'
+                    fiscalUrssafData[lbl] = parseInt(c[3].innerText.replace(/[^\d-]/g, "")) || 0;
+                    fiscalTvaData[lbl] = c[11].style.backgroundColor === 'gray'
                         ? 0
-                        : parseInt(c[10].innerText.replace(/\D/g, "")) || 0;
+                        : parseInt(c[11].innerText.replace(/[^\d-]/g, "")) || 0;
                 }
             });
         }
@@ -7353,7 +7353,7 @@ function displayIndicatorsTable() {
                              (month === '07' && year === '2025') ? 0.62 :
                              (month === '08' && year === '2025') ? 0.87 :
                              (month === '09' && year === '2025') ? 0.6 : 0.92;
-                          
+                         
             let panierJour = 0;
             if (joursTravailles > 0) {
                 panierJour = monthlyPurchaseData[key].Pain * coef / (joursTravailles * facteur);
@@ -7631,7 +7631,6 @@ function displayFiscalTable() {
             tableContainer.innerHTML = '<p>Erreur : Éléments de la page introuvables.</p>';
             return;
         }
-
         // Charger les données (inchangé)
         let salesData = {};
         let purchases = [];
@@ -7645,81 +7644,97 @@ function displayFiscalTable() {
             tableContainer.innerHTML = '<p>Erreur lors du chargement des données.</p>';
             return;
         }
-
         // Paramètres fiscaux (inchangé)
         const today = new Date();
         const urssafCutoffDate = new Date('2025-10-01');
         const tvaRate = parseFloat(document.getElementById('tva')?.value || 10) / 100;
-
         // Set end date to today in DD/MM/YYYY format (inchangé)
         const todayFormatted = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
         endInput.value = endInput.value || todayFormatted;
-
         // Dates de filtrage (inchangé)
         const start = startInput.value;
         const end = endInput.value;
-
         const parseDate = (dateStr) => {
             if (!dateStr) return null;
             const [day, month, year] = dateStr.split('/').map(Number);
             return new Date(year, month - 1, day);
         };
-
         const startDate = start ? parseDate(start) : parseDate('09/12/2024');
         const endDate = end ? parseDate(end) : today;
-
         if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
             tableContainer.innerHTML = '<p>Erreur : Dates invalides.</p>';
             alert('La date de début doit être antérieure à la date de fin.');
             return;
         }
-
         // Agréger les données par mois (inchangé pour sales)
         const monthlyData = {};
+        let current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+        while (current <= endDate) {
+            const key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+            if (!monthlyData[key]) {
+                monthlyData[key] = {
+                    caTTC: 0,
+                    caHT: 0,
+                    tvaCollectee: 0,
+                    tvaDeductible: 0,
+                    achatsHT_5_5: 0,
+                    tvaDed_5_5: 0,
+                    achatsHT_20: 0,
+                    tvaDed_20: 0,
+                    purchases: [],
+                    days: 0,
+                    charges: 0,
+                    chargesHT_20: 0
+                };
+            }
+            current.setMonth(current.getMonth() + 1);
+        }
         Object.keys(salesData).forEach(dateKey => {
             const date = new Date(dateKey);
             if (date >= startDate && date <= endDate) {
                 const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                 if (!monthlyData[key]) {
-                    monthlyData[key] = { 
-                        caTTC: 0,  
-                        caHT: 0,   
-                        tvaCollectee: 0, 
-                        tvaDeductible: 0, 
-                        achatsHT_5_5: 0, 
-                        tvaDed_5_5: 0, 
-                        achatsHT_20: 0, 
-                        tvaDed_20: 0, 
-                        purchases: [], 
-                        days: 0 
+                    monthlyData[key] = {
+                        caTTC: 0,
+                        caHT: 0,
+                        tvaCollectee: 0,
+                        tvaDeductible: 0,
+                        achatsHT_5_5: 0,
+                        tvaDed_5_5: 0,
+                        achatsHT_20: 0,
+                        tvaDed_20: 0,
+                        purchases: [],
+                        days: 0,
+                        charges: 0,
+                        chargesHT_20: 0
                     };
                 }
-                monthlyData[key].caTTC += (salesData[dateKey].card || 0) + (salesData[dateKey].cash || 0) / 2;  
+                monthlyData[key].caTTC += (salesData[dateKey].card || 0) + (salesData[dateKey].cash || 0) / 2;
                 monthlyData[key].days += 1;
             }
         });
-
         // Achats (TVA déductible) : inchangé
         purchases.forEach(p => {
             const date = new Date(p.date);
             if (date >= startDate && date <= endDate) {
                 const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                 if (!monthlyData[key]) {
-                    monthlyData[key] = { 
-                        caTTC: 0, 
-                        caHT: 0, 
-                        tvaCollectee: 0, 
-                        tvaDeductible: 0, 
-                        achatsHT_5_5: 0, 
-                        tvaDed_5_5: 0, 
-                        achatsHT_20: 0, 
-                        tvaDed_20: 0, 
-                        purchases: [], 
-                        days: 0 
+                    monthlyData[key] = {
+                        caTTC: 0,
+                        caHT: 0,
+                        tvaCollectee: 0,
+                        tvaDeductible: 0,
+                        achatsHT_5_5: 0,
+                        tvaDed_5_5: 0,
+                        achatsHT_20: 0,
+                        tvaDed_20: 0,
+                        purchases: [],
+                        days: 0,
+                        charges: 0,
+                        chargesHT_20: 0
                     };
                 }
                 monthlyData[key].purchases.push(p);
-
                 if (p.type === 'Pain' || p.type === 'Alimentaire') {
                     const ht = p.amountTTC / 1.055;
                     const tva = ht * 0.055;
@@ -7731,39 +7746,66 @@ function displayFiscalTable() {
                     monthlyData[key].achatsHT_20 += ht;
                     monthlyData[key].tvaDed_20 += tva;
                 }
-
                 monthlyData[key].tvaDeductible = monthlyData[key].tvaDed_5_5 + monthlyData[key].tvaDed_20;
             }
         });
-
+        const defaultCharges = {
+            "déc-24": 1925, "janv-25": 2372, "févr-25": 1952,
+            "mars-25": 1908, "avr-25": 2092, "mai-25": 2000
+        };
+        let chargesMensuelles = JSON.parse(localStorage.getItem("chargesMensuelles") || "{}");
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        const currentDay = now.getDate();
+        const monthNames = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
+        const sortedKeys = Object.keys(monthlyData).sort();
+        sortedKeys.forEach(key => {
+            const moisDate = new Date(`${key}-01`);
+            const lbl = `${monthNames[moisDate.getMonth()]}-${moisDate.getFullYear().toString().slice(-2)}`;
+            let ch = chargesMensuelles[lbl];
+            if (ch == null) {
+                if (defaultCharges[lbl] != null) {
+                    ch = defaultCharges[lbl];
+                } else {
+                    const daysInMonth = new Date(moisDate.getFullYear(), moisDate.getMonth() + 1, 0).getDate();
+                    if (moisDate.getFullYear() === currentYear && moisDate.getMonth() === currentMonth) {
+                        ch = Math.round(2000 * (currentDay / daysInMonth));
+                    } else {
+                        ch = 2000;
+                    }
+                }
+            }
+            monthlyData[key].charges = ch;
+            const chargesHT_20 = (ch - 1100) / 1.2;
+            monthlyData[key].chargesHT_20 = chargesHT_20;
+            const tvaDed_charges = chargesHT_20 * 0.2;
+            monthlyData[key].tvaDed_20 += tvaDed_charges;
+            monthlyData[key].tvaDeductible = monthlyData[key].tvaDed_5_5 + monthlyData[key].tvaDed_20;
+        });
         // Calcul du CA HT basé sur le cumul du CA TTC (inchangé)
         let cumulativeCATTC = 0;
-        const sortedKeys = Object.keys(monthlyData).sort();
         sortedKeys.forEach(key => {
             cumulativeCATTC += monthlyData[key].caTTC;
             if (cumulativeCATTC <= 101000) {
-                monthlyData[key].caHT = monthlyData[key].caTTC;  
+                monthlyData[key].caHT = monthlyData[key].caTTC;
             } else {
-                monthlyData[key].caHT = monthlyData[key].caTTC / (1 + tvaRate);  
+                monthlyData[key].caHT = monthlyData[key].caTTC / (1 + tvaRate);
             }
         });
-
         // Calcul du cumul CA HT pour la coloration
         let cumulativeCAHT = 0;
         sortedKeys.forEach(key => {
             cumulativeCAHT += monthlyData[key].caHT;
-            monthlyData[key].cumulCAHT = cumulativeCAHT;  // Stocker pour utilisation dans l'affichage
+            monthlyData[key].cumulCAHT = cumulativeCAHT; // Stocker pour utilisation dans l'affichage
         });
-
         // TVA collectée corrigée : 0.1 * CA HT (tvaRate * caHT)
         Object.keys(monthlyData).forEach(key => {
             monthlyData[key].tvaCollectee = monthlyData[key].caHT * tvaRate;
         });
-
 let tableHTML = `
     <style>
         /* ✅ Tout le style fiscal est maintenant isolé dans #fiscalTableContainer */
-
         #fiscalTableContainer {
             width: 100%;
             display: flex;
@@ -7771,14 +7813,12 @@ let tableHTML = `
             align-items: center;
             box-sizing: border-box;
         }
-
         #fiscalTableContainer h3 {
             text-align: center;
             margin-bottom: 10px;
             padding: 0 10px;
             box-sizing: border-box;
         }
-
         #fiscalTableContainer .table-container {
             width: 100%;
             overflow-x: auto; /* ✅ Scroll horizontal si nécessaire */
@@ -7786,7 +7826,6 @@ let tableHTML = `
             box-sizing: border-box;
             padding: 0 5px; /* évite les coupures sur les bords */
         }
-
         #fiscalTableContainer table {
             border-collapse: collapse;
             margin: 0 auto;
@@ -7795,18 +7834,15 @@ let tableHTML = `
             text-align: center;
             box-sizing: border-box;
         }
-
         #fiscalTableContainer th,
         #fiscalTableContainer td {
             padding: 6px;
             border: 1px solid #ccc;
             text-align: center;
         }
-
         #fiscalTableContainer th {
             white-space: nowrap; /* ✅ garde lisible les entêtes sans casser la mise en page */
         }
-
         /* ✅ Colonne "Mois" figée */
         #fiscalTableContainer td:first-child,
         #fiscalTableContainer th:first-child {
@@ -7817,7 +7853,6 @@ let tableHTML = `
             box-shadow: 2px 0 2px rgba(0,0,0,0.1); /* petite ombre pour la lisibilité */
         }
     </style>
-
     <div id="fiscalTableContainer">
         <h4>du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
         <div class="table-container">
@@ -7825,9 +7860,10 @@ let tableHTML = `
                 <thead>
                     <tr>
                         <th>Mois</th>
-                        <th>CA TTC</th>  
+                        <th>CA TTC</th>
                         <th>CA HT à déclarer</th>
                         <th style="background-color: #FF6666;">Impôts et Urssaf à payer</th>
+                        <th>Charges HT à TVA 20%</th>
                         <th>Achats HT à TVA 20%</th>
                         <th>TVA déductible 20%</th>
                         <th>Achats HT à TVA 5.5%</th>
@@ -7839,41 +7875,33 @@ let tableHTML = `
                 </thead>
                 <tbody>
 `;
-
-
-
-
-
         sortedKeys.forEach(key => {
             const [year, month] = key.split('-');
             const moisDate = new Date(`${key}-01`);
             const moisNom = moisDate.toLocaleDateString('fr-FR', { month: 'long' });
             const caTTC = Math.round(monthlyData[key].caTTC);
             const caHT = Math.round(monthlyData[key].caHT);
-
             // URSSAF : basé sur CA HT (inchangé)
             const urssafRateForMonth = moisDate < urssafCutoffDate ? 0.075 : 0.13715;
             const urssaf = Math.round(caHT * urssafRateForMonth);
-
+            const chargesHT_20 = Math.round(monthlyData[key].chargesHT_20);
             const achatsHT_20 = Math.round(monthlyData[key].achatsHT_20);
             const tvaDed_20 = Math.round(monthlyData[key].tvaDed_20);
             const achatsHT_5_5 = Math.round(monthlyData[key].achatsHT_5_5);
             const tvaDed_5_5 = Math.round(monthlyData[key].tvaDed_5_5);
-
             const tvaCollectee = Math.round(monthlyData[key].tvaCollectee);
             const tvaDeductible = Math.round(monthlyData[key].tvaDeductible);
             const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
-
             // Coloration pour TVA à payer
             const isBelowThreshold = monthlyData[key].cumulCAHT < 101000;
             const tvaPayerBgColor = isBelowThreshold ? 'gray' : '#FF6666';
-
             tableHTML += `
                 <tr>
                     <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)} ${year}</td>
                     <td>${caTTC}€</td>
                     <td>${caHT}€</td>
                     <td style="background-color: #FF6666; font-weight: bold;">${urssaf}€</td>
+                    <td>${chargesHT_20}€</td>
                     <td>${achatsHT_20}€</td>
                     <td>${tvaDed_20}€</td>
                     <td>${achatsHT_5_5}€</td>
@@ -7884,14 +7912,12 @@ let tableHTML = `
                 </tr>
             `;
         });
-
         tableHTML += `
                     </tbody>
                 </table>
             </div>
         `;
         tableContainer.innerHTML = tableHTML;
-
     } catch (error) {
         console.error('Erreur dans displayFiscalTable:', error);
         const tableContainer = document.getElementById('fiscalTable');
@@ -7900,26 +7926,15 @@ let tableHTML = `
         }
     }
 }
-
-
 function showBilan() {
     const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage', 'bilanPage'];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById('bilanPage').classList.remove('hidden');
-
     // ✅ Affiche d'abord les données fiscales, puis le bilan
     displayFiscalTable();
     setTimeout(displayBilan, 100);
-
     history.pushState({ page: 'bilanPage' }, '', '#bilan');
 }
-
-
-
-
-
-
-
 function displayBilan() {
     const startInput = document.getElementById("bilanStartDate").value || "2024-12-09";
     let endInput = document.getElementById("bilanEndDate").value;
@@ -7978,15 +7993,15 @@ function displayBilan() {
         };
         tbl.querySelectorAll("tr").forEach(row => {
             const c = row.querySelectorAll("td");
-            if (c.length >= 11) {  // Adjusted for new column count (11 columns)
+            if (c.length >= 12) { // Adjusted for new column count (12 columns)
                 const parts = c[0].innerText.trim().split(" ");
                 const ml = parts[0].toLowerCase(), yy = parts[1]?.slice(-2);
                 const lbl = ml in monthMap && yy ? `${monthMap[ml]}-${yy}` : null;
                 if (!lbl) return;
-                fiscalUrssafData[lbl] = parseInt(c[3].innerText.replace(/\D/g, "")) || 0;  // Changed from c[2] to c[3]
-                fiscalTvaData[lbl] = c[10].style.backgroundColor === 'gray'  // Changed condition from .crossed to background gray
+                fiscalUrssafData[lbl] = parseInt(c[3].innerText.replace(/\D/g, "")) || 0; // Changed from c[2] to c[3]
+                fiscalTvaData[lbl] = c[11].style.backgroundColor === 'gray' // Changed condition from .crossed to background gray
                     ? 0
-                    : parseInt(c[10].innerText.replace(/\D/g, "")) || 0;  // Changed from c[5] to c[10]
+                    : parseInt(c[11].innerText.replace(/\D/g, "")) || 0; // Changed from c[5] to c[11]
             }
         });
     }
@@ -8073,7 +8088,6 @@ function displayBilan() {
     html += `</tbody></table></div>`;
     document.getElementById("bilanTable").innerHTML = html;
 }
-
 function updateCharge(input) {
     const lbl = input.dataset.month;
     const val = parseInt(input.value) || 0;
