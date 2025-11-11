@@ -2049,14 +2049,15 @@ function filterRecipes() {
 <div style="display: flex; flex-direction: column; align-items: flex-start;">
   <label style="display: inline-flex; align-items: center; gap: 1px;">
     <span>Budget année 0</span>
-    <input type="checkbox" id="budgetAnnee0" name="budgetType" checked onclick="toggleBudgetType()">
+    <input type="checkbox" id="budgetAnnee0" name="budgetType" onclick="toggleBudgetType()">
   </label>
 
   <label style="display: inline-flex; align-items: center; gap: 1px; margin-top: 4px;">
     <span>Budget années suivantes</span>
-    <input type="checkbox" id="budgetAnneesSuivantes" name="budgetType" onclick="toggleBudgetType()">
+    <input type="checkbox" id="budgetAnneesSuivantes" name="budgetType" checked onclick="toggleBudgetType()">
   </label>
 </div>
+
 
 
 
@@ -5060,17 +5061,14 @@ function filterPurchases() {
         const endInput = document.getElementById('purchaseEndDate');
         const showCommentsCheckbox = document.getElementById('showPurchaseComments');
         const list = document.getElementById('purchasesList');
-
         if (!startInput || !endInput || !showCommentsCheckbox || !list) {
             console.error('Éléments HTML manquants pour filterPurchases');
             list.innerHTML = '<p>Erreur : Éléments de la page introuvables.</p>';
             return;
         }
-
         const start = startInput.value;
         const end = endInput.value;
         const showComments = showCommentsCheckbox.checked;
-
         // Fonction pour formater la date en heure de Paris
         const formatRecipeDate = (date) => {
             const jours = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
@@ -5082,7 +5080,6 @@ function filterPurchases() {
                 year: 'numeric'
             })}`;
         };
-
         // Fonction pour formater une date en YYYY-MM-DD en heure de Paris
         const getParisDateString = (date) => {
             const parisDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
@@ -5092,26 +5089,21 @@ function filterPurchases() {
                 day: '2-digit'
             }).split('/').reverse().join('-');
         };
-
         // Construction des dates de début et de fin en heure de Paris
         const startDate = start
             ? new Date(new Date(`${start}T00:00:00`).toLocaleString('en-US', { timeZone: 'Europe/Paris' }))
             : new Date(new Date('2024-12-09T00:00:00').toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
-
         const endDate = end
             ? new Date(new Date(`${end}T23:59:59`).toLocaleString('en-US', { timeZone: 'Europe/Paris' }))
             : new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
-
         // Log pour déboguer les dates
         console.log('startDate:', getParisDateString(startDate), 'endDate:', getParisDateString(endDate));
-
         // Vérification de validité des dates
         if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
             console.error('Dates invalides ou incohérentes');
             list.innerHTML = '<p>Erreur : Dates invalides.</p>';
             return;
         }
-
         // Charger les achats depuis localStorage
         let purchases = [];
         try {
@@ -5128,14 +5120,12 @@ function filterPurchases() {
             list.innerHTML = '<p>Erreur lors du chargement des achats.</p>';
             return;
         }
-
         // Vérifier salesData
         if (!salesData) {
             console.error('salesData non défini');
             list.innerHTML = '<p>Erreur : Données de ventes non disponibles.</p>';
             return;
         }
-
         // Créer le tableau des achats quotidiens
         const table = document.createElement('table');
         const thead = document.createElement('thead');
@@ -5149,20 +5139,15 @@ function filterPurchases() {
             </tr>
         `;
         table.appendChild(thead);
-
         const tbody = document.createElement('tbody');
-
         const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
         const totalsByPayment = { Carte: 0, Espèce: 0 };
         let grandTotal = 0;
-
         // Boucle sur les dates pour afficher les achats
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             const dateKey = getParisDateString(d);
             const purchasesOnDate = purchases.filter(p => p.date === dateKey);
-
             console.log('Date traitée:', dateKey, 'Achats:', purchasesOnDate);
-
             if (purchasesOnDate.length === 0) {
                 const row = document.createElement('tr');
                 row.innerHTML = `<td style="white-space: nowrap;">${formatRecipeDate(d)}</td><td></td><td></td><td></td>${showComments ? '<td></td>' : ''}`;
@@ -5174,16 +5159,13 @@ function filterPurchases() {
                     row.onclick = () => showPurchaseDetailFromIndex?.(purchases.indexOf(p));
                     row.innerHTML = `<td style="white-space: nowrap;">${formatRecipeDate(new Date(p.date))}</td><td>${Math.round(p.amountTTC)} €</td><td>${p.type}</td><td>${p.payment}</td>${showComments ? `<td>${p.comment || ''}</td>` : ''}`;
                     tbody.appendChild(row);
-
                     totalsByType[p.type] = (totalsByType[p.type] || 0) + p.amountTTC;
                     totalsByPayment[p.payment] = (totalsByPayment[p.payment] || 0) + p.amountTTC;
                     grandTotal += p.amountTTC;
                 });
             }
         }
-
         table.appendChild(tbody);
-
         // Ajouter le pied de tableau avec les totaux
         const tfoot = document.createElement('tfoot');
         tfoot.innerHTML = `
@@ -5196,26 +5178,21 @@ function filterPurchases() {
             <tr style="background-color: #f0f0f0;"><td style="font-weight:bold;">Total Général</td><td style="font-weight:bold;">${Math.round(grandTotal)} €</td><td></td><td></td>${showComments ? '<td></td>' : ''}</tr>
         `;
         table.appendChild(tfoot);
-
         list.innerHTML = `<h3>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
         const container = document.createElement('div');
         container.className = 'table-container';
         container.appendChild(table);
         list.appendChild(container);
-
         // Tableau Résumé par Mois
         const monthlyData = {};
         const monthlySalesData = {};
-
         // Calcul des données d'achats
         purchases.forEach(p => {
             const parisDate = new Date(new Date(p.date + 'T00:00:00').toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
             if (parisDate < startDate || parisDate > endDate) return;
-
             const year = parisDate.getFullYear();
             const month = String(parisDate.getMonth() + 1).padStart(2, '0');
             const key = `${year}-${month}`;
-
             if (!monthlyData[key]) {
                 monthlyData[key] = {
                     total: 0,
@@ -5226,15 +5203,12 @@ function filterPurchases() {
                     joursPain: new Set(),
                 };
             }
-
             monthlyData[key].total += p.amountTTC;
             monthlyData[key][p.type] = (monthlyData[key][p.type] || 0) + p.amountTTC;
-
             if (p.type === 'Pain') {
                 monthlyData[key].joursPain.add(p.date);
             }
         });
-
         // Calcul des jours travaillés à partir de salesData
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             const parisDate = new Date(d.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
@@ -5242,7 +5216,6 @@ function filterPurchases() {
             const month = String(parisDate.getMonth() + 1).padStart(2, '0');
             const day = String(parisDate.getDate()).padStart(2, '0');
             const dateKey = `${year}-${month}-${day}`;
-
             if (salesData[dateKey]) {
                 const monthKey = `${year}-${month}`;
                 if (!monthlySalesData[monthKey]) {
@@ -5251,7 +5224,6 @@ function filterPurchases() {
                 monthlySalesData[monthKey].activeDays += 1;
             }
         }
-
         const summaryTable = document.createElement('table');
         summaryTable.style.fontSize = '0.8em';
         const summaryHead = document.createElement('thead');
@@ -5266,13 +5238,14 @@ function filterPurchases() {
                 <th style="width: 50px; text-align: center;">Nb Jours travaillés</th>
                 <th style="width: 30px; text-align: center;">Nb Paniers/J</th>
                 <th style="width: 70px; text-align: right;">Coût Revient Panier Moy</th>
+                <th style="width: 70px; text-align: right;">Achats HT à TVA 5,5%</th>
                 <th style="width: 70px; text-align: right;">TVA déductible à 5,5%</th>
+                <th style="width: 70px; text-align: right;">Achats HT à TVA 20%</th>
                 <th style="width: 70px; text-align: right;">TVA déductible à 20%</th>
-                <th style="width: 70px; text-align: right;">TVA déductible Total</th>
+                <th style="width: 70px; text-align: right;">TVA déductible Totale sur Achats</th>
             </tr>
         `;
         summaryTable.appendChild(summaryHead);
-
         const summaryBody = document.createElement('tbody');
         Object.entries(monthlyData).forEach(([key, val]) => {
             const [year, month] = key.split('-');
@@ -5280,9 +5253,7 @@ function filterPurchases() {
                 month: 'long',
                 timeZone: 'Europe/Paris'
             });
-
             const joursTravailles = monthlySalesData[key]?.activeDays || 0;
-
             let panierJour = 0;
             if (joursTravailles > 0) {
                 const facteur = ((month === '12' && year === '2024') || (['01', '02'].includes(month) && year === '2025')) ? 0.7 : 0.56;
@@ -5290,31 +5261,28 @@ function filterPurchases() {
                              (month === '01' && year === '2025') ? 0.96 :
                              (month === '02' && year === '2025') ? 0.90 :
                              (month === '03' && year === '2025') ? 0.85 :
-                             (month === '04' && year === '2025') ? 0.85 : 
+                             (month === '04' && year === '2025') ? 0.85 :
                              (month === '05' && year === '2025') ? 0.80 :
-                             (month === '06' && year === '2025') ? 0.90 : 
+                             (month === '06' && year === '2025') ? 0.90 :
                              (month === '07' && year === '2025') ? 0.62 :
                              (month === '08' && year === '2025') ? 0.87 :
                              (month === '09' && year === '2025') ? 0.6 : 0.92;
-                             
-
+                            
                 panierJour = val.Pain * coef / (joursTravailles * facteur);
             }
-
             const totalAlimentaireArrondi = Math.round(val.Alimentaire);
             const totalPainArrondi = Math.round(val.Pain);
             const panierJourArrondi = Math.round(panierJour);
-
             let coutReviensPanierJour = 0;
             const denominateur = joursTravailles * panierJourArrondi;
             if (denominateur > 0) {
                 coutReviensPanierJour = (totalAlimentaireArrondi + totalPainArrondi) / denominateur;
             }
-
             const tvaDeductible5_5 = (val.Alimentaire + val.Pain) * 0.055 / 1.055;
             const tvaDeductible20 = (val.Autre + val.Matériel) * 0.2 / 1.2;
             const tvaDeductibleTotal = tvaDeductible5_5 + tvaDeductible20;
-
+            const achatsHT5_5 = tvaDeductible5_5 / 0.055;
+            const achatsHT20 = tvaDeductible20 / 0.2;
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${moisNom.charAt(0).toUpperCase() + moisNom.slice(1)}<br>${year}</td>
@@ -5326,13 +5294,14 @@ function filterPurchases() {
                 <td>${joursTravailles}</td>
                 <td>${panierJourArrondi}</td>
                 <td>${coutReviensPanierJour.toFixed(2)} €</td>
+                <td>${Math.round(achatsHT5_5)} €</td>
                 <td>${Math.round(tvaDeductible5_5)} €</td>
+                <td>${Math.round(achatsHT20)} €</td>
                 <td>${Math.round(tvaDeductible20)} €</td>
                 <td>${Math.round(tvaDeductibleTotal)} €</td>
             `;
             summaryBody.appendChild(row);
         });
-
         summaryTable.appendChild(summaryBody);
         const spacing = document.createElement('div');
         spacing.style.height = '30px';
@@ -5350,7 +5319,6 @@ function filterPurchases() {
         }
     }
 }
-
 
 
 
@@ -5401,144 +5369,203 @@ function printPurchases() {
         alert("Erreur : Les données des achats ne sont pas disponibles.");
         return;
     }
-
     const startDateInput = document.getElementById('purchaseStartDate').value;
     const endDateInput = document.getElementById('purchaseEndDate').value;
     const showComments = document.getElementById('showPurchaseComments').checked;
-
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
-
     if (isNaN(startDate) || isNaN(endDate)) {
         alert("Erreur : Dates invalides.");
         return;
     }
-
     // Generate all dates in the range
     const allDates = [];
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         allDates.push(new Date(d));
     }
-
     const filteredPurchases = purchases.filter(purchase => {
         const purchaseDate = new Date(purchase.date);
         return purchaseDate >= startDate && purchaseDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
-
     if (allDates.length === 0) {
         alert("Aucune donnée d'achat à télécharger.");
         return;
     }
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const margin = 10;
     const pageHeight = doc.internal.pageSize.height;
     let y = margin;
-    const colWidths = showComments ? [38, 38, 38, 38, 38] : [38, 38, 38, 38];
+    const colWidths = showComments ? [31, 22, 19, 25, 20, 20, 20, 19, 19] : [30, 20, 20, 20, 20, 20, 20, 20];
+    const ttcIndex = showComments ? 4 : 3;
+    const ht20Index = showComments ? 5 : 4;
+    const ht55Index = showComments ? 6 : 5;
+    const tva20Index = showComments ? 7 : 6;
+    const tva55Index = showComments ? 8 : 7;
     const rowHeight = 10;
+    const baseFontSize = 10;
+    const minFontSize = 6;
+    const lineHeightFactor = 1.15;
+    const maxNumLines = 5;
     const tableX = margin;
     const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
-
+    const headers = ['Date', 'Type', 'Paiement'];
+    if (showComments) headers.push('Commentaire');
+    headers.push('TTC', 'HT (20%)', 'HT (5.5%)', 'TVA 20%', 'TVA 5.5%');
     const drawHeader = () => {
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        if (showComments) {
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-            doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        let xPos = tableX;
+        for (let i = 0; i < headers.length; i++) {
+            doc.rect(xPos, y, colWidths[i], rowHeight);
+            doc.text(headers[i], xPos + 2, y + 6);
+            xPos += colWidths[i];
         }
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-        doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
         y += rowHeight;
     };
-
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text(`Chez Barth-Liste des achats du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
-
     drawHeader();
     doc.setFont('helvetica', 'normal');
-
+    const tvaRates = { Pain: 0.055, Alimentaire: 0.055, Matériel: 0.2, Autre: 0.2 };
     const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
     const totalsByPayment = { Carte: 0, Espèce: 0 };
+    let totalsHT20 = 0;
+    let totalsHT55 = 0;
+    let totalsTVA20 = 0;
+    let totalsTVA55 = 0;
     let totalTTC = 0;
-
     allDates.forEach(date => {
         const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
         const purchasesForDate = filteredPurchases.filter(purchase => new Date(purchase.date).toDateString() === date.toDateString());
-
         if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
             drawHeader();
         }
-
         if (purchasesForDate.length === 0) {
-            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            const thisRowHeight = rowHeight;
+            let xPos = tableX;
+            doc.rect(xPos, y, colWidths[0], thisRowHeight); doc.text(dateStr, xPos + 2, y + 6); xPos += colWidths[0];
+            doc.rect(xPos, y, colWidths[1], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[1];
+            doc.rect(xPos, y, colWidths[2], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[2];
             if (showComments) {
-                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-                doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                doc.rect(xPos, y, colWidths[3], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[3];
             }
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-            doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-            y += rowHeight;
+            doc.rect(xPos, y, colWidths[showComments ? 4 : 3], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 4 : 3];
+            doc.rect(xPos, y, colWidths[showComments ? 5 : 4], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 5 : 4];
+            doc.rect(xPos, y, colWidths[showComments ? 6 : 5], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 6 : 5];
+            doc.rect(xPos, y, colWidths[showComments ? 7 : 6], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 7 : 6];
+            doc.rect(xPos, y, colWidths[showComments ? 8 : 7], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 8 : 7];
+            y += thisRowHeight;
         } else {
             purchasesForDate.forEach(purchase => {
                 const type = purchase.type;
                 const payment = purchase.payment;
                 const comment = purchase.comment || '';
-                const amount = Math.round(purchase.amountTTC);
-
-                totalsByType[type] += purchase.amountTTC;
-                totalsByPayment[payment] += purchase.amountTTC;
-                totalTTC += purchase.amountTTC;
-
-                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
-                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-                if (showComments) {
-                    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-                    doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                const amountTTC = purchase.amountTTC;
+                const rate = tvaRates[type] || 0.2;
+                const ht = amountTTC / (1 + rate);
+                const tva = amountTTC - ht;
+                let ht20 = 0, ht55 = 0, tva20 = 0, tva55 = 0;
+                if (rate === 0.055) {
+                    ht55 = ht;
+                    tva55 = tva;
+                } else {
+                    ht20 = ht;
+                    tva20 = tva;
                 }
-                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-                doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-                y += rowHeight;
+                totalsByType[type] += amountTTC;
+                totalsByPayment[payment] += amountTTC;
+                totalTTC += amountTTC;
+                totalsHT20 += ht20;
+                totalsHT55 += ht55;
+                totalsTVA20 += tva20;
+                totalsTVA55 += tva55;
+                let commentLines = [''];
+                let commentFontSize = baseFontSize;
+                let numLines = 1;
+                if (showComments && comment) {
+                    const commentWidth = colWidths[3] - 4;
+                    doc.setFontSize(baseFontSize);
+                    commentLines = doc.splitTextToSize(comment, commentWidth);
+                    numLines = commentLines.length;
+                    if (numLines > maxNumLines) {
+                        let fs = baseFontSize;
+                        while (fs > minFontSize && numLines > maxNumLines) {
+                            fs -= 0.5;
+                            doc.setFontSize(fs);
+                            commentLines = doc.splitTextToSize(comment, commentWidth);
+                            numLines = commentLines.length;
+                        }
+                        commentFontSize = fs;
+                    }
+                } else {
+                    numLines = 1;
+                }
+                const lineHeight = commentFontSize * lineHeightFactor;
+                const thisRowHeight = Math.max(rowHeight, numLines * lineHeight);
+                if (y + thisRowHeight > pageHeight - margin) {
+                    doc.addPage();
+                    y = margin;
+                    drawHeader();
+                }
+                doc.setFontSize(baseFontSize);
+                let xPos = tableX;
+                doc.rect(xPos, y, colWidths[0], thisRowHeight); doc.text(dateStr, xPos + 2, y + 6); xPos += colWidths[0];
+                doc.rect(xPos, y, colWidths[1], thisRowHeight); doc.text(type, xPos + 2, y + 6); xPos += colWidths[1];
+                doc.rect(xPos, y, colWidths[2], thisRowHeight); doc.text(payment, xPos + 2, y + 6); xPos += colWidths[2];
+                if (showComments) {
+                    doc.rect(xPos, y, colWidths[3], thisRowHeight);
+                    doc.setFontSize(commentFontSize);
+                    for (let i = 0; i < commentLines.length; i++) {
+                        doc.text(commentLines[i], xPos + 2, y + 6 + i * (commentFontSize * lineHeightFactor));
+                    }
+                    xPos += colWidths[3];
+                }
+                doc.setFontSize(baseFontSize);
+                doc.rect(xPos, y, colWidths[showComments ? 4 : 3], thisRowHeight); doc.text(`${amountTTC.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 4 : 3];
+                doc.rect(xPos, y, colWidths[showComments ? 5 : 4], thisRowHeight); doc.text(ht20 === 0 ? '' : `${ht20.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 5 : 4];
+                doc.rect(xPos, y, colWidths[showComments ? 6 : 5], thisRowHeight); doc.text(ht55 === 0 ? '' : `${ht55.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 6 : 5];
+                doc.rect(xPos, y, colWidths[showComments ? 7 : 6], thisRowHeight); doc.text(tva20 === 0 ? '' : `${tva20.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 7 : 6];
+                doc.rect(xPos, y, colWidths[showComments ? 8 : 7], thisRowHeight); doc.text(tva55 === 0 ? '' : `${tva55.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 8 : 7];
+                y += thisRowHeight;
             });
         }
     });
-
-    const printTotalRow = (label, value, color = 'black') => {
-        if (y + rowHeight > pageHeight - margin) {
+    const printTotalInCol = (label, value, color, colIndex) => {
+        const thisRowHeight = rowHeight;
+        if (y + thisRowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
         }
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(color);
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(label, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-        doc.text(`${Math.round(value)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-        y += rowHeight;
+        let xPos = tableX;
+        for (let i = 0; i < colWidths.length; i++) {
+            doc.rect(xPos, y, colWidths[i], thisRowHeight);
+            let text = '';
+            if (i === 0) text = label;
+            if (i === colIndex) text = value === 0 ? '' : `${value.toFixed(2)}€`;
+            doc.text(text, xPos + 2, y + 6);
+            xPos += colWidths[i];
+        }
+        y += thisRowHeight;
         doc.setTextColor('black');
     };
-
     ['Pain', 'Alimentaire', 'Matériel', 'Autre'].forEach(type => {
-        printTotalRow(`Total ${type}`, totalsByType[type], '#003366');
+        printTotalInCol(`Total ${type}`, totalsByType[type], '#003366', ttcIndex);
     });
-
-    printTotalRow('Par Carte', totalsByPayment['Carte'], 'green');
-    printTotalRow('Par Espèce', totalsByPayment['Espèce'], 'green');
-    printTotalRow('Total Général', totalTTC, 'black');
-
+    printTotalInCol('Par Carte', totalsByPayment['Carte'], 'green', ttcIndex);
+    printTotalInCol('Par Espèce', totalsByPayment['Espèce'], 'green', ttcIndex);
+    printTotalInCol('Total Général', totalTTC, 'black', ttcIndex);
+    printTotalInCol('Total HT (20%)', totalsHT20, '#003366', ht20Index);
+    printTotalInCol('Total HT (5.5%)', totalsHT55, '#003366', ht55Index);
+    printTotalInCol('Total TVA 20%', totalsTVA20, '#003366', tva20Index);
+    printTotalInCol('Total TVA 5.5%', totalsTVA55, '#003366', tva55Index);
     window.open(doc.output('bloburl'), '_blank');
 }
 
@@ -5551,154 +5578,211 @@ function downloadPurchasesPDF() {
         alert("Erreur : Les données des achats ne sont pas disponibles.");
         return;
     }
-
     const startDateInput = document.getElementById('purchaseStartDate').value;
     const endDateInput = document.getElementById('purchaseEndDate').value;
     const showComments = document.getElementById('showPurchaseComments').checked;
-
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
-
     if (isNaN(startDate) || isNaN(endDate)) {
         alert("Erreur : Dates invalides.");
         return;
     }
-
     // Generate all dates in the range
     const allDates = [];
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         allDates.push(new Date(d));
     }
-
     const filteredPurchases = purchases.filter(purchase => {
         const purchaseDate = new Date(purchase.date);
         return purchaseDate >= startDate && purchaseDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
-
     if (allDates.length === 0) {
         alert("Aucune donnée d'achat à télécharger.");
         return;
     }
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const margin = 10;
     const pageHeight = doc.internal.pageSize.height;
     let y = margin;
-    const colWidths = showComments ? [38, 38, 38, 38, 38] : [38, 38, 38, 38];
+    const colWidths = showComments ? [31, 22, 19, 25, 20, 20, 20, 19, 19] : [30, 20, 20, 20, 20, 20, 20, 20];
+    const ttcIndex = showComments ? 4 : 3;
+    const ht20Index = showComments ? 5 : 4;
+    const ht55Index = showComments ? 6 : 5;
+    const tva20Index = showComments ? 7 : 6;
+    const tva55Index = showComments ? 8 : 7;
     const rowHeight = 10;
+    const baseFontSize = 10;
+    const minFontSize = 6;
+    const lineHeightFactor = 1.15;
+    const maxNumLines = 5;
     const tableX = margin;
     const dayAbbreviations = ['D', 'L', 'M', 'Me', 'J', 'V', 'S'];
-
+    const headers = ['Date', 'Type', 'Paiement'];
+    if (showComments) headers.push('Commentaire');
+    headers.push('TTC', 'HT (20%)', 'HT (5.5%)', 'TVA 20%', 'TVA 5.5%');
     const drawHeader = () => {
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        if (showComments) {
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-            doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        let xPos = tableX;
+        for (let i = 0; i < headers.length; i++) {
+            doc.rect(xPos, y, colWidths[i], rowHeight);
+            doc.text(headers[i], xPos + 2, y + 6);
+            xPos += colWidths[i];
         }
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-        doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
         y += rowHeight;
     };
-
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text(`Chez Barth-Liste des achats du ${dayAbbreviations[startDate.getDay()]} ${startDate.toLocaleDateString('fr-FR')} au ${dayAbbreviations[endDate.getDay()]} ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
-
     drawHeader();
     doc.setFont('helvetica', 'normal');
-
+    const tvaRates = { Pain: 0.055, Alimentaire: 0.055, Matériel: 0.2, Autre: 0.2 };
     const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
     const totalsByPayment = { Carte: 0, Espèce: 0 };
+    let totalsHT20 = 0;
+    let totalsHT55 = 0;
+    let totalsTVA20 = 0;
+    let totalsTVA55 = 0;
     let totalTTC = 0;
-
     allDates.forEach(date => {
         const dateStr = `${dayAbbreviations[date.getDay()]} ${date.toLocaleDateString('fr-FR')}`;
         const purchasesForDate = filteredPurchases.filter(purchase => new Date(purchase.date).toDateString() === date.toDateString());
-
         if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
             drawHeader();
         }
-
         if (purchasesForDate.length === 0) {
-            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            const thisRowHeight = rowHeight;
+            let xPos = tableX;
+            doc.rect(xPos, y, colWidths[0], thisRowHeight); doc.text(dateStr, xPos + 2, y + 6); xPos += colWidths[0];
+            doc.rect(xPos, y, colWidths[1], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[1];
+            doc.rect(xPos, y, colWidths[2], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[2];
             if (showComments) {
-                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-                doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                doc.rect(xPos, y, colWidths[3], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[3];
             }
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-            doc.text('', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-            y += rowHeight;
+            doc.rect(xPos, y, colWidths[showComments ? 4 : 3], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 4 : 3];
+            doc.rect(xPos, y, colWidths[showComments ? 5 : 4], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 5 : 4];
+            doc.rect(xPos, y, colWidths[showComments ? 6 : 5], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 6 : 5];
+            doc.rect(xPos, y, colWidths[showComments ? 7 : 6], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 7 : 6];
+            doc.rect(xPos, y, colWidths[showComments ? 8 : 7], thisRowHeight); doc.text('', xPos + 2, y + 6); xPos += colWidths[showComments ? 8 : 7];
+            y += thisRowHeight;
         } else {
             purchasesForDate.forEach(purchase => {
                 const type = purchase.type;
                 const payment = purchase.payment;
                 const comment = purchase.comment || '';
-                const amount = Math.round(purchase.amountTTC);
-
-                totalsByType[type] += purchase.amountTTC;
-                totalsByPayment[payment] += purchase.amountTTC;
-                totalTTC += purchase.amountTTC;
-
-                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
-                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
-                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-                if (showComments) {
-                    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-                    doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                const amountTTC = purchase.amountTTC;
+                const rate = tvaRates[type] || 0.2;
+                const ht = amountTTC / (1 + rate);
+                const tva = amountTTC - ht;
+                let ht20 = 0, ht55 = 0, tva20 = 0, tva55 = 0;
+                if (rate === 0.055) {
+                    ht55 = ht;
+                    tva55 = tva;
+                } else {
+                    ht20 = ht;
+                    tva20 = tva;
                 }
-                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-                doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-                y += rowHeight;
+                totalsByType[type] += amountTTC;
+                totalsByPayment[payment] += amountTTC;
+                totalTTC += amountTTC;
+                totalsHT20 += ht20;
+                totalsHT55 += ht55;
+                totalsTVA20 += tva20;
+                totalsTVA55 += tva55;
+                let commentLines = [''];
+                let commentFontSize = baseFontSize;
+                let numLines = 1;
+                if (showComments && comment) {
+                    const commentWidth = colWidths[3] - 4;
+                    doc.setFontSize(baseFontSize);
+                    commentLines = doc.splitTextToSize(comment, commentWidth);
+                    numLines = commentLines.length;
+                    if (numLines > maxNumLines) {
+                        let fs = baseFontSize;
+                        while (fs > minFontSize && numLines > maxNumLines) {
+                            fs -= 0.5;
+                            doc.setFontSize(fs);
+                            commentLines = doc.splitTextToSize(comment, commentWidth);
+                            numLines = commentLines.length;
+                        }
+                        commentFontSize = fs;
+                    }
+                } else {
+                    numLines = 1;
+                }
+                const lineHeight = commentFontSize * lineHeightFactor;
+                const thisRowHeight = Math.max(rowHeight, numLines * lineHeight);
+                if (y + thisRowHeight > pageHeight - margin) {
+                    doc.addPage();
+                    y = margin;
+                    drawHeader();
+                }
+                doc.setFontSize(baseFontSize);
+                let xPos = tableX;
+                doc.rect(xPos, y, colWidths[0], thisRowHeight); doc.text(dateStr, xPos + 2, y + 6); xPos += colWidths[0];
+                doc.rect(xPos, y, colWidths[1], thisRowHeight); doc.text(type, xPos + 2, y + 6); xPos += colWidths[1];
+                doc.rect(xPos, y, colWidths[2], thisRowHeight); doc.text(payment, xPos + 2, y + 6); xPos += colWidths[2];
+                if (showComments) {
+                    doc.rect(xPos, y, colWidths[3], thisRowHeight);
+                    doc.setFontSize(commentFontSize);
+                    for (let i = 0; i < commentLines.length; i++) {
+                        doc.text(commentLines[i], xPos + 2, y + 6 + i * (commentFontSize * lineHeightFactor));
+                    }
+                    xPos += colWidths[3];
+                }
+                doc.setFontSize(baseFontSize);
+                doc.rect(xPos, y, colWidths[showComments ? 4 : 3], thisRowHeight); doc.text(`${amountTTC.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 4 : 3];
+                doc.rect(xPos, y, colWidths[showComments ? 5 : 4], thisRowHeight); doc.text(ht20 === 0 ? '' : `${ht20.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 5 : 4];
+                doc.rect(xPos, y, colWidths[showComments ? 6 : 5], thisRowHeight); doc.text(ht55 === 0 ? '' : `${ht55.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 6 : 5];
+                doc.rect(xPos, y, colWidths[showComments ? 7 : 6], thisRowHeight); doc.text(tva20 === 0 ? '' : `${tva20.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 7 : 6];
+                doc.rect(xPos, y, colWidths[showComments ? 8 : 7], thisRowHeight); doc.text(tva55 === 0 ? '' : `${tva55.toFixed(2)}€`, xPos + 2, y + 6); xPos += colWidths[showComments ? 8 : 7];
+                y += thisRowHeight;
             });
         }
     });
-
-    const printTotalRow = (label, value, color = 'black') => {
-        if (y + rowHeight > pageHeight - margin) {
+    const printTotalInCol = (label, value, color, colIndex) => {
+        const thisRowHeight = rowHeight;
+        if (y + thisRowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
         }
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(color);
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(label, tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
-        doc.text(`${Math.round(value)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-        y += rowHeight;
+        let xPos = tableX;
+        for (let i = 0; i < colWidths.length; i++) {
+            doc.rect(xPos, y, colWidths[i], thisRowHeight);
+            let text = '';
+            if (i === 0) text = label;
+            if (i === colIndex) text = value === 0 ? '' : `${value.toFixed(2)}€`;
+            doc.text(text, xPos + 2, y + 6);
+            xPos += colWidths[i];
+        }
+        y += thisRowHeight;
         doc.setTextColor('black');
     };
-
     ['Pain', 'Alimentaire', 'Matériel', 'Autre'].forEach(type => {
-        printTotalRow(`Total ${type}`, totalsByType[type], '#003366');
+        printTotalInCol(`Total ${type}`, totalsByType[type], '#003366', ttcIndex);
     });
-
-    printTotalRow('Par Carte', totalsByPayment['Carte'], 'green');
-    printTotalRow('Par Espèce', totalsByPayment['Espèce'], 'green');
-    printTotalRow('Total Général', totalTTC, 'black');
-
+    printTotalInCol('Par Carte', totalsByPayment['Carte'], 'green', ttcIndex);
+    printTotalInCol('Par Espèce', totalsByPayment['Espèce'], 'green', ttcIndex);
+    printTotalInCol('Total Général', totalTTC, 'black', ttcIndex);
+    printTotalInCol('Total HT (20%)', totalsHT20, '#003366', ht20Index);
+    printTotalInCol('Total HT (5.5%)', totalsHT55, '#003366', ht55Index);
+    printTotalInCol('Total TVA 20%', totalsTVA20, '#003366', tva20Index);
+    printTotalInCol('Total TVA 5.5%', totalsTVA55, '#003366', tva55Index);
     const startStr = startDate.toLocaleDateString('fr-CA');
     const endStr = endDate.toLocaleDateString('fr-CA');
     const fileName = `Chez_Barth_Achats_${startStr}_au_${endStr}.pdf`;
     doc.save(fileName);
-
     setTimeout(() => {
         alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
     }, 500);
-
- window.open(doc.output('bloburl'), '_blank');
+    window.open(doc.output('bloburl'), '_blank');
 }
 
 
