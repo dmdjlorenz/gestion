@@ -7899,13 +7899,28 @@ function displayFiscalTable() {
             monthlyData[key].tvaDeductible = monthlyData[key].tvaDed_5_5 + monthlyData[key].tvaDed_20;
         });
         // Calcul du CA HT basé sur le cumul du CA TTC (inchangé)
+        const thresholdStartDate = new Date('2025-01-01');
         let cumulativeCATTC = 0;
         sortedKeys.forEach(key => {
-            cumulativeCATTC += monthlyData[key].caTTC;
-            if (cumulativeCATTC <= 101000) {
-                monthlyData[key].caHT = monthlyData[key].caTTC;
+            const moisDate = new Date(`${key}-01`);
+            if (moisDate >= thresholdStartDate) {
+                cumulativeCATTC += monthlyData[key].caTTC;
+                if (cumulativeCATTC <= 101000) {
+                    monthlyData[key].caHT = monthlyData[key].caTTC;
+                    monthlyData[key].tvaCollectee = 0;
+                    monthlyData[key].tvaDeductible = 0;
+                    monthlyData[key].tvaDed_5_5 = 0;
+                    monthlyData[key].tvaDed_20 = 0;
+                } else {
+                    monthlyData[key].caHT = monthlyData[key].caTTC / (1 + tvaRate);
+                    monthlyData[key].tvaCollectee = monthlyData[key].caHT * tvaRate;
+                }
             } else {
-                monthlyData[key].caHT = monthlyData[key].caTTC / (1 + tvaRate);
+                monthlyData[key].caHT = monthlyData[key].caTTC;
+                monthlyData[key].tvaCollectee = 0;
+                monthlyData[key].tvaDeductible = 0;
+                monthlyData[key].tvaDed_5_5 = 0;
+                monthlyData[key].tvaDed_20 = 0;
             }
         });
         // Calcul du cumul CA HT pour la coloration
@@ -7913,10 +7928,6 @@ function displayFiscalTable() {
         sortedKeys.forEach(key => {
             cumulativeCAHT += monthlyData[key].caHT;
             monthlyData[key].cumulCAHT = cumulativeCAHT; // Stocker pour utilisation dans l'affichage
-        });
-        // TVA collectée corrigée : 0.1 * CA HT (tvaRate * caHT)
-        Object.keys(monthlyData).forEach(key => {
-            monthlyData[key].tvaCollectee = monthlyData[key].caHT * tvaRate;
         });
 let tableHTML = `
     <style>
@@ -8008,7 +8019,7 @@ let tableHTML = `
             const tvaDeductible = Math.round(monthlyData[key].tvaDeductible);
             const tvaAPayer = Math.round(tvaCollectee - tvaDeductible);
             // Coloration pour TVA à payer
-            const isBelowThreshold = monthlyData[key].cumulCAHT < 101000;
+            const isBelowThreshold = (tvaCollectee === 0);
             const tvaPayerBgColor = isBelowThreshold ? 'gray' : '#FF6666';
             tableHTML += `
                 <tr>
@@ -8041,6 +8052,8 @@ let tableHTML = `
         }
     }
 }
+
+
 function showBilan() {
     const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage', 'bilanPage'];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
