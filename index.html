@@ -1567,45 +1567,49 @@ table {
 
  
 <div id="indicatorsTable"></div>
-    <h4>Coefficient de vente</h4>
-    <div class="chart-container">
-        <canvas id="coefVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>Coût de revient Panier Moyen</h4>
-    <div class="chart-container">
-        <canvas id="coutReviensChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>Prix de vente Panier Moyen</h4>
-    <div class="chart-container">
-        <canvas id="prixVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>Marge Brute Panier Moyen</h4>
-    <div class="chart-container">
-        <canvas id="margeBruteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>Chiffre d'affaire mensuel (TTC)</h4>
-    <div class="chart-container">
-        <canvas id="caMensuelChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>Bénéfice net d'impôts mensuel</h4>
-    <div class="chart-container">
-        <canvas id="beneficeNetChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>Ventes par jour en moyenne</h4>
-    <div class="chart-container">
-        <canvas id="caParJourChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>CA moyen des jours de semaine</h4>
-    <div class="chart-container">
-        <canvas id="weekdayCaChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <h4>Taux de cash</h4>
-    <div class="chart-container">
-        <canvas id="cashRateChart" style="margin-top: 10px; max-width: 100%;"></canvas>
-    </div>
-    <div class="buttons no-print" style="margin-top: 20px;">
-        <button onclick="backToHome()" style="background:#000000; color:white;">Retour</button>
-    </div>
+<h4>Coefficient de vente</h4>
+<div class="chart-container">
+    <canvas id="coefVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Coût de revient Panier Moyen</h4>
+<div class="chart-container">
+    <canvas id="coutReviensChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Prix de vente Panier Moyen</h4>
+<div class="chart-container">
+    <canvas id="prixVenteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Marge Brute Panier Moyen</h4>
+<div class="chart-container">
+    <canvas id="margeBruteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Chiffre d'affaire mensuel (TTC)</h4>
+<div class="chart-container">
+    <canvas id="caMensuelChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Bénéfice net d'impôts mensuel</h4>
+<div class="chart-container">
+    <canvas id="beneficeNetChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Rentabilité %</h4>
+<div class="chart-container">
+    <canvas id="rentabiliteChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Ventes par jour en moyenne</h4>
+<div class="chart-container">
+    <canvas id="caParJourChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>CA moyen des jours de semaine</h4>
+<div class="chart-container">
+    <canvas id="weekdayCaChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<h4>Taux de cash</h4>
+<div class="chart-container">
+    <canvas id="cashRateChart" style="margin-top: 10px; max-width: 100%;"></canvas>
+</div>
+<div class="buttons no-print" style="margin-top: 20px;">
+    <button onclick="backToHome()" style="background:#000000; color:white;">Retour</button>
+</div>
 </div>
 
 
@@ -7367,6 +7371,7 @@ function displayIndicatorsTable() {
         const caParJourData = [];
         const cashRateData = [];
         const beneficeNetData = [];
+        const rentabiliteData = [];
         const monthNames = ["janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"];
         const defaultCharges = {
             "déc-24": 1925, "janv-25": 2372, "févr-25": 1952,
@@ -7437,7 +7442,7 @@ function displayIndicatorsTable() {
                              (month === '07' && year === '2025') ? 0.62 :
                              (month === '08' && year === '2025') ? 0.87 :
                              (month === '09' && year === '2025') ? 0.6 : 0.92;
-                         
+                        
             let panierJour = 0;
             if (joursTravailles > 0) {
                 panierJour = monthlyPurchaseData[key].Pain * coef / (joursTravailles * facteur);
@@ -7480,6 +7485,7 @@ function displayIndicatorsTable() {
             const cumCA = monthCumulative[key] || 0;
             const tvToUse = cumCA > 101000 ? tv : 0;
             const net = ca - ach - ch - pers - ur - tvToUse;
+            const rentabilite = ca > 0 ? (net / ca * 100) : 0;
             let coefClass = '';
             if (coefVente < 2.3) coefClass = 'coef-low';
             else if (coefVente >= 2.3 && coefVente <= 2.6) coefClass = 'coef-medium';
@@ -7502,6 +7508,7 @@ function displayIndicatorsTable() {
             caParJourData.push(caParJour);
             cashRateData.push(cashRate);
             beneficeNetData.push(Math.round(net));
+            rentabiliteData.push(Number(rentabilite.toFixed(1)));
         });
         tableHTML += `
                 </tbody>
@@ -7610,6 +7617,7 @@ function displayIndicatorsTable() {
                                 if (canvasId === 'coefVenteChart') return `${value.toFixed(1)}`;
                                 if (canvasId === 'caMensuelChart' || canvasId === 'caParJourChart' || canvasId === 'weekdayCaChart' || canvasId === 'beneficeNetChart') return `${Math.round(value)}€`;
                                 if (canvasId === 'cashRateChart') return `${Math.round(value)}%`;
+                                if (canvasId === 'rentabiliteChart') return `${value.toFixed(1)}%`;
                                 return `${value.toFixed(2)}€`;
                             },
                             font: {
@@ -7639,12 +7647,14 @@ function displayIndicatorsTable() {
                                     label = `${Math.round(value)}€`;
                                 } else if (canvasId === 'cashRateChart') {
                                     label = `${Math.round(value)}%`;
+                                } else if (canvasId === 'rentabiliteChart') {
+                                    label = `${value.toFixed(1)}%`;
                                 } else {
                                     label = `${value.toFixed(2)}€`;
                                 }
                                 if (canvasId === 'caMensuelChart') {
-                                    ctx.translate(point.x, point.y - 20); // Increased offset to -15 for more space
-                                    ctx.rotate(-30 * Math.PI / 180); // Rotate -45 degrees for diagonal upward
+                                    ctx.translate(point.x, point.y - 20);
+                                    ctx.rotate(-30 * Math.PI / 180);
                                     ctx.fillText(label, 0, 0);
                                 } else {
                                     ctx.fillText(label, point.x, point.y - 10);
@@ -7671,6 +7681,26 @@ function displayIndicatorsTable() {
                     }
                 });
             }
+
+            // ➤ Ajout de la ligne horizontale rouge à 20 % sur le graphique de rentabilité
+            if (canvasId === 'rentabiliteChart') {
+                config.plugins.push({
+                    id: 'horizontalLine',
+                    beforeDraw: (chart) => {
+                        const { ctx, chartArea, scales } = chart;
+                        const y = scales.y.getPixelForValue(20);
+                        ctx.save();
+                        ctx.strokeStyle = 'red';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(chartArea.left, y);
+                        ctx.lineTo(chartArea.right, y);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                });
+            }
+
             new Chart(ctx, config);
         };
         createChart('coefVenteChart', 'Coefficient de vente', coefVenteData, 'Coefficient de vente', 2, 4, '#0000FF', 'line');
@@ -7682,6 +7712,7 @@ function displayIndicatorsTable() {
         createChart('caParJourChart', 'Ventes par jour en moyenne', caParJourData, 'Ventes par jour (€)', 0, 1600, '#87CEEB', 'bar');
         createChart('weekdayCaChart', 'CA moyen des jours de semaine', weekdayCaData, 'CA moyen (€)', 0, 1200, '#C71585', 'bar', joursSemaine);
         createChart('cashRateChart', 'Taux de cash', cashRateData, 'Taux de cash (%)', 10, 40, '#FF4500', 'line');
+        createChart('rentabiliteChart', 'Rentabilité %', rentabiliteData, 'Rentabilité (%)', -20, 40, '#2E8B57', 'line');
     } catch (error) {
         console.error('Erreur dans displayIndicatorsTable:', error);
         const tableContainer = document.getElementById('indicatorsTable');
