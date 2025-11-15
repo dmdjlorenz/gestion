@@ -7361,7 +7361,7 @@ function displayIndicatorsTable() {
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth();
         const currentDay = currentDate.getDate();
-        const showCurrentMonth = currentDate.getDate() >= 15;
+        const showCurrentMonth = currentDate.getDate() >= 20;
         const chartLabels = [];
         const coefVenteData = [];
         const coutReviensData = [];
@@ -8002,7 +8002,11 @@ let tableHTML = `
                 <tbody>
 `;
         sortedKeys.forEach(key => {
-            const [year, month] = key.split('-');
+            const [year, month] = key.split('-').map(Number);
+            const isCurrentMonth = (year === today.getFullYear() && (month - 1) === today.getMonth());
+            if (isCurrentMonth && today.getDate() < 20) {
+                return;
+            }
             const moisDate = new Date(`${key}-01`);
             const moisNom = moisDate.toLocaleDateString('fr-FR', { month: 'long' });
             const caTTC = Math.round(monthlyData[key].caTTC);
@@ -8052,7 +8056,6 @@ let tableHTML = `
         }
     }
 }
-
 
 function showBilan() {
     const pages = ['homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 'purchasesManagementPage', 'personnelPage', 'personnelManagementPage', 'passwordPage', 'budgetPage', 'settingsPage', 'indicatorsPage', 'fiscalPage', 'bilanPage'];
