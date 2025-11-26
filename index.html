@@ -3949,11 +3949,13 @@ function updateOrderList() {
         <tr>
             <td style="text-align: center; padding: 2px;">
                 <div style="margin: 0; padding: 0; line-height: 1.2;">
-                    <div style="margin: 0; padding: 0;">CHEZ BARTH</div>
-                    <div style="margin: 0; padding: 0;">16 place des Prêcheurs 13100 Aix en Provence</div>
-                    <div style="margin: 0; padding: 0;">Téléphone : 09 77 53 78 71</div>
-                    <div style="margin: 0; padding: 0;">Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
-                </div>
+    <div style="margin: 0; padding: 0;">CHEZ BARTH</div>
+    <div style="margin: 0; padding: 0;">16 place des Prêcheurs 13100 Aix en Provence</div>
+    <div style="margin: 0; padding: 0;">Téléphone : 09 77 53 78 71</div>
+    <div style="margin: 0; padding: 0;">Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
+    <div style="margin: 0; padding: 0;">TVA intra : FR 08932532229</div>
+</div>
+
             </td>
         </tr>
         <tr>
@@ -4093,11 +4095,13 @@ function saveInvoice() {
             <tr>
                 <td style="text-align: center;">
                     <div style="text-align: center;">
-                        <div>CHEZ BARTH</div>
-                        <div>16 place des Prêcheurs 13100 Aix en Provence</div>
-                        <div>Téléphone : 09 77 53 78 71</div>
-                        <div>Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
-                    </div>
+    <div>CHEZ BARTH</div>
+    <div>16 place des Prêcheurs 13100 Aix en Provence</div>
+    <div>Téléphone : 09 77 53 78 71</div>
+    <div>Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
+    <div>TVA intra : FR 08932532229</div>
+</div>
+
                 </td>
             </tr>
             <tr>
@@ -4199,7 +4203,9 @@ function sendInvoiceBySms() {
     smsText += preventAutoLink("13100") + "\u200B Aix\u200B en\u200B Provence\n";
     smsText += "Tel: 09\u200B77\u200B53\u200B78\u200B71\n";
     smsText += "SIRET: " + preventAutoLink("93253222900014") + "\n";
-    smsText += "APE: 56.10C\nEntreprise Individuelle\n\n";
+smsText += "APE: 56.10C\nEntreprise Individuelle\n";
+smsText += "TVA intra: FR 08932532229\n\n";
+
 
     const caBelow = document.getElementById('caBelow101000').checked;
     smsText += `Fact N° ${invoiceCounter} du ${formattedDate}\n`;
@@ -4283,7 +4289,9 @@ function sendInvoiceByEmail() {
     emailBody += "16\u200B place\u200B des\u200B Prêcheurs,\u200B 13100\u200B Aix\u200B en\u200B Provence\n";
     emailBody += "Tel: 09\u200B77\u200B53\u200B78\u200B71\n";
     emailBody += "Ent. Indiv. SIRET: 932\u200B532\u200B229\u200B00014 - APE: 56.10C\n";
-    emailBody += `Fact N° ${invoiceCounter} - ${formattedDate}${caBelow ? ' (TVA non applicable)' : ''}\n`;
+emailBody += "TVA intra: FR 08932532229\n";
+emailBody += `Fact N° ${invoiceCounter} - ${formattedDate}${caBelow ? ' (TVA non applicable)' : ''}\n`;
+
     if (customerName) {
         emailBody += `Client : ${customerName}\n`;
     }
@@ -4340,8 +4348,10 @@ async function printToBluetoothThermal() {
         text += "13100 Aix en Provence\n";
         text += "Téléphone : 09 77 53 78 71\n";
         text += "Ent. Indiv. SIRET : 93253222900014\n";
-        text += "APE : 56.10C\n";
-        text += "\n";
+text += "APE : 56.10C\n";
+text += "TVA intra : FR 08932532229\n";
+text += "\n";
+
 
         // Facture
         text += `Fact N° ${invoiceCounter} du ${date}\n`;
@@ -4526,12 +4536,14 @@ function viewInvoiceDetail(number) {
     invoiceDetailContainer.innerHTML = `
         <div id="invoiceHeader">
             CHEZ BARTH<br>
-            16 place des Prêcheurs<br>
-            13100 Aix en Provence<br>
-            Téléphone : 09 77 53 78 71<br>
-            Ent Indiv SIRET : 93253222900014<br>
-            APE : 56.10C
-            <div style="height: 6px;"></div>
+16 place des Prêcheurs<br>
+13100 Aix en Provence<br>
+Téléphone : 09 77 53 78 71<br>
+Ent Indiv SIRET : 93253222900014<br>
+APE : 56.10C<br>
+TVA intra : FR 08932532229<br>
+<div style="height: 6px;"></div>
+
             <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
             ${invoice.customerName ? `<div style="text-align: left; margin-top: 6px;"><strong>Client : ${invoice.customerName}</strong></div>` : ''}
             <div class="invoice-number" style="margin-top: 6px; font-weight: bold;">
