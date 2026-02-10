@@ -2871,7 +2871,7 @@ try {
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
         doc.rect(margin, y, pageWidth - 2 * margin, 20);
-        doc.text(`LIVRE DES RECETTES ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
+        doc.text(`LIVRE DES RECETTES (TTC) ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
         doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence SIRET : 93253222900014', pageWidth / 2, y + 16, { align: 'center' });
         y += 25;
         doc.setFontSize(10);
@@ -2990,7 +2990,7 @@ function exportRecipeToPdfofficiel() {
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
         doc.rect(margin, y, pageWidth - 2 * margin, 20);
-        doc.text(`LIVRE DES RECETTES ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
+        doc.text(`LIVRE DES RECETTES (TTC) ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
         doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence SIRET : 93253222900014', pageWidth / 2, y + 16, { align: 'center' });
         y += 25;
         doc.setFontSize(10);
